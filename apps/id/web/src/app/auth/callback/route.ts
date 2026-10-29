@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { safeReturnTo } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 
-export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
   // 2. Trao đổi Auth Code lấy phiên làm việc (Session)
   if (code) {
-    const supabase = await createClient();
+    const supabase = await createClient(request);
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       // internal path ("/terms") -> prepend origin; absolute ("https://pomoduo…") -> dùng nguyên; nếu không có -> trực tiếp về VNTEZ Console

@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { cookieDomain } from "./domains";
 
 export function createClient() {
   const supabaseUrl =
@@ -9,6 +10,12 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     "placeholder-anon-key";
 
-  return createBrowserClient(supabaseUrl, supabaseKey);
+  return createBrowserClient(supabaseUrl, supabaseKey, {
+    cookieOptions: {
+      domain: cookieDomain(),
+      sameSite: "lax",
+      secure: typeof window !== "undefined" && window.location.protocol === "https:",
+    },
+  });
 }
 
