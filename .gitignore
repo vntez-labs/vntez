@@ -44,6 +44,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# standalone repos managed separately
-apps/id/
+# cloudflare
+.wrangler
+.dev.vars*
 
