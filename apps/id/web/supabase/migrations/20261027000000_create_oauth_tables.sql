@@ -87,10 +87,17 @@ create policy "Allow update oauth_codes"
 -- 4. Khởi tạo ứng dụng mặc định cho hệ sinh thái VNTEZ
 insert into public.oauth_clients (client_id, client_secret_hash, name, redirect_uris, is_internal)
 values (
+  'vntez-console-app',
+  null,
+  'VNTEZ Console',
+  array['http://localhost:3000/auth/callback', 'https://vntez-console.vercel.app/auth/callback'],
+  true
+),
+(
   'vntez_c18f43a315d368109d4d8aca',
   null,
-  'VNTEZ Client',
-  array['http://localhost:3000/auth/callback', 'https://vntez-console.vercel.app/auth/callback', 'http://localhost:3000/oauth/tester/callback', 'https://vntez-id.vercel.app/oauth/tester/callback'],
+  'BMAN',
+  array['vntez-bman://auth/callback'],
   true
 ),
 (
