@@ -49,7 +49,7 @@ function CallbackContent() {
 
     const clientId =
       sessionStorage.getItem("vntez_oauth_tester_client_id") ||
-      "vntez-demo-client";
+      "vntez_c18f43a315d368109d4d8aca";
     const redirectUri = window.location.origin + "/oauth/tester/callback";
 
     try {

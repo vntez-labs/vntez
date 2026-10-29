@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const clientId =
     process.env.VNTEZ_CLIENT_ID ||
     process.env.NEXT_PUBLIC_VNTEZ_CLIENT_ID ||
-    "vntez_39d12110edebc2b5d4f584c6";
+    "vntez_c18f43a315d368109d4d8aca";
 
   const baseUrl = process.env.VNTEZ_BASE_URL || "https://vntez-id.vercel.app";
 

@@ -115,7 +115,7 @@ curl -X POST https://vntez-id.vercel.app/oauth/token \\
   -H "Content-Type: application/json" \\
   -d '{
     "grant_type": "authorization_code",
-    "client_id": "YOUR_CLIENT_ID",
+    "client_id": "vntez_c18f43a315d368109d4d8aca",
     "code": "AUTH_CODE_RECEIVED",
     "code_verifier": "ORIGINAL_CODE_VERIFIER",
     "redirect_uri": "https://your-app.com/callback"

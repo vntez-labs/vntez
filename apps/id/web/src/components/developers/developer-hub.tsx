@@ -393,7 +393,7 @@ Bước 4: Gửi GET request tới ${CANONICAL_GATEWAY_URL}/oauth/userinfo với
                       size="sm"
                       onClick={() =>
                         copy(
-                          `${CANONICAL_GATEWAY_URL}/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=https://your-app.com/callback&response_type=code&state=xyz123abc&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256`,
+                          `${CANONICAL_GATEWAY_URL}/oauth/authorize?client_id=vntez_c18f43a315d368109d4d8aca&redirect_uri=https://your-app.com/callback&response_type=code&state=xyz123abc&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256`,
                           "ep1"
                         )
                       }
@@ -428,7 +428,7 @@ Bước 4: Gửi GET request tới ${CANONICAL_GATEWAY_URL}/oauth/userinfo với
                 <div className="rounded-xl bg-[#080d16] border border-white/[0.08] p-4 sm:p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-200 overflow-x-auto">
                   <pre className="whitespace-pre">
 {`GET https://vntez-id.vercel.app/oauth/authorize
-  ?client_id=YOUR_CLIENT_ID
+  ?client_id=vntez_c18f43a315d368109d4d8aca
   &redirect_uri=https://your-app.com/callback
   &response_type=code
   &state=xyz123abc
@@ -463,7 +463,7 @@ Bước 4: Gửi GET request tới ${CANONICAL_GATEWAY_URL}/oauth/userinfo với
   -H "Content-Type: application/json" \\
   -d '{
     "grant_type": "authorization_code",
-    "client_id": "YOUR_CLIENT_ID",
+    "client_id": "vntez_c18f43a315d368109d4d8aca",
     "code": "AUTH_CODE_RECEIVED",
     "code_verifier": "ORIGINAL_CODE_VERIFIER",
     "redirect_uri": "https://your-app.com/callback"
@@ -492,7 +492,7 @@ Bước 4: Gửi GET request tới ${CANONICAL_GATEWAY_URL}/oauth/userinfo với
   -H "Content-Type: application/json" \\
   -d '{
     "grant_type": "authorization_code",
-    "client_id": "YOUR_CLIENT_ID",
+    "client_id": "vntez_c18f43a315d368109d4d8aca",
     "code": "AUTH_CODE",
     "code_verifier": "PKCE_VERIFIER",
     "redirect_uri": "https://your-app.com/callback"
