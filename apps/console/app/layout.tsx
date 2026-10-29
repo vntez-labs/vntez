@@ -1,8 +1,55 @@
 import type { Metadata, Viewport } from "next";
+import { Be_Vietnam_Pro, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@workspace/auth/provider";
 import { getServerSession } from "@workspace/auth/server";
+import { cn } from "@workspace/ui/lib/utils";
+
+const beVietnamPro = Be_Vietnam_Pro({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-sans",
+  display: "swap",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  weight: ["500", "600", "700", "800"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-display",
+  display: "swap",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-mono",
+  display: "swap",
+  fallback: [
+    "ui-monospace",
+    "SFMono-Regular",
+    "Menlo",
+    "Monaco",
+    "Consolas",
+    "monospace",
+  ],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -34,21 +81,14 @@ export default async function RootLayout({
     <html
       lang="vi"
       suppressHydrationWarning
-      className="dark font-sans antialiased"
+      className={cn(
+        beVietnamPro.variable,
+        plusJakartaSans.variable,
+        jetbrainsMono.variable,
+        "dark font-sans antialiased"
+      )}
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary">
+      <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary">
         <ThemeProvider>
           <AuthProvider initialUser={user} initialToken={accessToken}>
             {children}
