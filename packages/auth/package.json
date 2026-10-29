@@ -1,0 +1,41 @@
+{
+  "name": "@workspace/auth",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zustand": "^5.0.3"
+  },
+  "peerDependencies": {
+    "next": ">=15.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "typescript": "^5"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./pkce": "./src/pkce.ts",
+    "./client": "./src/client.ts",
+    "./cookies": "./src/cookies.ts",
+    "./types": "./src/types.ts",
+    "./store": "./src/store.ts",
+    "./guard": "./src/guard.tsx",
+    "./provider": "./src/provider.tsx",
+    "./server": "./src/server.ts"
+  }
+}
