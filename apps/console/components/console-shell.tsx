@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +14,7 @@ import {
   HardDrive,
   Layers,
   Newspaper,
+  ArrowLeft,
 } from "lucide-react";
 import { UserDropdown } from "@/components/user-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -32,13 +33,15 @@ export const NAV_ITEMS = [
 
 export function ConsoleShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const isSubPage = pathname.includes("/editor") || pathname.split("/").filter(Boolean).length > 1;
 
   return (
-    <div className="flex min-h-screen w-full bg-[#fbf9f5] dark:bg-[#080c14] overflow-x-hidden">
-      {/* Sidebar - Solid White on warm Claude-style ivory background */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-[#0c121e] md:flex shadow-[1px_0_3px_rgba(0,0,0,0.02)]">
+    <div className="flex min-h-screen w-full bg-[#fbf9f5] dark:bg-[#080c14] text-foreground overflow-x-hidden">
+      {/* Sidebar - Solid pure white on warm ivory background */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-zinc-200/70 dark:border-zinc-800/70 bg-white dark:bg-[#0c121e] md:flex shadow-xs">
         {/* Brand Header */}
-        <div className="flex h-16 items-center gap-3 border-b border-zinc-200/60 dark:border-zinc-800/60 px-6 bg-white dark:bg-[#0c121e]">
+        <div className="flex h-16 items-center gap-3 border-b border-zinc-200/70 dark:border-zinc-800/70 px-6 bg-white dark:bg-[#0c121e]">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
             <Terminal className="h-5 w-5" />
           </div>
@@ -66,8 +69,8 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
                   isActive
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-zinc-100/70 dark:hover:bg-zinc-800/60 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -80,14 +83,31 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col md:pl-64 min-w-0 w-full max-w-full overflow-x-hidden">
-        {/* Top Header */}
-        <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-[#0c121e]/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 shadow-xs">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Console</span>
-            <span className="text-muted-foreground/50">/</span>
-            <span className="font-semibold text-foreground">
-              {NAV_ITEMS.find((item) => item.href === pathname)?.label || "Bảng điều khiển"}
-            </span>
+        {/* Top Header - Solid pure white */}
+        <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-zinc-200/70 dark:border-zinc-800/70 bg-white/95 dark:bg-[#0c121e]/95 backdrop-blur-md px-6 sm:px-8 lg:px-10 shadow-2xs">
+          <div className="flex items-center gap-3">
+            {isSubPage && (
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-foreground transition-all cursor-pointer shadow-2xs"
+                title="Quay lại trang trước"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Quay lại</span>
+              </button>
+            )}
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-muted-foreground">Console</span>
+              <span className="text-muted-foreground/50">/</span>
+              <span className="font-semibold text-foreground">
+                {pathname.includes("/apps/editor")
+                  ? "Soạn thảo Ứng dụng"
+                  : pathname.includes("/blog-posts/editor")
+                    ? "Soạn thảo Bài viết"
+                    : NAV_ITEMS.find((item) => item.href === pathname)?.label || "Bảng điều khiển"}
+              </span>
+            </div>
           </div>
 
           {/* Top Actions: Theme Switcher & User Profile Dropdown */}
@@ -97,8 +117,8 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-[#fbf9f5] dark:bg-[#080c14] min-w-0 w-full max-w-full">
+        {/* Page Content - Warm ivory canvas */}
+        <main className="flex-1 p-6 sm:p-8 lg:p-10 bg-[#fbf9f5] dark:bg-[#080c14] min-w-0 w-full max-w-full">
           {children}
         </main>
       </div>

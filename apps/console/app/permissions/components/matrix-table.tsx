@@ -127,23 +127,23 @@ export function MatrixTable() {
                   const isChecked = activePerms.has(permKey) || activePerms.has("*:*");
 
                   return (
-                    <td key={permKey} className="py-1.5 px-1.5 text-center">
+                    <td key={permKey} className="py-2.5 px-2 text-center">
                       <button
                         type="button"
                         onClick={() => togglePermission(selectedRoleId, permKey)}
                         className={cn(
-                          "group relative flex h-9 w-full min-w-[70px] items-center justify-center rounded-xl transition-all cursor-pointer font-medium text-xs shadow-2xs select-none",
+                          "group relative inline-flex size-7.5 items-center justify-center rounded-lg transition-all cursor-pointer select-none",
                           isChecked
-                            ? "bg-primary text-white hover:bg-primary/90 active:scale-95 ring-2 ring-primary/20"
-                            : "bg-zinc-100/80 hover:bg-zinc-200/70 dark:bg-zinc-900/40 dark:hover:bg-zinc-800/80 text-zinc-300 dark:text-zinc-600 hover:text-zinc-500"
+                            ? "bg-primary text-white hover:bg-primary/90 shadow-xs hover:scale-105 active:scale-95"
+                            : "bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800/60 dark:hover:bg-zinc-700/80 text-zinc-300 dark:text-zinc-600 hover:text-zinc-500"
                         )}
                         title={`${selectedRoleId} - ${permKey}`}
                         aria-label={`Toggle ${permKey}`}
                       >
                         {isChecked ? (
-                          <Check className="h-4 w-4 stroke-[2.5] text-white transition-transform group-hover:scale-110" />
+                          <Check className="h-4 w-4 stroke-[2.5] text-white" />
                         ) : (
-                          <Plus className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         )}
                       </button>
                     </td>

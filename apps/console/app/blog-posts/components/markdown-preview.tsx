@@ -74,24 +74,6 @@ export function MarkdownPreview({
           <RenderMarkdownBody content={content} />
         )}
       </div>
-
-      {/* Footer Stats Preview */}
-      <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-muted-foreground font-mono">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1 text-cyan-600">
-            <Eye className="size-3.5" /> 0 lượt xem
-          </span>
-          <span className="flex items-center gap-1 text-rose-500">
-            <Heart className="size-3.5" /> 0 lượt tim
-          </span>
-          <span className="flex items-center gap-1 text-amber-500">
-            <MessageSquare className="size-3.5" /> 0 bình luận
-          </span>
-        </div>
-        <span className="text-[11px] uppercase tracking-wider text-muted-foreground/60">
-          Chế độ xem trước thời gian thực
-        </span>
-      </div>
     </article>
   );
 }

@@ -12,7 +12,7 @@ export const vntezIdTokenSection: DocSection = {
   desc: "Trao đổi Authorization Code và Code Verifier lấy JWT Access Token và Refresh Token.",
   endpoint: {
     method: "POST",
-    path: "https://id.vntez.cloud/oauth/token",
+    path: "https://iam.vntez.cloud/oauth/token",
   },
   params: [
     {
@@ -90,7 +90,7 @@ export const vntezIdTokenSection: DocSection = {
   ],
   subtabs: buildUniversalCodeSubtabs({
     method: "POST",
-    url: "https://id.vntez.cloud/oauth/token",
+    url: "https://iam.vntez.cloud/oauth/token",
     headers: {
       "Content-Type": "application/json",
     },
@@ -118,7 +118,7 @@ export const vntezIdUserinfoSection: DocSection = {
   desc: "Truy vấn thông tin định danh người dùng (sub, email, tên hiển thị, avatar, vai trò) bằng Bearer token.",
   endpoint: {
     method: "GET",
-    path: "https://id.vntez.cloud/oauth/userinfo",
+    path: "https://iam.vntez.cloud/oauth/userinfo",
   },
   params: [
     {
@@ -140,7 +140,7 @@ export const vntezIdUserinfoSection: DocSection = {
           name: "Nguyễn Văn Dev",
           email: "dev@vntez.cloud",
           email_verified: true,
-          picture: "https://id.vntez.cloud/avatars/usr_9812401.png",
+          picture: "https://iam.vntez.cloud/avatars/usr_9812401.png",
           roles: ["developer", "admin"],
         },
         null,
@@ -174,7 +174,7 @@ export const vntezIdUserinfoSection: DocSection = {
   ],
   subtabs: buildUniversalCodeSubtabs({
     method: "GET",
-    url: "https://id.vntez.cloud/oauth/userinfo",
+    url: "https://iam.vntez.cloud/oauth/userinfo",
     headers: {
       Authorization: "Bearer eyJhbGciOiJSUzI1NiIs...",
     },
@@ -191,7 +191,7 @@ export const vntezIdDiscoverySection: DocSection = {
   desc: "Cấu hình OIDC Discovery tự động cho phép mọi thư viện chuẩn (NextAuth, Passport, Auth0 SDK) kết nối không cần cấu hình thủ công.",
   endpoint: {
     method: "GET",
-    path: "https://id.vntez.cloud/.well-known/openid-configuration",
+    path: "https://iam.vntez.cloud/.well-known/openid-configuration",
   },
   responses: [
     {
@@ -199,11 +199,11 @@ export const vntezIdDiscoverySection: DocSection = {
       description: "OIDC Discovery metadata.",
       json: JSON.stringify(
         {
-          issuer: "https://id.vntez.cloud",
-          authorization_endpoint: "https://id.vntez.cloud/oauth/authorize",
-          token_endpoint: "https://id.vntez.cloud/oauth/token",
-          userinfo_endpoint: "https://id.vntez.cloud/oauth/userinfo",
-          jwks_uri: "https://id.vntez.cloud/.well-known/jwks.json",
+          issuer: "https://iam.vntez.cloud",
+          authorization_endpoint: "https://iam.vntez.cloud/oauth/authorize",
+          token_endpoint: "https://iam.vntez.cloud/oauth/token",
+          userinfo_endpoint: "https://iam.vntez.cloud/oauth/userinfo",
+          jwks_uri: "https://iam.vntez.cloud/.well-known/jwks.json",
           response_types_supported: ["code"],
           code_challenge_methods_supported: ["S256"],
         },
@@ -214,7 +214,7 @@ export const vntezIdDiscoverySection: DocSection = {
   ],
   subtabs: buildUniversalCodeSubtabs({
     method: "GET",
-    url: "https://id.vntez.cloud/.well-known/openid-configuration",
+    url: "https://iam.vntez.cloud/.well-known/openid-configuration",
     headers: {},
   }),
 }

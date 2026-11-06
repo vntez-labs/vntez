@@ -1,17 +1,36 @@
 import type { AppItem, BlogPostItem } from "./content-types.js";
 
-export const CONTENT_STORAGE_BASE =
-  "https://stbswcnsitztbusqrdhi.supabase.co/storage/v1/object/public/vntez-assets";
+export const R2_WORKER_BASE =
+  process.env.R2_UPLOAD_WORKER_URL || "https://upload.hnamhocit.workers.dev";
+
+async function getR2SignedUrl(key: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${R2_WORKER_BASE}/api/upload/signed-download-url`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, expiresIn: 3600 }),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.downloadUrl || null;
+  } catch (err) {
+    console.error(`Failed to get R2 signed url for ${key}:`, err);
+    return null;
+  }
+}
 
 export async function fetchLiveApps(): Promise<AppItem[]> {
   try {
-    const res = await fetch(`${CONTENT_STORAGE_BASE}/apps.json`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
+    const signedUrl = await getR2SignedUrl("apps.json");
+    if (signedUrl) {
+      const res = await fetch(signedUrl, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data;
+        }
+      }
     }
   } catch (err) {
     console.warn("Using fallback apps data:", err);
@@ -21,13 +40,15 @@ export async function fetchLiveApps(): Promise<AppItem[]> {
 
 export async function fetchLiveBlogPosts(): Promise<BlogPostItem[]> {
   try {
-    const res = await fetch(`${CONTENT_STORAGE_BASE}/blog_posts.json`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
+    const signedUrl = await getR2SignedUrl("blog_posts.json");
+    if (signedUrl) {
+      const res = await fetch(signedUrl, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data;
+        }
+      }
     }
   } catch (err) {
     console.warn("Using fallback blog posts data:", err);

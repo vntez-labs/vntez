@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1163.0",
+    "@aws-sdk/s3-request-presigner": "^3.1163.0",
     "@tabler/icons-react": "^3.50.0",
     "@types/prismjs": "^1.26.6",
     "@workspace/ui": "workspace:*",

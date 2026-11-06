@@ -1,9 +1,25 @@
 "use client";
 
 import React from "react";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Clock } from "lucide-react";
 import { AutoResizeTextarea } from "@workspace/ui/components/auto-resize-textarea";
+import { CustomSelect } from "@workspace/ui/components/custom-select";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
+
+const BLOG_STATUS_OPTIONS = [
+  { value: "published", label: "Xuất bản Công khai" },
+  { value: "draft", label: "Bản nháp nội bộ" },
+];
+
+const AUTHOR_OPTIONS = [
+  { value: "Core Engineering Team", label: "Core Engineering Team", description: "Đội ngũ Kỹ thuật Cốt lõi" },
+  { value: "Product & Architecture", label: "Product & Architecture", description: "Sản phẩm & Kiến trúc Hệ thống" },
+  { value: "Infrastructure & DevOps", label: "Infrastructure & DevOps", description: "Hạ tầng Cloud & Vận hành" },
+  { value: "Security & IAM Team", label: "Security & IAM Team", description: "Bảo mật & Định danh Phân quyền" },
+  { value: "Founders & Leadership", label: "Founders & Leadership", description: "Ban Sáng lập & Định hướng" },
+  { value: "Developer Relations", label: "Developer Relations", description: "Cộng đồng Lập trình viên" },
+  { value: "Data & AI Research", label: "Data & AI Research", description: "Nghiên cứu Dữ liệu & AI" },
+];
 
 interface PaperBlogMetaProps {
   title: string;
@@ -113,12 +129,11 @@ export function PaperBlogMeta({
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
             Tác giả / Nhóm
           </label>
-          <input
-            type="text"
-            placeholder="Core Engineering Team"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
+          <CustomSelect
+            value={author || "Core Engineering Team"}
+            onChange={(val) => setAuthor(val)}
+            options={AUTHOR_OPTIONS}
+            placeholder="Chọn nhóm tác giả..."
           />
         </div>
 
@@ -126,13 +141,15 @@ export function PaperBlogMeta({
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
             Thời lượng đọc
           </label>
-          <input
-            type="text"
-            placeholder="5 phút đọc"
-            value={readTime}
-            onChange={(e) => setReadTime(e.target.value)}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
-          />
+          <div className="flex items-center gap-2 py-2 border-0 border-b border-zinc-200/80 dark:border-zinc-800 text-xs">
+            <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
+            <span className="font-semibold text-foreground font-mono">
+              {readTime || "1 phút đọc"}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              (Tự động tính)
+            </span>
+          </div>
         </div>
       </div>
 
@@ -193,14 +210,11 @@ export function PaperBlogMeta({
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
             Trạng thái xuất bản
           </label>
-          <select
+          <CustomSelect
             value={status}
-            onChange={(e) => setStatus(e.target.value as "published" | "draft")}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground outline-none transition-colors cursor-pointer"
-          >
-            <option value="published">Xuất bản Công khai</option>
-            <option value="draft">Bản nháp nội bộ</option>
-          </select>
+            onChange={(val) => setStatus(val as "published" | "draft")}
+            options={BLOG_STATUS_OPTIONS}
+          />
         </div>
       </div>
     </div>

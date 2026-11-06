@@ -12,6 +12,13 @@ import { MarkdownToolbar } from "../components/markdown-toolbar";
 import { MarkdownPreview } from "../components/markdown-preview";
 import { BlogCommentsManager } from "../components/blog-comments-manager";
 
+function computeReadTime(text: string): string {
+  const clean = text.replace(/```[\s\S]*?```/g, "").replace(/[#*`_~>[\]()]/g, "").trim();
+  const words = clean ? clean.split(/\s+/).filter(Boolean).length : 0;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} phút đọc`;
+}
+
 export default function BlogEditorPage() {
   return (
     <AuthGuard>
@@ -33,7 +40,6 @@ function BlogEditorContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"edit" | "preview" | "split">("edit");
 
   // Form State
   const [title, setTitle] = useState("");
@@ -97,6 +103,7 @@ function BlogEditorContent() {
     const replacement = prefix + selected + suffix;
     const newContent = content.substring(0, start) + replacement + content.substring(end);
     setContent(newContent);
+    setReadTime(computeReadTime(newContent));
     setTimeout(() => {
       el.focus();
       el.setSelectionRange(start + prefix.length, end + prefix.length);
@@ -175,99 +182,94 @@ function BlogEditorContent() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto w-full min-w-0 py-4 px-2 sm:px-0">
-      <div className="bg-white dark:bg-[#0c121e] rounded-3xl p-8 sm:p-14 shadow-xs space-y-10 border-0">
-        <BlogEditorHeader
-          isEditing={Boolean(editSlug)}
-          isSaving={isSaving}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onSave={handleSave}
+    <div className="w-full max-w-full min-w-0 space-y-8">
+      <BlogEditorHeader
+        isSaving={isSaving}
+        onSave={handleSave}
+      />
+
+      {errorMessage && (
+        <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs">
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Full-width Paper Document Canvas - Direct Side-by-Side View */}
+      <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0c121e] rounded-3xl p-8 sm:p-12 lg:p-14 shadow-xs border border-zinc-200/70 dark:border-zinc-800/70 space-y-10">
+        <PaperBlogMeta
+          title={title}
+          setTitle={setTitle}
+          slug={slug}
+          setSlug={setSlug}
+          excerpt={excerpt}
+          setExcerpt={setExcerpt}
+          category={category}
+          setCategory={setCategory}
+          author={author}
+          setAuthor={setAuthor}
+          readTime={readTime}
+          setReadTime={setReadTime}
+          status={status}
+          setStatus={setStatus}
+          illustrationKey={illustrationKey}
+          setIllustrationKey={setIllustrationKey}
+          thumbnailUrl={thumbnailUrl}
+          setThumbnailUrl={setThumbnailUrl}
+          isUploading={isUploading}
+          onFileUpload={handleFileUpload}
+          isEdit={Boolean(editSlug)}
         />
 
-        {errorMessage && (
-          <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs">
-            {errorMessage}
-          </div>
-        )}
-
-        {/* Paper Document Canvas */}
-        <div className="space-y-8">
-          <PaperBlogMeta
-            title={title}
-            setTitle={setTitle}
-            slug={slug}
-            setSlug={setSlug}
-            excerpt={excerpt}
-            setExcerpt={setExcerpt}
-            category={category}
-            setCategory={setCategory}
-            author={author}
-            setAuthor={setAuthor}
-            readTime={readTime}
-            setReadTime={setReadTime}
-            status={status}
-            setStatus={setStatus}
-            illustrationKey={illustrationKey}
-            setIllustrationKey={setIllustrationKey}
-            thumbnailUrl={thumbnailUrl}
-            setThumbnailUrl={setThumbnailUrl}
-            isUploading={isUploading}
-            onFileUpload={handleFileUpload}
-            isEdit={Boolean(editSlug)}
-          />
-
-          {/* Markdown Writing Workspace */}
-          <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/80">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Nội dung Markdown ({content.length} ký tự)
-              </label>
-              <MarkdownToolbar onInsert={handleInsert} />
-            </div>
-
-            {/* Editor vs Preview Grid */}
-            <div className={activeTab === "split" ? "grid grid-cols-1 md:grid-cols-2 gap-8" : ""}>
-              {(activeTab === "edit" || activeTab === "split") && (
-                <div className="space-y-2">
-                  <AutoResizeTextarea
-                    ref={textareaRef}
-                    minRows={10}
-                    placeholder="# Tiêu đề chính&#10;&#10;Bắt đầu soạn thảo bài viết bằng Markdown...&#10;&#10;```ts&#10;const fast = true;&#10;```"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="font-mono text-sm leading-relaxed border-b border-zinc-200/80 dark:border-zinc-800 pb-4 focus:border-primary"
-                  />
-                </div>
-              )}
-
-              {(activeTab === "preview" || activeTab === "split") && (
-                <div className="p-6 rounded-2xl bg-zinc-50/70 dark:bg-zinc-900/40 min-h-[400px]">
-                  <MarkdownPreview
-                    title={title}
-                    category={category}
-                    author={author}
-                    readTime={readTime}
-                    thumbnailUrl={thumbnailUrl}
-                    content={content}
-                  />
-                </div>
-              )}
-            </div>
+        {/* Markdown Writing Workspace */}
+        <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Nội dung Markdown ({content.length} ký tự)
+            </label>
+            <MarkdownToolbar onInsert={handleInsert} />
           </div>
 
-          {/* Comments Manager (Only shown when editing an existing post) */}
-          {Boolean(editSlug) && (
-            <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-              <BlogCommentsManager
-                comments={comments || []}
-                onDeleteComment={(commentId) => {
-                  setComments((prev) => (prev || []).filter((c) => c.id !== commentId));
+          {/* Direct Side-by-Side Editor & Live Preview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 w-full max-w-full">
+            <div className="space-y-2 min-w-0">
+              <AutoResizeTextarea
+                ref={textareaRef}
+                minRows={14}
+                placeholder="# Tiêu đề chính&#10;&#10;Bắt đầu soạn thảo bài viết bằng Markdown...&#10;&#10;```ts&#10;const fast = true;&#10;```"
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                  setReadTime(computeReadTime(e.target.value));
                 }}
+                className="font-mono text-sm leading-relaxed border-0 p-0 focus:outline-none"
               />
             </div>
-          )}
+
+            {/* Direct Preview without nested wrapper box */}
+            <div className="min-w-0 lg:border-l lg:border-zinc-100 lg:dark:border-zinc-800/80 lg:pl-10">
+              <MarkdownPreview
+                title={title}
+                category={category}
+                author={author}
+                readTime={readTime}
+                thumbnailUrl={thumbnailUrl}
+                content={content}
+              />
+            </div>
+          </div>
         </div>
+
+        {/* Comments Manager (Only shown when editing an existing post) */}
+        {Boolean(editSlug) && (
+          <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
+            <BlogCommentsManager
+              comments={comments || []}
+              onDeleteComment={(commentId) => {
+                setComments((prev) => (prev || []).filter((c) => c.id !== commentId));
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -33,7 +33,6 @@ function AppsEditorContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"form" | "preview" | "split">("form");
 
   // Form State
   const [name, setName] = useState("");
@@ -153,107 +152,101 @@ function AppsEditorContent() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto w-full min-w-0 py-4 px-2 sm:px-0">
-      <div className="bg-white dark:bg-[#0c121e] rounded-3xl p-8 sm:p-14 shadow-xs space-y-10 border-0">
-        <AppsEditorHeader
-          isEditing={Boolean(editId)}
-          isSaving={isSaving}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onSave={handleSave}
-        />
+    <div className="w-full max-w-full min-w-0 space-y-8">
+      <AppsEditorHeader
+        isSaving={isSaving}
+        onSave={handleSave}
+      />
 
-        {errorMessage && (
-          <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs">
-            {errorMessage}
-          </div>
-        )}
+      {errorMessage && (
+        <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs">
+          {errorMessage}
+        </div>
+      )}
 
-        {/* Form and Preview Layout */}
-        <div className={activeTab === "split" ? "grid grid-cols-1 lg:grid-cols-2 gap-10" : ""}>
-          {(activeTab === "form" || activeTab === "split") && (
-            <div className="space-y-8">
-              {/* Document Headline Title */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block">
-                  Tên Sản phẩm / Ứng dụng
-                </label>
-                <input
-                  type="text"
-                  placeholder="Nhập tên ứng dụng hoặc dịch vụ..."
-                  value={name}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full text-2xl sm:text-3xl font-extrabold tracking-tight font-display bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 pb-2 focus:outline-none focus:border-primary placeholder:text-zinc-300 dark:placeholder:text-zinc-700 text-foreground transition-colors"
-                />
-              </div>
-
-              {/* Identifier, Category, Illustration, Status */}
-              <AppsEditorFields
-                id={id}
-                setId={setId}
-                isEdit={Boolean(editId)}
-                category={category}
-                setCategory={setCategory}
-                color={color}
-                setColor={setColor}
-                ctaLink={ctaLink}
-                setCtaLink={setCtaLink}
-                illustrationKey={illustrationKey}
-                setIllustrationKey={setIllustrationKey}
-                status={status}
-                setStatus={setStatus}
+      {/* Full-width Paper Document Canvas - Direct Side-by-Side Split View */}
+      <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0c121e] rounded-3xl p-8 sm:p-12 lg:p-14 shadow-xs border border-zinc-200/70 dark:border-zinc-800/70">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 w-full max-w-full">
+          {/* Form Fields Column */}
+          <div className="space-y-8">
+            {/* Document Headline Title */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block">
+                Tên Sản phẩm / Ứng dụng
+              </label>
+              <input
+                type="text"
+                placeholder="Nhập tên ứng dụng hoặc dịch vụ..."
+                value={name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                className="w-full text-2xl sm:text-3xl font-extrabold tracking-tight font-display bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 pb-2 focus:outline-none focus:border-primary placeholder:text-zinc-300 dark:placeholder:text-zinc-700 text-foreground transition-colors"
               />
-
-              {/* Auto-Resize Description */}
-              <div className="space-y-3 pt-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
-                  Mô tả chi tiết sản phẩm
-                </label>
-                <AutoResizeTextarea
-                  minRows={3}
-                  placeholder="Mô tả các tính năng cốt lõi, giải pháp kỹ thuật và giá trị mang lại cho người dùng..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="text-sm leading-relaxed border-b border-zinc-200/80 dark:border-zinc-800 pb-3 focus:border-primary"
-                />
-              </div>
-
-              {/* Avatar Uploader */}
-              <div className="pt-2">
-                <PaperAvatarUploader
-                  avatarUrl={avatarUrl}
-                  setAvatarUrl={setAvatarUrl}
-                  color={color}
-                  isUploading={isUploading}
-                  onFileUpload={handleFileUpload}
-                />
-              </div>
-
-              {/* Platforms Selector */}
-              <div className="pt-2">
-                <PaperPlatformsSelector
-                  platforms={platforms}
-                  setPlatforms={setPlatforms}
-                />
-              </div>
             </div>
-          )}
 
-          {/* Accurate Real-Time Preview on Public Products page */}
-          {(activeTab === "preview" || activeTab === "split") && (
-            <div className={activeTab === "split" ? "lg:border-l lg:border-zinc-100 lg:dark:border-zinc-800/80 lg:pl-10" : ""}>
-              <ProductCardPreview
-                name={name}
-                category={category}
-                description={description}
-                color={color}
-                platforms={platforms}
+            {/* Identifier, Category, Illustration, Status */}
+            <AppsEditorFields
+              id={id}
+              setId={setId}
+              isEdit={Boolean(editId)}
+              category={category}
+              setCategory={setCategory}
+              color={color}
+              setColor={setColor}
+              ctaLink={ctaLink}
+              setCtaLink={setCtaLink}
+              illustrationKey={illustrationKey}
+              setIllustrationKey={setIllustrationKey}
+              status={status}
+              setStatus={setStatus}
+            />
+
+            {/* Auto-Resize Description */}
+            <div className="space-y-3 pt-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+                Mô tả chi tiết sản phẩm
+              </label>
+              <AutoResizeTextarea
+                minRows={3}
+                placeholder="Mô tả các tính năng cốt lõi, giải pháp kỹ thuật và giá trị mang lại cho người dùng..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="text-sm leading-relaxed border-b border-zinc-200/80 dark:border-zinc-800 pb-3 focus:border-primary"
+              />
+            </div>
+
+            {/* Avatar Uploader */}
+            <div className="pt-2">
+              <PaperAvatarUploader
                 avatarUrl={avatarUrl}
-                illustrationKey={illustrationKey}
-                status={status}
+                setAvatarUrl={setAvatarUrl}
+                color={color}
+                isUploading={isUploading}
+                onFileUpload={handleFileUpload}
               />
             </div>
-          )}
+
+            {/* Platforms Selector */}
+            <div className="pt-2">
+              <PaperPlatformsSelector
+                platforms={platforms}
+                setPlatforms={setPlatforms}
+              />
+            </div>
+          </div>
+
+          {/* Real-Time Live Preview Column (No nested wrapper box or bg) */}
+          <div className="lg:border-l lg:border-zinc-100 lg:dark:border-zinc-800/80 lg:pl-12">
+            <ProductCardPreview
+              name={name}
+              category={category}
+              description={description}
+              color={color}
+              platforms={platforms}
+              avatarUrl={avatarUrl}
+              illustrationKey={illustrationKey}
+              status={status}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,47 +1,69 @@
+import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import type { BlogPostItem, BlogComment } from "@workspace/ui/lib/content-types";
 
-const STORAGE_URL =
-  "https://stbswcnsitztbusqrdhi.supabase.co/storage/v1/object/vntez-assets/blog_posts.json";
-const PUBLIC_STORAGE_URL =
-  "https://stbswcnsitztbusqrdhi.supabase.co/storage/v1/object/public/vntez-assets/blog_posts.json";
+let r2Client: S3Client | null = null;
 
-function getServiceKey(): string {
-  return (
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0YnN3Y25zaXR6dGJ1c3FyZGhpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDI1Mjc2MywiZXhwIjoyMTA1ODI4NzYzfQ.ag_TagaE5fe6hor21fPbr5abVr0LD3YahygwFJVjwlw"
-  );
+function getClient(): S3Client {
+  if (r2Client) return r2Client;
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  const endpoint =
+    process.env.R2_ENDPOINT ||
+    (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : undefined);
+
+  if (!endpoint || !accessKeyId || !secretAccessKey) {
+    throw new Error(
+      "Missing required R2 environment variables (R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)"
+    );
+  }
+
+  r2Client = new S3Client({
+    region: "auto",
+    endpoint,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+  return r2Client;
 }
+
+const BUCKET = process.env.R2_BUCKET_NAME || "vntez-bucket";
 
 export async function getLiveBlogPosts(): Promise<BlogPostItem[]> {
   try {
-    const res = await fetch(PUBLIC_STORAGE_URL, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const s3 = getClient();
+    const res = await s3.send(
+      new GetObjectCommand({
+        Bucket: BUCKET,
+        Key: "blog_posts.json",
+      })
+    );
+    const text = await res.Body?.transformToString();
+    if (!text) return [];
+    const data = JSON.parse(text);
     return Array.isArray(data) ? data : [];
   } catch (err) {
-    console.error("Error reading live blog posts:", err);
+    console.error("Error reading live blog posts from R2:", err);
     return [];
   }
 }
 
 export async function saveLiveBlogPosts(posts: BlogPostItem[]): Promise<boolean> {
   try {
-    const key = getServiceKey();
-    const res = await fetch(STORAGE_URL, {
-      method: "POST",
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-        "x-upsert": "true",
-      },
-      body: JSON.stringify(posts, null, 2),
-    });
-    return res.ok;
+    const s3 = getClient();
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: "blog_posts.json",
+        Body: Buffer.from(JSON.stringify(posts, null, 2)),
+        ContentType: "application/json",
+      })
+    );
+    return true;
   } catch (err) {
-    console.error("Error saving live blog posts:", err);
+    console.error("Error saving live blog posts to R2:", err);
     return false;
   }
 }

@@ -149,10 +149,22 @@ export const useStorageStore = create<StorageState>((set, get) => {
 
     getDownloadUrl: async (key: string) => {
       set({ generatingKey: key, generatedSignedUrl: null });
+      try {
+        const res = await fetch(`/api/storage?key=${encodeURIComponent(key)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.downloadUrl) {
+            set({ generatedSignedUrl: data.downloadUrl, generatingKey: null });
+            return data.downloadUrl;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to generate presigned URL:", err);
+      }
       const target = get().files.find((f) => f.key === key);
-      const url = target?.download_url || `https://stbswcnsitztbusqrdhi.supabase.co/storage/v1/object/public/vntez-assets/${key}`;
-      set({ generatedSignedUrl: url, generatingKey: null });
-      return url;
+      const fallbackUrl = target?.download_url || null;
+      set({ generatedSignedUrl: fallbackUrl, generatingKey: null });
+      return fallbackUrl;
     },
 
     clearGeneratedUrl: () => set({ generatedSignedUrl: null, generatingKey: null }),

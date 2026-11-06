@@ -59,7 +59,10 @@ export function StorageMeterCard() {
             </span>
           </div>
           <p className="text-[11px] font-mono text-muted-foreground">
-            {usedPercentage.toFixed(2)}% &bull; {metrics.total_files} files
+            {metrics.total_bytes > 0 && usedPercentage < 0.01
+              ? "< 0.01%"
+              : `${usedPercentage.toFixed(2)}%`}{" "}
+            &bull; {metrics.total_files} files
           </p>
         </div>
       </div>
@@ -69,7 +72,10 @@ export function StorageMeterCard() {
         <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
           <div
             className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500"
-            style={{ width: `${Math.max(usedPercentage, 2)}%` }}
+            style={{
+              width: `${usedPercentage}%`,
+              minWidth: metrics.total_bytes > 0 ? "2px" : "0px",
+            }}
           />
         </div>
       </div>
@@ -89,7 +95,10 @@ export function StorageMeterCard() {
           <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
               className="h-full rounded-full bg-sky-500"
-              style={{ width: `${Math.max(classAPercent, 1)}%` }}
+              style={{
+                width: `${classAPercent}%`,
+                minWidth: metrics.monthly_operations.class_a > 0 ? "2px" : "0px",
+              }}
             />
           </div>
         </div>
@@ -107,7 +116,10 @@ export function StorageMeterCard() {
           <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
               className="h-full rounded-full bg-violet-500"
-              style={{ width: `${Math.max(classBPercent, 1)}%` }}
+              style={{
+                width: `${classBPercent}%`,
+                minWidth: metrics.monthly_operations.class_b > 0 ? "2px" : "0px",
+              }}
             />
           </div>
         </div>

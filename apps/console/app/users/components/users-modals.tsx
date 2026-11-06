@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { UserPlus, X, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { useUsersStore } from "../users-store";
@@ -19,16 +19,33 @@ export function UsersModals() {
     formError,
   } = useUsersStore();
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (isAddUserOpen) closeAddUserModal();
+        if (deletingUser) setDeletingUser(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isAddUserOpen, deletingUser, closeAddUserModal, setDeletingUser]);
+
   return (
     <>
       {/* Modal: Thêm người dùng mới */}
       {isAddUserOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={closeAddUserModal}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity duration-150 animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
             <div className="flex items-center justify-between pb-2 border-b border-[#f5f2eb] dark:border-border/40">
               <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-emerald-600" />
-                Thêm người dùng vào Supabase Auth
+                Thêm người dùng mới
               </h3>
               <button
                 type="button"
@@ -110,14 +127,14 @@ export function UsersModals() {
                   type="button"
                   variant="outline"
                   onClick={closeAddUserModal}
-                  className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9"
+                  className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9 cursor-pointer"
                 >
                   Hủy bỏ
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="text-xs h-9 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="text-xs h-9 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
                 >
                   {isSubmitting ? "Đang tạo..." : "Xác nhận Tạo người dùng"}
                 </Button>
@@ -129,8 +146,14 @@ export function UsersModals() {
 
       {/* Modal: Xác nhận Xóa người dùng */}
       {deletingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={() => setDeletingUser(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity duration-150 animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-full bg-destructive/10 text-destructive">
                 <Trash2 className="h-5 w-5" />
@@ -140,7 +163,7 @@ export function UsersModals() {
                   Xác nhận xóa Người dùng
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Tài khoản này sẽ bị xóa hoàn toàn khỏi Supabase Auth và cơ sở dữ liệu.
+                  Tài khoản này sẽ bị xóa hoàn toàn khỏi hệ thống.
                 </p>
               </div>
             </div>
@@ -160,7 +183,7 @@ export function UsersModals() {
                 type="button"
                 variant="outline"
                 onClick={() => setDeletingUser(null)}
-                className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9"
+                className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9 cursor-pointer"
               >
                 Hủy bỏ
               </Button>
@@ -169,7 +192,7 @@ export function UsersModals() {
                 variant="destructive"
                 disabled={isSubmitting}
                 onClick={handleDeleteUserSubmit}
-                className="text-xs h-9 font-semibold"
+                className="text-xs h-9 font-semibold cursor-pointer"
               >
                 {isSubmitting ? "Đang xóa..." : "Xác nhận Xóa vĩnh viễn"}
               </Button>

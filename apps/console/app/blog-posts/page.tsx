@@ -103,36 +103,40 @@ function BlogManagementContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl min-w-0 w-full max-w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+    <div className="space-y-8 min-w-0 w-full max-w-full">
+      {/* Header with human-centric spacing and typography hierarchy */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-zinc-100 dark:border-zinc-800/80">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
             <span className="font-semibold text-foreground">vntez Engineering Blog</span>
-            <span>•</span>
-            <span>{posts.length} Bài viết</span>
+            <span className="text-muted-foreground/30">•</span>
+            <span className="text-primary font-semibold">{posts.length} Bài viết</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-display">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display leading-tight">
             Quản trị Bài viết & Blog
           </h1>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl pt-1">
             Soạn thảo bằng Markdown Editor trực quan, xem trước live, theo dõi lượt xem, lượt tim và quản lý bình luận.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={fetchPosts}
             disabled={isLoading}
-            className="h-9 gap-1.5 text-xs bg-white dark:bg-card border-0 shadow-xs"
+            className="h-10 px-4 gap-2 text-xs rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-card hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-2xs cursor-pointer"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
             <span>Làm mới</span>
           </Button>
 
-          <Button onClick={handleCreate} size="sm" className="h-9 gap-1.5 text-xs shadow-xs">
+          <Button
+            onClick={handleCreate}
+            size="sm"
+            className="h-10 px-5 gap-2 text-xs font-semibold rounded-xl shadow-xs cursor-pointer"
+          >
             <Plus className="h-4 w-4" />
             <span>Viết bài mới</span>
           </Button>
@@ -140,13 +144,13 @@ function BlogManagementContent() {
       </div>
 
       {/* Summary Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-2xl bg-white dark:bg-card p-4 shadow-xs space-y-1">
-          <span className="text-[11px] text-muted-foreground">Tổng bài viết</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/50 dark:bg-zinc-900/30 p-4 space-y-1">
+          <span className="text-[11px] text-muted-foreground font-medium">Tổng bài viết</span>
           <div className="text-xl font-bold font-display text-foreground">{stats.total}</div>
         </div>
-        <div className="rounded-2xl bg-white dark:bg-card p-4 shadow-xs space-y-1">
-          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+        <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/50 dark:bg-zinc-900/30 p-4 space-y-1">
+          <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
             <Eye className="h-3 w-3 text-cyan-600" />
             <span>Tổng lượt xem</span>
           </span>
@@ -154,8 +158,8 @@ function BlogManagementContent() {
             {stats.views.toLocaleString()}
           </div>
         </div>
-        <div className="rounded-2xl bg-white dark:bg-card p-4 shadow-xs space-y-1">
-          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+        <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/50 dark:bg-zinc-900/30 p-4 space-y-1">
+          <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
             <Heart className="h-3 w-3 text-rose-500" />
             <span>Tổng lượt tim</span>
           </span>
@@ -163,8 +167,8 @@ function BlogManagementContent() {
             {stats.likes.toLocaleString()}
           </div>
         </div>
-        <div className="rounded-2xl bg-white dark:bg-card p-4 shadow-xs space-y-1">
-          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+        <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/50 dark:bg-zinc-900/30 p-4 space-y-1">
+          <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
             <MessageSquare className="h-3 w-3 text-amber-500" />
             <span>Tổng bình luận</span>
           </span>
@@ -174,16 +178,16 @@ function BlogManagementContent() {
         </div>
       </div>
 
-      {/* Search and Category Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-card p-3 rounded-2xl shadow-xs">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+      {/* Search and Category Filter without nested card wrappers */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Tìm theo tiêu đề, slug, tóm tắt..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-900/50 text-foreground ring-1 ring-zinc-200/80 dark:ring-zinc-800"
+            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-900/60 text-foreground border border-zinc-200/80 dark:border-zinc-800 focus:outline-none focus:border-primary transition-colors"
           />
         </div>
 
@@ -192,10 +196,10 @@ function BlogManagementContent() {
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-colors ${
               selectedCategory === "all"
-                ? "bg-primary text-white"
-                : "bg-zinc-100 text-muted-foreground hover:text-foreground dark:bg-zinc-800"
+                ? "bg-primary text-white shadow-xs"
+                : "bg-zinc-100 hover:bg-zinc-200 text-muted-foreground hover:text-foreground dark:bg-zinc-800 dark:hover:bg-zinc-700"
             }`}
           >
             Tất cả ({posts.length})
@@ -205,10 +209,10 @@ function BlogManagementContent() {
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-colors ${
                 selectedCategory === cat
-                  ? "bg-primary text-white"
-                  : "bg-zinc-100 text-muted-foreground hover:text-foreground dark:bg-zinc-800"
+                  ? "bg-primary text-white shadow-xs"
+                  : "bg-zinc-100 hover:bg-zinc-200 text-muted-foreground hover:text-foreground dark:bg-zinc-800 dark:hover:bg-zinc-700"
               }`}
             >
               {cat}

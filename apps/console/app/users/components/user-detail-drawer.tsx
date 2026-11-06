@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { X, Copy, Check, Globe, Trash2 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { useUsersStore } from "../users-store";
@@ -15,6 +15,25 @@ export function UserDetailDrawer() {
     handleCopy,
     setDeletingUser,
   } = useUsersStore();
+
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setSelectedUser(null);
+    }, 200);
+  };
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (!selectedUser) return null;
 
@@ -35,8 +54,18 @@ export function UserDetailDrawer() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
-      <div className="border-0 bg-white dark:bg-card shadow-2xl w-full max-w-lg h-full flex flex-col p-6 space-y-5 overflow-y-auto animate-in slide-in-from-right duration-200">
+    <div
+      onClick={handleClose}
+      className={`fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs transition-opacity duration-200 ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`border-0 bg-white dark:bg-card shadow-2xl w-full max-w-lg h-full flex flex-col p-6 space-y-5 overflow-y-auto transform transition-transform duration-200 ease-out ${
+          isClosing ? "translate-x-full" : "translate-x-0"
+        }`}
+      >
         {/* Drawer Header */}
         <div className="flex items-center justify-between pb-3 border-b border-[#f5f2eb] dark:border-border/40">
           <div className="flex items-center gap-3">
@@ -75,7 +104,7 @@ export function UserDetailDrawer() {
 
           <button
             type="button"
-            onClick={() => setSelectedUser(null)}
+            onClick={handleClose}
             className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg cursor-pointer"
           >
             <X className="h-5 w-5" />

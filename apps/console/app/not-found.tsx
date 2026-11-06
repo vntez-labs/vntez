@@ -7,7 +7,7 @@ export default function NotFound() {
       homeHref="/"
       docsHref="https://vntez.cloud/docs"
       consoleHref="/"
-      idHref="https://id.vntez.cloud"
+      idHref="https://iam.vntez.cloud"
     />
   );
 }

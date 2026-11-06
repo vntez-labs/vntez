@@ -103,7 +103,7 @@ export const vntezIdOverviewSection: DocSection = {
   ],
   subtabs: buildUniversalCodeSubtabs({
     method: "GET",
-    url: "https://id.vntez.cloud/oauth/authorize?client_id=vntez_cl_9872134&redirect_uri=https%3A%2F%2Fyourapp.com%2Fcallback&response_type=code&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256",
+    url: "https://iam.vntez.cloud/oauth/authorize?client_id=vntez_cl_9872134&redirect_uri=https%3A%2F%2Fyourapp.com%2Fcallback&response_type=code&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256",
     headers: {},
   }),
 }

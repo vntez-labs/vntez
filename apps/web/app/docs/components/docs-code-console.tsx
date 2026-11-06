@@ -218,7 +218,7 @@ export function DocsCodeConsole({
       <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-white/5">
         <span>Cần chạy thử trực tiếp?</span>
         <a
-          href="https://id.vntez.cloud/developers"
+          href="https://iam.vntez.cloud/developers"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-slate-300 hover:text-primary font-medium transition-colors"

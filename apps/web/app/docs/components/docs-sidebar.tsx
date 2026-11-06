@@ -151,7 +151,7 @@ export function DocsSidebar({
         </div>
 
         <a
-          href="https://id.vntez.cloud/developers"
+          href="https://iam.vntez.cloud/developers"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-between rounded-xl border border-black/[0.08] dark:border-white/[0.08] p-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium hover:text-primary hover:border-primary/40 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all"

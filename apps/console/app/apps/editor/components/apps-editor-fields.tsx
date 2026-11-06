@@ -1,7 +1,23 @@
 "use client";
 
 import React from "react";
+import { CustomSelect } from "@workspace/ui/components/custom-select";
 import type { AppItem } from "@workspace/ui/lib/content-types";
+
+const ILLUSTRATION_OPTIONS = [
+  { value: "storage", label: "Lưu trữ Đối tượng" },
+  { value: "iam", label: "Định danh & Phân quyền IAM" },
+  { value: "pos", label: "Bán lẻ & POS Offline" },
+  { value: "wms", label: "Kho vận & WMS" },
+  { value: "telemetry", label: "Giám sát Telemetry" },
+  { value: "sdk", label: "Bộ Công cụ SDK" },
+  { value: "ecosystem", label: "Hệ sinh thái chung" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "active", label: "Hoạt động (Hiển thị Public)" },
+  { value: "draft", label: "Bản nháp (Ẩn khỏi trang chủ)" },
+];
 
 interface AppsEditorFieldsProps {
   id: string;
@@ -105,33 +121,22 @@ export function AppsEditorFields({
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
             Hình minh họa Fallback
           </label>
-          <select
-            value={illustrationKey}
-            onChange={(e) => setIllustrationKey(e.target.value as AppItem["illustrationKey"])}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground outline-none transition-colors cursor-pointer"
-          >
-            <option value="storage">Lưu trữ Đối tượng</option>
-            <option value="iam">Định danh & Phân quyền IAM</option>
-            <option value="pos">Bán lẻ & POS Offline</option>
-            <option value="wms">Kho vận & WMS</option>
-            <option value="telemetry">Giám sát Telemetry</option>
-            <option value="sdk">Bộ Công cụ SDK</option>
-            <option value="ecosystem">Hệ sinh thái chung</option>
-          </select>
+          <CustomSelect
+            value={illustrationKey || "ecosystem"}
+            onChange={(val) => setIllustrationKey(val as AppItem["illustrationKey"])}
+            options={ILLUSTRATION_OPTIONS}
+          />
         </div>
 
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
             Trạng thái hiển thị
           </label>
-          <select
+          <CustomSelect
             value={status}
-            onChange={(e) => setStatus(e.target.value as "active" | "draft")}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground outline-none transition-colors cursor-pointer"
-          >
-            <option value="active">Hoạt động (Hiển thị Public)</option>
-            <option value="draft">Bản nháp (Ẩn khỏi trang chủ)</option>
-          </select>
+            onChange={(val) => setStatus(val as "active" | "draft")}
+            options={STATUS_OPTIONS}
+          />
         </div>
       </div>
     </div>
