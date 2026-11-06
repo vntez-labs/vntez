@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { ScrollToTop } from "@/components/landing/scroll-to-top"
+import { TopProgressBar } from "@workspace/ui/components/top-progress-bar"
 
 // Primary Font for Body & UI: 100% Vietnamese support, pristine baseline and diacritics
 const beVietnamPro = Be_Vietnam_Pro({
@@ -191,6 +192,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased font-sans transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <TopProgressBar />
           <div className="min-h-screen flex flex-col bg-background text-foreground antialiased font-sans transition-colors duration-200">
             <Header />
             <div className="flex-1">

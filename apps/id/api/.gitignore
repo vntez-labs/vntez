@@ -1,9 +1,0 @@
-node_modules/
-.wrangler/
-dist/
-.turbo/
-.dev.vars
-.dev.vars.*
-.env
-.env.*
-!.env.example

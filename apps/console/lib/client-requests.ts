@@ -1,59 +1,9 @@
-import fs from "fs";
-import path from "path";
 import crypto from "crypto";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import type { ClientRequestRecord } from "./client-requests-types";
+import { ensureLocalStore, writeLocalStore } from "./client-requests-local";
 
-export interface ClientRequestRecord {
-  id: string;
-  user_id: string | null;
-  applicant_name: string;
-  applicant_email: string;
-  applicant_phone: string | null;
-  identity_proof: string | null;
-  project_name: string;
-  project_idea: string;
-  project_website: string | null;
-  requested_redirect_uris: string[];
-  deal_type: "partner" | "enterprise" | "startup" | "individual";
-  status: "pending" | "approved" | "rejected";
-  admin_notes: string | null;
-  approved_client_id: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-const LOCAL_STORE_PATH = path.join(process.cwd(), "data", "oauth_client_requests.json");
-
-function ensureLocalStore(): ClientRequestRecord[] {
-  try {
-    const dir = path.dirname(LOCAL_STORE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    if (!fs.existsSync(LOCAL_STORE_PATH)) {
-      const initialSeed: ClientRequestRecord[] = [];
-      fs.writeFileSync(LOCAL_STORE_PATH, JSON.stringify(initialSeed, null, 2), "utf-8");
-      return initialSeed;
-    }
-    const raw = fs.readFileSync(LOCAL_STORE_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error("Local store read error:", err);
-    return [];
-  }
-}
-
-function writeLocalStore(records: ClientRequestRecord[]): void {
-  try {
-    const dir = path.dirname(LOCAL_STORE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(LOCAL_STORE_PATH, JSON.stringify(records, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Local store write error:", err);
-  }
-}
+export * from "./client-requests-types";
 
 // 1. Get all client requests (queries Supabase first, falls back to local store)
 export async function getAllClientRequests(): Promise<{

@@ -1,271 +1,190 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
+import { IconArrowUpRight } from "@tabler/icons-react"
 import {
-  IconServer2,
-  IconShieldCheck,
-  IconRefresh,
-  IconTruckDelivery,
-  IconActivity,
-  IconLayersLinked,
-  IconCheck,
-  IconArrowRight,
-  IconCloudUpload,
-  IconWifiOff,
-  IconBrandGoogle,
-  IconBrandGithub,
-  IconDatabase,
-} from "@tabler/icons-react"
+  IsometricStorageArt,
+  IsometricSecurityArt,
+  IsometricOfflineArt,
+  IsometricSupplyChainArt,
+  IsometricTelemetryArt,
+  IsometricEcosystemArt,
+} from "@/components/landing/card-illustrations"
 
 export const metadata: Metadata = {
   title: "Sản phẩm — Hệ sinh thái Công nghệ vntez",
   description:
-    "Danh mục các sản phẩm chủ lực của vntez: Lưu trữ Edge S3, Định danh OAuth 2.0 PKCE, Máy bán hàng Offline-First BMAN, Chuỗi cung ứng WMS và Hệ thống Giám sát.",
+    "Danh mục các sản phẩm chủ lực của vntez: Lưu trữ Edge S3, Định danh OAuth 2.0 PKCE, Máy bán hàng Offline-First BMAN, Chuỗi cung ứng WMS và Hệ thống Giám sát Telemetry.",
 }
 
-const PRODUCTS = [
+interface Product {
+  id: string
+  name: string
+  category: string
+  description: string
+  releaseDate?: string
+  platforms?: string[]
+  color: string
+  ctaLink: string
+  thumbnail: React.ComponentType<{ className?: string }>
+}
+
+const PRODUCTS: Product[] = [
   {
     id: "storage",
-    badge: "LƯU TRỮ BIÊN // NVME CLUSTER",
     name: "vntez Storage & Edge",
-    headline: "Lưu trữ tương thích AWS S3 với tốc độ NVMe nội địa.",
+    category: "Lưu trữ đối tượng",
     description:
-      "Cụm máy chủ kép tại Hà Nội (HAN-01) và TP.HCM (SGN-02) trang bị 100% ổ NVMe Enterprise. Khởi đầu miễn phí, nâng cấp linh hoạt theo dung lượng thực tế, loại bỏ hoàn toàn nỗi lo chi phí ẩn của các dịch vụ đám mây ngoại.",
-    icon: IconServer2,
+      "Lưu trữ đối tượng chuẩn AWS S3 API trên cụm NVMe nội địa, tối ưu độ trễ truy xuất và miễn phí băng thông tải về.",
+    releaseDate: "10/2024",
+    platforms: ["AWS S3 API", "Node.js", "Go", "Python", "CLI"],
     color: "#fb291a",
-    highlights: [
-      "Tương thích 100% chuẩn AWS S3 API (Node, Python, Go, C#)",
-      "Hỗ trợ Upload đa phân mảnh (Multipart Upload) cho tệp dung lượng lớn",
-      "Độ trễ truy xuất nội địa < 15ms, tối ưu tốc độ cho ứng dụng tại Việt Nam",
-      "Mô hình chi phí mở rộng minh bạch, không phụ phí phát sinh bất ngờ",
-    ],
-    ctaText: "Khởi tạo Bucket lưu trữ",
     ctaLink: "/docs#storage-api",
+    thumbnail: IsometricStorageArt,
   },
   {
     id: "vntez-id",
-    badge: "ĐỊNH DANH & XÁC THỰC // OAUTH 2.0 & PKCE",
-    name: "vntez-id Identity Gateway",
-    headline: "Đăng nhập Social một chạm & Bảo mật chuẩn PKCE.",
+    name: "vntez-id",
+    category: "Định danh & SSO",
     description:
-      "Cổng định danh bảo mật Zero-Trust hỗ trợ chuẩn RFC 7636 PKCE dành riêng cho ứng dụng di động và web SPA. Đăng nhập nhanh qua Google, GitHub hoặc tài khoản hệ sinh thái, tự động cấp phát token JWT ngắn hạn.",
-    icon: IconShieldCheck,
+      "Cổng định danh chuẩn OAuth 2.0 PKCE, hỗ trợ Social Login Google & GitHub, Passkey FIDO2 và cấp token JWT bảo mật.",
+    releaseDate: "08/2024",
+    platforms: ["Web SPA", "iOS", "Android", "REST API"],
     color: "#fb291a",
-    highlights: [
-      "Chuẩn PKCE (RFC 7636) bảo vệ mã ủy quyền chống lại việc bị ứng dụng độc hại đánh chặn",
-      "Hỗ trợ Social Login: Google Account, GitHub SSO và xác thực đa yếu tố",
-      "Token JWT ngắn hạn với chu kỳ thu hồi và làm mới phiên an toàn",
-      "Mã hóa đầu cuối, khóa riêng tư được bảo vệ trong Secure Enclave của thiết bị",
-    ],
-    ctaText: "Tích hợp vntez-id SDK",
-    ctaLink: "/docs#oauth-pkce",
+    ctaLink: "/docs#vntez-id",
+    thumbnail: IsometricSecurityArt,
   },
   {
     id: "bman-pos",
-    badge: "BÁN LẺ & ĐIỂM BÁN // OFFLINE ENGINE",
-    name: "BMAN POS & Offline Core",
-    headline: "Máy bán hàng chạy trơn tru kể cả khi mất Internet.",
+    name: "BMAN POS",
+    category: "Bán lẻ & Điểm bán",
     description:
-      "Được thiết kế theo triết lý Offline-First với cơ sở dữ liệu SQLite nhúng tại máy thu ngân. Nhân viên bán hàng tiếp tục quét mã, thêm món và in bill qua mạng LAN bình thường. Dữ liệu tự động đồng bộ và đối soát ngay khi có kết nối trở lại.",
-    icon: IconRefresh,
+      "Máy bán lẻ Offline-First chạy cơ sở dữ liệu SQLite cục bộ, duy trì quét mã và in bill trơn tru ngay cả khi mất mạng.",
+    releaseDate: "05/2024",
+    platforms: ["Windows", "macOS", "Linux", "Android POS"],
     color: "#06b6d4",
-    highlights: [
-      "Bán hàng và in hóa đơn qua mạng LAN chỉ mất 15ms không cần Internet",
-      "Hàng đợi Write-Ahead Log (WAL) SQLite an toàn chống sập nguồn đột ngột (ACID)",
-      "Thuật toán đối soát tự động (Automatic Reconciliation) không gây xung đột số liệu",
-      "Khóa tồn kho nguyên tử hỗ trợ chiến dịch bán hàng đa kênh có lượng truy cập lớn",
-    ],
-    ctaText: "Khám phá kiến trúc POS",
     ctaLink: "/blog/offline-first-pos-architecture",
+    thumbnail: IsometricOfflineArt,
   },
   {
     id: "supply-chain",
-    badge: "KHO VẬN & LOGISTICS // SMART DISPATCH",
-    name: "vntez Fleet & Logistics (WMS)",
-    headline: "Tối ưu hóa tuyến đường giao nhận & điều phối kho bãi.",
+    name: "vntez WMS & Fleet",
+    category: "Kho vận & Logistics",
     description:
-      "Hệ thống điều phối kho vận thời gian thực tự động sắp xếp vị trí hàng hóa theo tần suất xuất kho và vạch lộ trình giao hàng chặng cuối cho tài xế với sai số dự báo ETA dưới 2 phút.",
-    icon: IconTruckDelivery,
+      "Hệ thống quản lý kho vận thông minh và thuật toán định tuyến giao hàng chặng cuối theo thời gian thực cho chuỗi phân phối.",
+    releaseDate: "03/2024",
+    platforms: ["Web Dashboard", "Android", "iOS"],
     color: "#10b981",
-    highlights: [
-      "Thuật toán định tuyến đa điểm giảm tới 30% quãng đường di chuyển của đội xe",
-      "Tự động tính toán vị trí lưu kho thông minh (Smart Shelf Slotting)",
-      "Cập nhật tọa độ GPS và trạng thái đơn hàng theo thời gian thực",
-      "Tích hợp chặt chẽ với BMAN POS và hệ thống quản lý xuất nhập tồn",
-    ],
-    ctaText: "Xem giải pháp Logistics",
     ctaLink: "/docs#logistics-wms",
+    thumbnail: IsometricSupplyChainArt,
   },
   {
     id: "telemetry",
-    badge: "GIÁM SÁT & QUAN SÁT // OBSERVABILITY",
-    name: "vntez Telemetry Engine",
-    headline: "Bắt lỗi runtime trên thiết bị trước khi người dùng báo cáo.",
+    name: "vntez Telemetry",
+    category: "Giám sát & Vết lỗi",
     description:
-      "SDK giám sát siêu nhẹ (< 8KB) tự động thu thập lỗi runtime, phân tích stack trace và ghi nhận phễu hành vi của người dùng trên cả nền tảng web, mobile và terminal POS.",
-    icon: IconActivity,
+      "Bộ công cụ thu thập log, tracing chuẩn OpenTelemetry và bắt lỗi runtime thời gian thực với SDK siêu nhẹ (< 8KB).",
+    releaseDate: "01/2024",
+    platforms: ["Web", "Node.js", "React Native", "Flutter"],
     color: "#f77241",
-    highlights: [
-      "Dung lượng SDK cực nhỏ (< 8KB), không gây ảnh hưởng đến hiệu năng ứng dụng",
-      "Tự động bắt lỗi unhandled exception và gửi báo cáo phân tích tức thời",
-      "Theo dõi các chỉ số Core Web Vitals (LCP, INP, CLS) theo thời gian thực",
-      "Dashboard trực quan với khả năng phân nhóm sự cố theo phiên bản phát hành",
-    ],
-    ctaText: "Cài đặt Telemetry SDK",
     ctaLink: "/docs#telemetry-sdk",
+    thumbnail: IsometricTelemetryArt,
   },
   {
     id: "ecosystem",
-    badge: "HỆ ĐIỀU HÀNH KẾT NỐI // VNTEZ SDK",
-    name: "Hệ sinh thái SDK liên thông",
-    headline: "Một thư viện duy nhất cho mọi ngôn ngữ và nền tảng.",
+    name: "vntez SDK & Tools",
+    category: "Bộ công cụ SDK",
     description:
-      "Kết nối toàn bộ hạ tầng, định danh và nghiệp vụ bán lẻ qua một thư viện đồng nhất. Hỗ trợ chính thức TypeScript/JavaScript, C# (.NET), Go, Python và cURL CLI.",
-    icon: IconLayersLinked,
+      "Bộ thư viện đa ngôn ngữ với Type Definition hoàn chỉnh đơn giản hóa việc tích hợp TypeScript, Go, C# (.NET) và Python.",
+    releaseDate: "11/2023",
+    platforms: ["TypeScript", "Go", "C# (.NET)", "Python"],
     color: "#8b5cf6",
-    highlights: [
-      "Bộ SDK đồng nhất với Type Definition hoàn chỉnh (TypeScript / C# / Go)",
-      "Xác thực token và refresh tự động ở tầng ngầm không làm gián đoạn UI",
-      "Tài liệu API tương tác với ví dụ thực tế có thể chạy ngay",
-      "Cam kết tương thích ngược (Backward Compatibility) và không vendor lock-in",
-    ],
-    ctaText: "Đọc tài liệu SDK",
     ctaLink: "/docs",
+    thumbnail: IsometricEcosystemArt,
   },
 ]
 
 export default function ProductsPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24 space-y-24">
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        <Badge variant="brand" className="font-mono uppercase tracking-wider text-xs px-3 py-1">
-          HỆ SINH THÁI SẢN PHẨM VNTEZ
-        </Badge>
-
-        <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
-          Giải pháp đồng nhất cho <br />
-          <span className="text-[#fb291a]">Hạ tầng, Bảo mật & Bán lẻ.</span>
-        </h1>
-
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
-          Mỗi sản phẩm được thiết kế để giải quyết dứt điểm một bài toán kỹ thuật trọng yếu, đồng thời kết nối liền mạch thành một hệ điều hành doanh nghiệp thống nhất.
-        </p>
-      </div>
-
-      {/* Product List */}
-      <div className="space-y-16">
-        {PRODUCTS.map((prod, idx) => {
-          const Icon = prod.icon
-          const isEven = idx % 2 === 0
+    <div className="mx-auto max-w-6xl px-6 pt-10 sm:pt-14 pb-20 sm:pb-28 space-y-20">
+      {/* Grid Products - Direct, borderless, airy layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-20 lg:gap-y-24">
+        {PRODUCTS.map((prod) => {
+          const ThumbnailComponent = prod.thumbnail
 
           return (
-            <div
+            <article
               key={prod.id}
               id={prod.id}
-              className="scroll-mt-28 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e] p-8 sm:p-10 shadow-sm transition-all hover:border-[#fb291a]/30"
+              className="scroll-mt-28 group flex flex-col"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-8 space-y-5">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="size-11 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `${prod.color}18`, color: prod.color }}
-                    >
-                      <Icon className="size-6" strokeWidth={1.8} />
-                    </div>
-                    <div>
-                      <div className="font-mono text-xs font-bold uppercase tracking-wider" style={{ color: prod.color }}>
-                        {prod.badge}
-                      </div>
-                      <h2 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                        {prod.name}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200">
-                    {prod.headline}
-                  </h3>
-
-                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
-                    {prod.description}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    {prod.highlights.map((item, i) => (
-                      <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-                        <IconCheck className="size-4 shrink-0 text-emerald-500 mt-0.5" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
+              {/* Thumbnail Frame (Spacious padding, airy, borderless) */}
+              <Link
+                href={prod.ctaLink}
+                className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block"
+              >
+                {/* Category badge */}
+                <div className="absolute top-3.5 left-3.5 z-10">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                    <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color }} />
+                    {prod.category}
+                  </span>
                 </div>
 
-                <div className="lg:col-span-4 flex flex-col justify-between h-full space-y-6 lg:border-l lg:border-black/[0.06] lg:dark:border-white/[0.06] lg:pl-8">
-                  <div className="space-y-3">
-                    <div className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-                      Tính khả dụng
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit">
-                      <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>Production Ready • SLA 99.95%</span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Đã triển khai thực tế trên hệ thống chuỗi cửa hàng và doanh nghiệp phân phối tại Việt Nam.
-                    </p>
-                  </div>
-
-                  <div className="pt-4">
-                    <Link
-                      href={prod.ctaLink}
-                      className={buttonVariants({
-                        variant: "default",
-                        size: "lg",
-                        className: "w-full rounded-xl font-bold gap-2 text-sm shadow-sm",
-                      })}
-                    >
-                      <span>{prod.ctaText}</span>
-                      <IconArrowRight className="size-4" />
-                    </Link>
-                  </div>
+                {/* Isometric Thumbnail Illustration with generous negative space */}
+                <div className="relative size-full max-h-32 max-w-44 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 pointer-events-none">
+                  <ThumbnailComponent className="size-full object-contain" />
                 </div>
-              </div>
-            </div>
+              </Link>
+
+              {/* Title & Interactive Arrow */}
+              <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+                <Link href={prod.ctaLink} className="inline-flex items-center gap-1.5">
+                  <span>{prod.name}</span>
+                  <IconArrowUpRight className="size-4 opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[#fb291a]" />
+                </Link>
+              </h2>
+
+              {/* Description */}
+              <p className="mt-2.5 text-[13px] sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-sans">
+                {prod.description}
+              </p>
+            </article>
           )
         })}
       </div>
 
-      {/* Bottom Quick Start CTA */}
-      <div className="rounded-2xl bg-slate-50 dark:bg-[#070b14] border border-black/[0.06] dark:border-white/[0.06] p-8 sm:p-12 text-center space-y-6">
-        <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-          Sẵn sàng đưa hệ thống của bạn lên tầm cao mới?
-        </h2>
-        <p className="max-w-xl mx-auto text-sm sm:text-base text-slate-600 dark:text-slate-300">
-          Tích hợp nhanh chóng qua SDK chỉ với vài dòng lệnh. Đội ngũ kỹ sư VNTEZ sẵn sàng hỗ trợ di chuyển dữ liệu miễn phí.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+      {/* Developer Quick-Access Bar */}
+      <div className="rounded-2xl bg-slate-50 dark:bg-[#070b14] border border-slate-200/80 dark:border-white/[0.06] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="space-y-1 text-center sm:text-left">
+          <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
+            Cần tích hợp hoặc tài liệu API chi tiết?
+          </h2>
+          <p className="text-xs text-slate-600 dark:text-slate-300">
+            Tra cứu hướng dẫn cài đặt SDK hoặc truy cập cổng điều khiển để cấu hình dịch vụ.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
           <Link
             href="/docs"
             className={buttonVariants({
-              variant: "default",
-              size: "lg",
-              className: "font-semibold rounded-xl px-6",
-            })}
-          >
-            Đọc tài liệu tích hợp
-          </Link>
-          <a
-            href="mailto:support@vntez.net"
-            className={buttonVariants({
               variant: "outline",
-              size: "lg",
-              className: "font-semibold rounded-xl px-6",
+              size: "sm",
+              className: "font-semibold rounded-xl text-xs",
             })}
           >
-            Liên hệ tư vấn kiến trúc
-          </a>
+            Tài liệu kỹ thuật
+          </Link>
+          <Link
+            href="https://vntez-console.vercel.app"
+            className={buttonVariants({
+              variant: "default",
+              size: "sm",
+              className: "font-semibold rounded-xl text-xs",
+            })}
+          >
+            Vào Bảng điều khiển
+          </Link>
         </div>
       </div>
     </div>

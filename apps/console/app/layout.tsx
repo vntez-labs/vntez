@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@workspace/auth/provider";
 import { getServerSession } from "@workspace/auth/server";
 import { cn } from "@workspace/ui/lib/utils";
+import { TopProgressBar } from "@workspace/ui/components/top-progress-bar";
 
 const beVietnamPro = Be_Vietnam_Pro({
   weight: ["300", "400", "500", "600", "700"],
@@ -52,12 +53,35 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://vntez-console.vercel.app"),
   title: {
     default: "VNTEZ Console - Trung tâm Quản trị Bảo mật",
     template: "%s | VNTEZ Console",
   },
   description:
     "Hệ thống điều hành và bảng điều khiển quản trị trung tâm được bảo vệ bởi VNTEZ ID OAuth 2.0 PKCE.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "https://vntez-console.vercel.app",
+    siteName: "VNTEZ Console",
+    title: "VNTEZ Console - Trung tâm Quản trị Bảo mật",
+    description:
+      "Bảng điều khiển quản trị trung tâm cụm lưu trữ Edge S3 NVMe, định danh OAuth 2.0 PKCE và theo dõi trạng thái hệ thống.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VNTEZ Console - Trung tâm Quản trị Bảo mật",
+    description:
+      "Bảng điều khiển quản trị trung tâm cụm lưu trữ Edge S3 NVMe, định danh OAuth 2.0 PKCE và theo dõi trạng thái hệ thống.",
+  },
   robots: {
     index: false,
     follow: false,
@@ -65,7 +89,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#080c14",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
@@ -85,11 +109,12 @@ export default async function RootLayout({
         beVietnamPro.variable,
         plusJakartaSans.variable,
         jetbrainsMono.variable,
-        "dark font-sans antialiased"
+        "font-sans antialiased"
       )}
     >
       <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary">
         <ThemeProvider>
+          <TopProgressBar />
           <AuthProvider initialUser={user} initialToken={accessToken}>
             {children}
           </AuthProvider>

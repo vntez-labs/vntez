@@ -1,0 +1,13 @@
+# VNTEZ Monorepo Cursor Rules
+
+# BẮT BUỘC ĐỌC TÀI LIỆU TRƯỚC KHI LÀM VIỆC:
+# 1. README.md (Root monorepo)
+# 2. apps/web/README.md (Public Web & Docs 3 cột)
+# 3. apps/console/README.md (Console BaaS & Zustand)
+# 4. apps/id/web/README.md (Virtual Desktop OS & Identity)
+# 5. packages/ui/README.md (Shared UI components)
+
+# QUY TẮC CỐT LÕI:
+# - Mọi file .ts / .tsx phải strictly < 300 dòng.
+# - Không đập đi làm lại các tính năng đã hoàn thiện.
+# - Luôn chạy: bun run typecheck && bun run build

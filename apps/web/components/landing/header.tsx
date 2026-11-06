@@ -85,7 +85,7 @@ export function Header() {
         {/* Action Button & Theme Switcher */}
         <div className="flex items-center gap-3">
           <Link
-            href="/products#vntez-id"
+            href="https://vntez-console.vercel.app"
             className={buttonVariants({
               variant: "default",
               size: "sm",
@@ -142,7 +142,7 @@ export function Header() {
             })}
             <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.06]">
               <Link
-                href="/products#vntez-id"
+                href="https://vntez-console.vercel.app"
                 className={buttonVariants({
                   variant: "default",
                   className: "w-full font-semibold",
