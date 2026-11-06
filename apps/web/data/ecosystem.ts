@@ -51,15 +51,15 @@ export const ECOSYSTEM_PILLARS: EcosystemPillar[] = [
     iconColor: "text-[#f77241]",
     products: [
       {
-        id: "vntez-id",
-        name: "vntez-id",
-        role: "Cổng định danh & SSO",
-        problemSolved: "Người dùng ngại nhớ mật khẩu; doanh nghiệp mất quyền kiểm soát khi nhân sự đổi thiết bị.",
-        valueDelivered: "Đăng nhập một chạm bằng vân tay/khuôn mặt (Passkey). Thu hồi quyền truy cập tức thì trên toàn bộ hệ thống khi cần.",
+        id: "vntez-iam",
+        name: "vntez-iam",
+        role: "Định danh & Phân quyền IAM",
+        problemSolved: "Khó khăn trong việc kiểm soát quyền truy cập chi tiết, rò rỉ secret và phân tán quản lý tài khoản trên nhiều dịch vụ.",
+        valueDelivered: "Hệ thống IAM toàn diện: Quản lý người dùng, phân quyền ma trận RBAC đa cấp độ, SSO và xác thực an toàn chuẩn Enterprise.",
         capabilities: [
-          "Xác thực sinh trắc học FIDO2 không mật khẩu",
-          "Cấp quyền tập trung theo chuẩn OAuth 2.0 / OIDC",
-          "Hủy phiên làm việc ngay lập tức khi phát hiện rủi ro",
+          "Quản lý định danh người dùng và Single Sign-On (SSO)",
+          "Ma trận phân quyền RBAC/ABAC chi tiết theo Resources & Actions",
+          "Xác thực bảo mật chuẩn OAuth 2.0 PKCE, FIDO2 Passkey và thu hồi quyền tức thì",
         ],
         icon: IconShieldCheck,
       },
@@ -91,7 +91,7 @@ export const ECOSYSTEM_PILLARS: EcosystemPillar[] = [
       },
     ],
     quickLinks: [
-      { label: "Đăng nhập vntez-id", href: "#vntez-id" },
+      { label: "Cổng vntez-iam", href: "#vntez-iam" },
       { label: "Lưu trữ Edge R2", href: "#edge-r2" },
       { label: "Giám sát Telemetry", href: "#telemetry" },
     ],

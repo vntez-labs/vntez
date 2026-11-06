@@ -4,7 +4,7 @@ import {
   vntezIdUserinfoSection,
   vntezIdDiscoverySection,
   vntezIdAiPromptSection,
-} from "./sections/vntez-id"
+} from "./sections/vntez-iam"
 import {
   storagePutSection,
   storageGetSection,
@@ -35,7 +35,7 @@ export const DOC_SECTIONS: DocSection[] = [
 ]
 
 export const APP_FILTERS: AppFilter[] = [
-  { id: "vntez-id", label: "vntez-id (SSO & OAuth)", version: "v2.4.0", color: "#fb291a" },
+  { id: "vntez-iam", label: "vntez-iam (IAM & RBAC)", version: "v2.5.0", color: "#fb291a" },
   { id: "storage", label: "vntez Storage (S3 API)", version: "v1.8.2", color: "#0284c7" },
   { id: "bman-pos", label: "BMAN POS (Offline-First)", version: "v3.1.0", color: "#059669" },
   { id: "supply-chain", label: "vntez WMS (Logistics)", version: "v2.0.1", color: "#d97706" },

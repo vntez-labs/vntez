@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     process.env.NEXT_PUBLIC_VNTEZ_CLIENT_ID ||
     "vntez-console-app";
 
-  const baseUrl = process.env.VNTEZ_BASE_URL || "https://vntez-id.vercel.app";
+  const baseUrl = process.env.VNTEZ_BASE_URL || "https://vntez-iam.vercel.app";
 
   // Determine redirect URI: env config or request origin + /auth/callback
   const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL;

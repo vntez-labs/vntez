@@ -11,7 +11,7 @@ export function ProductDeepDives() {
       {/* BLOCK 1: VNTEZ STORAGE & EDGE (NVME CLUSTER) */}
       <StorageDeepDive />
 
-      {/* BLOCK 2: OAUTH 2.0, PKCE & SOCIAL LOGIN (ZAG) */}
+      {/* BLOCK 2: ĐỊNH DANH & PHÂN QUYỀN IAM (VNTEZ-IAM) */}
       <IdDeepDive />
 
       {/* BLOCK 3: BMAN POS & OFFLINE ENGINE */}

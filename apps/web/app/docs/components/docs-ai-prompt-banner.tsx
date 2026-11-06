@@ -20,10 +20,10 @@ export function DocsAiPromptBanner({ copiedId, onCopy }: DocsAiPromptBannerProps
           <span>Prompt AI Tích Hợp Một Chạm (Cursor / Claude Code)</span>
         </div>
         <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">
-          Cần tích hợp vntez-id vào dự án trong vài giây?
+          Cần tích hợp vntez-iam vào dự án trong vài giây?
         </h3>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
-          Copy prompt tổng thể này và dán trực tiếp vào Cursor Composer hoặc Claude để AI tự động cấu hình quy trình OAuth 2.0 PKCE, xử lý state và đổi token.
+          Copy prompt tổng thể này và dán trực tiếp vào Cursor Composer hoặc Claude để AI tự động cấu hình quy trình phân quyền IAM & RBAC, xử lý state và đổi token.
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export function DocsAiPromptBanner({ copiedId, onCopy }: DocsAiPromptBannerProps
           )}
         </button>
         <Link
-          href="https://vntez-id.vercel.app"
+          href="https://vntez-iam.vercel.app"
           target="_blank"
           rel="noreferrer"
           className={buttonVariants({
@@ -54,7 +54,7 @@ export function DocsAiPromptBanner({ copiedId, onCopy }: DocsAiPromptBannerProps
             className: "rounded-xl text-xs font-semibold gap-1.5",
           })}
         >
-          <span>Mở cổng vntez-id</span>
+          <span>Mở cổng vntez-iam</span>
           <IconExternalLink className="size-3.5 text-slate-400" />
         </Link>
       </div>

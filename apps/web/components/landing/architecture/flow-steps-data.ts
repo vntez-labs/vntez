@@ -12,10 +12,10 @@ export interface FlowStep {
 export const FLOW_STEPS: FlowStep[] = [
   {
     id: "id",
-    title: "1. Định danh & Cấp quyền (vntez-id)",
-    role: "OAUTH 2.0 & PKCE AUTH",
-    desc: "Đăng nhập nhanh qua Google, GitHub hoặc tài khoản hệ sinh thái, cấp JWT ngắn hạn an toàn.",
-    metric: "Chuẩn PKCE (RFC 7636) • Token JWT",
+    title: "1. Định danh & Phân quyền (vntez-iam)",
+    role: "IAM & RBAC MATRIX",
+    desc: "Quản lý người dùng, ma trận phân quyền chi tiết và xác thực SSO chuẩn Enterprise.",
+    metric: "Ma trận RBAC • SSO • Token JWT",
     color: "#fb291a",
     bgSoft: "bg-[#fb291a]/10",
     borderSoft: "border-[#fb291a]/30",

@@ -34,7 +34,7 @@ export default function TermsPage() {
             1. Chấp thuận điều khoản
           </h2>
           <p>
-            Bằng việc đăng ký tài khoản vntez-id, sử dụng SDK hoặc tích hợp bất kỳ dịch vụ nào trong hệ sinh thái vntez (bao gồm Storage Edge S3, BMAN POS, Telemetry), bạn đồng ý chịu sự ràng buộc của các điều khoản dưới đây.
+            Bằng việc đăng ký tài khoản vntez-iam, sử dụng SDK hoặc tích hợp bất kỳ dịch vụ nào trong hệ sinh thái vntez (bao gồm Storage Edge S3, BMAN POS, Telemetry), bạn đồng ý chịu sự ràng buộc của các điều khoản dưới đây.
           </p>
         </section>
 
@@ -43,7 +43,7 @@ export default function TermsPage() {
             2. Cam kết chất lượng dịch vụ (SLA)
           </h2>
           <p>
-            vntez cam kết thời gian hoạt động khả dụng (Uptime SLA) đạt tối thiểu 99.95% đối với các cụm máy chủ lưu trữ Edge S3 và cổng định danh vntez-id. Trong trường hợp hệ thống gián đoạn vượt quá mức cam kết do lỗi hạ tầng của chúng tôi, khách hàng sẽ được hoàn cước tương ứng theo chính sách tín dụng dịch vụ (Service Credits).
+            vntez cam kết thời gian hoạt động khả dụng (Uptime SLA) đạt tối thiểu 99.95% đối với các cụm máy chủ lưu trữ Edge S3 và cổng định danh vntez-iam. Trong trường hợp hệ thống gián đoạn vượt quá mức cam kết do lỗi hạ tầng của chúng tôi, khách hàng sẽ được hoàn cước tương ứng theo chính sách tín dụng dịch vụ (Service Credits).
           </p>
         </section>
 
@@ -52,7 +52,7 @@ export default function TermsPage() {
             3. Quyền sở hữu dữ liệu & Cam kết không Vendor Lock-in
           </h2>
           <p>
-            Bạn giữ 100% quyền sở hữu trí tuệ và quyền tài sản đối với toàn bộ dữ liệu, mã nguồn và tệp tin tải lên vntez. Chúng tôi cam kết sử dụng các chuẩn giao thức mở (Open Standard: AWS S3 API, OAuth 2.0 PKCE, SQLite WAL) để bạn có thể tự do sao lưu, di chuyển hoặc chuyển đổi nhà cung cấp mà không gặp bất kỳ rào cản kỹ thuật hay chi phí phạt nào.
+            Bạn giữ 100% quyền sở hữu trí tuệ và quyền tài sản đối với toàn bộ dữ liệu, mã nguồn và tệp tin tải lên vntez. Chúng tôi cam kết sử dụng các chuẩn giao thức mở (Open Standard: AWS S3 API, IAM OIDC / RBAC, SQLite WAL) để bạn có thể tự do sao lưu, di chuyển hoặc chuyển đổi nhà cung cấp mà không gặp bất kỳ rào cản kỹ thuật hay chi phí phạt nào.
           </p>
         </section>
 

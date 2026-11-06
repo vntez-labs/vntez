@@ -3,10 +3,10 @@ import type { DocSection } from "../types"
 import { buildUniversalCodeSubtabs } from "../code-samples-generator"
 
 export const vntezIdTokenSection: DocSection = {
-  id: "vntez-id-token",
-  appId: "vntez-id",
-  title: "2. Trao đổi Token (Token Endpoint)",
-  category: "Định danh & SSO",
+  id: "vntez-iam-token",
+  appId: "vntez-iam",
+  title: "2. Trao đổi Token & Cấp Quyền RBAC (Token Endpoint)",
+  category: "Định danh & Phân quyền IAM",
   badge: "POST /oauth/token",
   icon: IconKey,
   desc: "Trao đổi Authorization Code và Code Verifier lấy JWT Access Token và Refresh Token.",
@@ -109,10 +109,10 @@ export const vntezIdTokenSection: DocSection = {
 }
 
 export const vntezIdUserinfoSection: DocSection = {
-  id: "vntez-id-userinfo",
-  appId: "vntez-id",
-  title: "3. Lấy hồ sơ người dùng (Userinfo)",
-  category: "Định danh & SSO",
+  id: "vntez-iam-userinfo",
+  appId: "vntez-iam",
+  title: "3. Lấy hồ sơ người dùng & Phân quyền (Userinfo)",
+  category: "Định danh & Phân quyền IAM",
   badge: "GET /oauth/userinfo",
   icon: IconUserCheck,
   desc: "Truy vấn thông tin định danh người dùng (sub, email, tên hiển thị, avatar, vai trò) bằng Bearer token.",
@@ -182,10 +182,10 @@ export const vntezIdUserinfoSection: DocSection = {
 }
 
 export const vntezIdDiscoverySection: DocSection = {
-  id: "vntez-id-discovery",
-  appId: "vntez-id",
+  id: "vntez-iam-discovery",
+  appId: "vntez-iam",
   title: "4. Khám phá OpenID Configuration",
-  category: "Định danh & SSO",
+  category: "Định danh & Phân quyền IAM",
   badge: "GET /.well-known",
   icon: IconWorldDownload,
   desc: "Cấu hình OIDC Discovery tự động cho phép mọi thư viện chuẩn (NextAuth, Passport, Auth0 SDK) kết nối không cần cấu hình thủ công.",

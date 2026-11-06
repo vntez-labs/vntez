@@ -17,12 +17,12 @@ export function RegisteredClientsCard({ stats }: RegisteredClientsCardProps) {
           Ứng dụng Client Đã Đăng ký & Giới hạn Hạn mức (public.oauth_clients)
         </h3>
         <a
-          href="https://vntez-id.vercel.app/developers"
+          href="https://vntez-iam.vercel.app/developers"
           target="_blank"
           rel="noreferrer"
           className="text-xs text-primary font-medium hover:underline inline-flex items-center gap-1"
         >
-          <span>Quản lý tại VNTEZ Dev Hub</span>
+          <span>Quản lý tại VNTEZ IAM Dev Hub</span>
           <ExternalLink className="h-3 w-3" />
         </a>
       </div>

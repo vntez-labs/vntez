@@ -71,16 +71,16 @@ export const metadata: Metadata = {
     template: "%s | vntez",
   },
   description:
-    "Hệ sinh thái công nghệ đa tầng vntez: Hạ tầng lưu trữ Edge S3 NVMe tốc độ cao, định danh bảo mật OAuth 2.0 PKCE, máy bán hàng BMAN Offline-First và chuỗi cung ứng thông minh tại Việt Nam.",
+    "Hệ sinh thái công nghệ đa tầng vntez: Hạ tầng lưu trữ Edge S3 NVMe tốc độ cao, định danh & phân quyền IAM (vntez-iam), máy bán hàng BMAN Offline-First và chuỗi cung ứng thông minh tại Việt Nam.",
   keywords: [
     "vntez",
     "vntez.net",
-    "vntez-id",
+    "vntez-iam",
     "Lưu trữ Edge S3",
     "NVMe S3 Vietnam",
     "BMAN POS",
     "Offline-First SQLite",
-    "OAuth 2.0 PKCE",
+    "IAM RBAC",
     "Smart Logistics WMS",
     "Công nghệ Việt Nam",
     "Chủ quyền số",
@@ -106,13 +106,13 @@ export const metadata: Metadata = {
     siteName: "vntez Platform",
     title: "vntez — Hệ điều hành & Hạ tầng Công nghệ Doanh nghiệp",
     description:
-      "Hợp nhất lưu trữ Edge S3 NVMe, định danh OAuth 2.0 PKCE và giải pháp bán lẻ Offline-First tại Việt Nam.",
+      "Hợp nhất lưu trữ Edge S3 NVMe, định danh & phân quyền IAM (vntez-iam) và giải pháp bán lẻ Offline-First tại Việt Nam.",
   },
   twitter: {
     card: "summary_large_image",
     title: "vntez — Hệ điều hành & Hạ tầng Công nghệ Doanh nghiệp",
     description:
-      "Hợp nhất lưu trữ Edge S3 NVMe, định danh OAuth 2.0 PKCE và giải pháp bán lẻ Offline-First tại Việt Nam.",
+      "Hợp nhất lưu trữ Edge S3 NVMe, định danh & phân quyền IAM (vntez-iam) và giải pháp bán lẻ Offline-First tại Việt Nam.",
     creator: "@hnamhocit",
   },
   robots: {
@@ -145,7 +145,7 @@ const jsonLd = {
         "https://facebook.com/hnamhocit",
       ],
       description:
-        "Hệ sinh thái công nghệ đa tầng: Hạ tầng lưu trữ Edge S3, Định danh OAuth 2.0 PKCE và Bán lẻ Offline-First.",
+        "Hệ sinh thái công nghệ đa tầng: Hạ tầng lưu trữ Edge S3, Định danh & Phân quyền IAM (vntez-iam) và Bán lẻ Offline-First.",
     },
     {
       "@type": "WebSite",

@@ -38,7 +38,7 @@ export function DeveloperExperience() {
           </h2>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
-            Thư viện chính thức cho Node, C# (.NET) và Python. Tương thích 100% chuẩn AWS S3 API và tích hợp quy trình OAuth 2.0 PKCE chuẩn bảo mật.
+            Thư viện chính thức cho Node, C# (.NET) và Python. Tương thích 100% chuẩn AWS S3 API và tích hợp quản trị định danh & phân quyền IAM bảo mật.
           </p>
         </div>
 

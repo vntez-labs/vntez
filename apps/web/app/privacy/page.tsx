@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           </h2>
           <ul className="list-disc pl-6 space-y-2 text-slate-600 dark:text-slate-400">
             <li>
-              <strong className="text-slate-900 dark:text-white">Dữ liệu định danh vntez-id:</strong> Địa chỉ email, tên hiển thị công khai từ nhà cung cấp Social OAuth (Google, GitHub) khi được bạn cấp quyền. Chúng tôi không bao giờ lưu trữ mật khẩu dạng rõ (plaintext password).
+              <strong className="text-slate-900 dark:text-white">Dữ liệu định danh & phân quyền vntez-iam:</strong> Địa chỉ email, tên hiển thị công khai, vai trò và phạm vi phân quyền khi được cấp phép. Chúng tôi không bao giờ lưu trữ mật khẩu dạng rõ (plaintext password).
             </li>
             <li>
               <strong className="text-slate-900 dark:text-white">Dữ liệu lưu trữ Edge S3:</strong> Tệp tin nhị phân và đối tượng do người dùng tải lên được mã hóa khi lưu trữ (Encryption at Rest) bằng thuật toán AES-256 và mã hóa khi truyền tải (TLS 1.3).

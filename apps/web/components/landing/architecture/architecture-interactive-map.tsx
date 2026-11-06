@@ -120,7 +120,7 @@ export function ArchitectureInteractiveMap({
           </circle>
         )}
 
-        {/* NODE 1: Center Core vntez-id / Ecosystem Hub */}
+        {/* NODE 1: Center Core vntez-iam / Ecosystem Hub */}
         <g
           className="cursor-pointer transition-transform hover:scale-105"
           onClick={() => onSelectStep("id")}

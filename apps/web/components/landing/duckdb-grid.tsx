@@ -61,7 +61,7 @@ export function DuckDbGrid() {
         </motion.div>
 
         {/* ================================================================= */}
-        {/* CARD 2: OAuth 2.0, PKCE & Social Login                            */}
+        {/* CARD 2: Định danh & Phân quyền IAM (vntez-iam)                    */}
         {/* ================================================================= */}
         <motion.div
           whileHover={{ y: -4 }}
@@ -72,11 +72,11 @@ export function DuckDbGrid() {
             <div className="flex items-center gap-3 mb-3">
               <IconShieldCheck className="size-7 shrink-0 text-[#fb291a]" strokeWidth={1.75} />
               <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
-                Xác thực OAuth 2.0 & PKCE
+                Định danh & Phân quyền IAM
               </h3>
             </div>
             <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
-              Đăng nhập nhanh qua Google, GitHub hoặc tài khoản hệ sinh thái. Chuẩn bảo mật PKCE cho Web và Mobile.
+              Hệ thống IAM toàn diện: Quản lý người dùng, phân quyền ma trận RBAC/ABAC, SSO và xác thực an toàn chuẩn Enterprise.
             </p>
           </div>
 
@@ -86,10 +86,10 @@ export function DuckDbGrid() {
 
           <div className="relative z-10 pt-5 mt-auto">
             <Link
-              href="/products#vntez-id"
+              href="/products#vntez-iam"
               className="inline-flex items-center gap-1.5 font-semibold text-xs text-[#fb291a] hover:underline"
             >
-              <span>Khám phá xác thực</span>
+              <span>Khám phá vntez-iam</span>
               <IconArrowRight className="size-3" />
             </Link>
           </div>

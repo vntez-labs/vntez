@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     "vntez-console-app";
 
   const clientSecret = process.env.VNTEZ_CLIENT_SECRET;
-  const baseUrl = process.env.VNTEZ_BASE_URL || "https://vntez-id.vercel.app";
+  const baseUrl = process.env.VNTEZ_BASE_URL || "https://vntez-iam.vercel.app";
 
   const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL;
   const origin = configuredAppUrl || request.nextUrl.origin;

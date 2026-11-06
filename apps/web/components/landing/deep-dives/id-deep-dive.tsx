@@ -26,12 +26,12 @@ export function IdDeepDive() {
               <div className="size-3 rounded-full bg-amber-400/80" />
               <div className="size-3 rounded-full bg-emerald-400/80" />
               <span className="ml-2 font-mono text-xs text-slate-500 dark:text-slate-400">
-                oauth2_pkce_auth.session
+                vntez_iam_matrix.session
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold font-mono">
               <IconShieldLock className="size-3.5" />
-              <span>RFC 7636 PKCE</span>
+              <span>IAM & RBAC Matrix</span>
             </div>
           </div>
 
@@ -91,11 +91,11 @@ export function IdDeepDive() {
               </div>
               <div className="flex items-center justify-between text-slate-500">
                 <span>Grant Type:</span>
-                <span className="text-slate-800 dark:text-slate-200">authorization_code + PKCE</span>
+                <span className="text-slate-800 dark:text-slate-200">authorization_code + PKCE / RBAC</span>
               </div>
               <div className="flex items-center justify-between text-slate-500">
                 <span>Token Payload:</span>
-                <span className="text-[#fb291a] font-semibold">Bearer JWT (Stateless, 15 phút)</span>
+                <span className="text-[#fb291a] font-semibold">Bearer JWT + Roles Scope (15m)</span>
               </div>
             </div>
           </div>
@@ -111,16 +111,16 @@ export function IdDeepDive() {
       {/* Right Column: Text & Features */}
       <div className="order-1 lg:order-2 lg:col-span-6 space-y-6">
         <div className="text-xs font-mono font-bold tracking-wider text-[#fb291a] uppercase">
-          ĐỊNH DANH & XÁC THỰC // OAUTH 2.0 & PKCE
+          ĐỊNH DANH & PHÂN QUYỀN // VNTEZ-IAM
         </div>
 
         <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
-          Đăng nhập Social & OAuth 2.0. <br />
-          <span className="text-[#fb291a]">Bảo mật chuẩn PKCE cho Web & Mobile.</span>
+          Hệ thống Quản lý Truy cập IAM. <br />
+          <span className="text-[#fb291a]">Phân quyền ma trận RBAC & SSO bảo mật.</span>
         </h2>
 
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
-          Đăng nhập nhanh chóng qua Google, GitHub hoặc tài khoản hệ sinh thái. Chuẩn bảo mật PKCE và token JWT ngắn hạn giúp bảo vệ toàn diện ứng dụng di động và web của bạn.
+          Hệ thống IAM toàn diện cho doanh nghiệp: Quản lý định danh người dùng tập trung, ma trận phân quyền chi tiết (Resources & Actions), Single Sign-On (SSO) và bảo vệ ứng dụng với mã hóa Zero-Trust.
         </p>
 
         <div className="space-y-3.5 pt-1">
@@ -129,9 +129,9 @@ export function IdDeepDive() {
               <IconCheck className="size-3.5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Chuẩn PKCE (RFC 7636)</h4>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Ma trận phân quyền RBAC & ABAC</h4>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                Bảo vệ mã ủy quyền chống lại việc bị ứng dụng độc hại đánh chặn trên thiết bị di động.
+                Kiểm soát chi tiết quyền hạn theo Roles (Admin, Developer, Operator, Viewer) với từng tài nguyên và hành vi tương ứng.
               </p>
             </div>
           </div>

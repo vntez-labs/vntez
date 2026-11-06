@@ -80,8 +80,8 @@ const COMPARISON_DATA: ComparisonRow[] = [
     },
   },
   {
-    criterion: "Xác thực (OAuth 2.0 & PKCE)",
-    detail: "Đăng nhập Social một chạm và quản lý phiên an toàn",
+    criterion: "Định danh & Phân quyền IAM",
+    detail: "Quản lý người dùng, phân quyền RBAC/ABAC và đăng nhập SSO",
     vntez: {
       text: "Hỗ trợ sẵn (Google, GitHub, JWT)",
       positive: true,

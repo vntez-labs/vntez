@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: "Sản phẩm — Hệ sinh thái Công nghệ vntez",
   description:
-    "Danh mục các sản phẩm chủ lực của vntez: Lưu trữ Edge S3, Định danh OAuth 2.0 PKCE, Máy bán hàng Offline-First BMAN, Chuỗi cung ứng WMS và Hệ thống Giám sát Telemetry.",
+    "Danh mục các sản phẩm chủ lực của vntez: Lưu trữ Edge S3, Định danh & Phân quyền IAM (vntez-iam), Máy bán hàng Offline-First BMAN, Chuỗi cung ứng WMS và Hệ thống Giám sát Telemetry.",
 }
 
 interface Product {
@@ -43,15 +43,15 @@ const PRODUCTS: Product[] = [
     thumbnail: IsometricStorageArt,
   },
   {
-    id: "vntez-id",
-    name: "vntez-id",
-    category: "Định danh & SSO",
+    id: "vntez-iam",
+    name: "vntez-iam",
+    category: "Định danh & Phân quyền IAM",
     description:
-      "Cổng định danh chuẩn OAuth 2.0 PKCE, hỗ trợ Social Login Google & GitHub, Passkey FIDO2 và cấp token JWT bảo mật.",
+      "Hệ thống IAM toàn diện: Quản lý định danh người dùng, ma trận phân quyền RBAC/ABAC, Single Sign-On (SSO) và xác thực an toàn chuẩn Enterprise.",
     releaseDate: "08/2024",
-    platforms: ["Web SPA", "iOS", "Android", "REST API"],
+    platforms: ["Web SPA", "iOS", "Android", "REST API", "OIDC"],
     color: "#fb291a",
-    ctaLink: "/docs#vntez-id",
+    ctaLink: "/docs#vntez-iam",
     thumbnail: IsometricSecurityArt,
   },
   {

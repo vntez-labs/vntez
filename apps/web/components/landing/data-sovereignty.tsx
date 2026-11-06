@@ -27,11 +27,11 @@ export function DataSovereignty() {
       metric: "Sẵn sàng vận hành 99.9%",
     },
     {
-      title: "Bảo mật OAuth 2.0 & PKCE",
-      subtitle: "SECURE AUTHENTICATION",
-      desc: "Đăng nhập nhanh qua Social Login và chuẩn PKCE. Token JWT ngắn hạn giúp loại bỏ hoàn toàn nguy cơ đánh chặn quyền truy cập.",
+      title: "Định danh & Phân quyền IAM",
+      subtitle: "IDENTITY & ACCESS MANAGEMENT",
+      desc: "Kiểm soát truy cập toàn diện với ma trận phân quyền RBAC/ABAC, SSO và xác thực bảo mật chuẩn Enterprise.",
       icon: IconShieldLock,
-      metric: "OAuth 2.0 PKCE & JWT",
+      metric: "IAM, RBAC & SSO",
     },
   ]
 

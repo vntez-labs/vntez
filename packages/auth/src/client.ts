@@ -1,8 +1,8 @@
 /**
- * VNTEZ ID OAuth 2.0 PKCE Client
+ * VNTEZ IAM Client
  * RFC 6749 & RFC 7636
  *
- * Interacts with VNTEZ ID server endpoints:
+ * Interacts with VNTEZ IAM server endpoints:
  * 1. GET  /oauth/authorize
  * 2. POST /oauth/token
  * 3. GET  /oauth/userinfo
@@ -10,7 +10,7 @@
 
 import type { VntezTokenResponse, VntezUser } from './types';
 
-export const VNTEZ_DEFAULT_BASE_URL = 'https://vntez-id.vercel.app';
+export const VNTEZ_DEFAULT_BASE_URL = 'https://vntez-iam.vercel.app';
 
 export interface AuthorizeUrlParams {
   baseUrl?: string;

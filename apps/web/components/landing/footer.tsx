@@ -22,7 +22,7 @@ export function Footer() {
             </Link>
 
             <p className="text-slate-600 dark:text-slate-400 max-w-xs leading-relaxed font-sans text-sm">
-              Hạ tầng lưu trữ Edge tốc độ cao, định danh bảo mật OAuth 2.0 PKCE và giải pháp bán lẻ offline-first tại Việt Nam.
+              Hạ tầng lưu trữ Edge tốc độ cao, định danh & phân quyền IAM (vntez-iam) và giải pháp bán lẻ offline-first tại Việt Nam.
             </p>
 
             {/* Trạng thái máy chủ (All systems operational) */}
@@ -69,8 +69,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/products#vntez-id" className="hover:text-[#fb291a] transition-colors">
-                  vntez-id (OAuth 2.0 PKCE)
+                <Link href="/products#vntez-iam" className="hover:text-[#fb291a] transition-colors">
+                  vntez-iam (Định danh & Phân quyền IAM)
                 </Link>
               </li>
               <li>

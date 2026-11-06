@@ -7,19 +7,19 @@ export {
   vntezIdTokenSection,
   vntezIdUserinfoSection,
   vntezIdDiscoverySection,
-} from "./vntez-id-endpoints"
+} from "./vntez-iam-endpoints"
 
 export const vntezIdOverviewSection: DocSection = {
-  id: "vntez-id-overview",
-  appId: "vntez-id",
-  title: "1. Tổng quan & Chuẩn OAuth 2.0 PKCE",
-  category: "Định danh & SSO",
-  badge: "RFC 7636 & OIDC",
+  id: "vntez-iam-overview",
+  appId: "vntez-iam",
+  title: "1. Tổng quan & Ma trận Phân quyền IAM",
+  category: "Định danh & Phân quyền IAM",
+  badge: "IAM & RBAC Matrix",
   icon: IconShieldCheck,
-  desc: "Cổng định danh tập trung (SSO) sử dụng luồng Authorization Code kết hợp Proof Key for Code Exchange (PKCE S256). Tuyệt đối bảo mật, không cần lưu trữ hay gửi Client Secret trên client.",
+  desc: "Hệ thống quản lý định danh và kiểm soát truy cập tập trung (IAM & SSO). Hỗ trợ kiểm soát truy cập chi tiết (RBAC & ABAC), ma trận Resources & Actions, luồng Authorization Code kết hợp PKCE S256 tuyệt đối bảo mật.",
   endpoint: {
     method: "GET",
-    path: "https://id.vntez.cloud/oauth/authorize",
+    path: "https://iam.vntez.cloud/oauth/authorize",
   },
   params: [
     {
@@ -109,13 +109,13 @@ export const vntezIdOverviewSection: DocSection = {
 }
 
 export const vntezIdAiPromptSection: DocSection = {
-  id: "vntez-id-ai-prompt",
-  appId: "vntez-id",
+  id: "vntez-iam-ai-prompt",
+  appId: "vntez-iam",
   title: "5. Prompt Tích hợp AI (Cursor / Claude Code)",
   category: "Tích hợp Tự động",
   badge: "One-Click Prompt",
   icon: IconSparkles,
-  desc: "Dán prompt hoàn chỉnh này vào Cursor Composer hoặc Claude Code để AI tự động tạo mã nguồn xác thực OAuth 2.0 PKCE, lưu trữ token an toàn và gắn guard bảo vệ route.",
+  desc: "Dán prompt hoàn chỉnh này vào Cursor Composer hoặc Claude Code để AI tự động tạo mã nguồn xác thực VNTEZ IAM, quản lý token an toàn và cấu hình phân quyền RBAC.",
   subtabs: [
     {
       key: "prompt",

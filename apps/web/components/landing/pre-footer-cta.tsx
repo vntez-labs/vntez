@@ -14,20 +14,20 @@ export function PreFooterCta() {
         </h2>
 
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans max-w-2xl mx-auto">
-          Hợp nhất định danh OAuth 2.0, lưu trữ Edge tốc độ cao và giải pháp bán lẻ offline-first trên một nền tảng đồng nhất.
+          Hợp nhất định danh & phân quyền IAM, lưu trữ Edge tốc độ cao và giải pháp bán lẻ offline-first trên một nền tảng đồng nhất.
         </p>
 
         {/* Action Buttons using Shadcn Button Variants */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <Link
-            href="/products#vntez-id"
+            href="/products#vntez-iam"
             className={buttonVariants({
               variant: "default",
               size: "lg",
               className: "w-full sm:w-auto rounded-full px-8 py-3.5 text-base font-bold shadow-sm gap-2",
             })}
           >
-            <span>Khởi tạo tài khoản vntez-id</span>
+            <span>Khởi tạo tài khoản vntez-iam</span>
             <IconArrowRight className="size-4" />
           </Link>
 

@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = {
   title: "Blog & Kỹ thuật — vntez Engineering",
   description:
-    "Chia sẻ kiến trúc hệ thống, nghiên cứu kỹ thuật phân tán, bảo mật OAuth 2.0 PKCE, điện toán Offline-First và cập nhật công nghệ từ đội ngũ vntez.",
+    "Chia sẻ kiến trúc hệ thống, nghiên cứu kỹ thuật phân tán, định danh & phân quyền IAM, điện toán Offline-First và cập nhật công nghệ từ đội ngũ vntez.",
 }
 
 interface BlogPost {
@@ -67,11 +67,11 @@ const POSTS: BlogPost[] = [
     thumbnail: IsometricStorageArt,
   },
   {
-    slug: "oauth2-pkce-mobile-security",
-    title: "Bảo vệ ứng dụng di động với chuẩn OAuth 2.0 PKCE (RFC 7636)",
+    slug: "enterprise-iam-rbac-matrix-architecture",
+    title: "Kiến trúc IAM & Ma trận phân quyền RBAC: Bảo vệ ứng dụng chuẩn Enterprise",
     excerpt:
-      "Vì sao Client Secret là một sai lầm bảo mật nghiêm trọng trên ứng dụng di động và Single Page App (SPA). Hướng dẫn từng bước triển khai Proof Key for Code Exchange với Code Verifier và Code Challenge SHA-256.",
-    category: "Bảo mật & Định danh",
+      "Vì sao Client Secret là một sai lầm bảo mật trên Single Page App (SPA). Hướng dẫn thiết kế hệ thống IAM toàn diện với ma trận phân quyền chi tiết (Resources & Actions), SSO và xác thực an toàn.",
+    category: "Bảo mật & IAM",
     color: "#fb291a",
     author: "Security Team",
     date: "21/10/2026",

@@ -97,7 +97,7 @@ export default function Image() {
               margin: 0,
             }}
           >
-            Hợp nhất lưu trữ Edge S3 NVMe, định danh OAuth 2.0 PKCE và giải pháp bán lẻ Offline-First tại Việt Nam.
+            Hợp nhất lưu trữ Edge S3 NVMe, định danh & phân quyền IAM (vntez-iam) và giải pháp bán lẻ Offline-First tại Việt Nam.
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export default function Image() {
           <span>•</span>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#fb291a" }} />
-            <span>RFC 7636 PKCE</span>
+            <span>IAM & RBAC Security</span>
           </div>
           <span>•</span>
           <div style={{ marginLeft: "auto", color: "#64748b", fontFamily: "monospace" }}>

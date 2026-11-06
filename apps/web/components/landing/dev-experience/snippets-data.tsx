@@ -15,7 +15,7 @@ export const SNIPPETS: Record<LangTab, SnippetConfig> = {
     filename: "client.ts",
     raw: `import { vntez } from '@vntez/sdk';
 
-// Khởi tạo client với OAuth 2.0 PKCE
+// Khởi tạo client với VNTEZ IAM
 const client = new vntez({ appId: 'bman_pos_core' });
 
 // Tải tệp lên Edge S3 tốc độ cao
@@ -30,7 +30,7 @@ await client.storage.upload(file, { multipart: true });`,
         <span className="text-emerald-400">'@vntez/sdk'</span>
         <span className="text-slate-400">;</span>
         {"\n\n"}
-        <span className="text-slate-500">// Khởi tạo client với OAuth 2.0 PKCE</span>
+        <span className="text-slate-500">// Khởi tạo client với VNTEZ IAM</span>
         {"\n"}
         <span className="text-purple-400 font-semibold">const</span>{" "}
         <span className="text-blue-300">client</span>{" "}
