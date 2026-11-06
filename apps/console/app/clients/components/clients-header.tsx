@@ -25,14 +25,15 @@ export function ClientsHeader() {
     <div className="space-y-6">
       {/* Header action bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold font-display text-foreground flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            Quản lý Client OAuth 2.0 (public.oauth_clients)
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Cấp quyền, tạo mới, chỉnh sửa và thu hồi các ứng dụng kết nối SSO qua giao thức chuẩn PKCE S256
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold font-display text-foreground">
+              Quản lý Client OAuth 2.0
+            </h1>
+          </div>
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0">

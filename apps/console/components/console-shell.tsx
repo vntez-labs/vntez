@@ -14,6 +14,7 @@ import {
   HardDrive,
 } from "lucide-react";
 import { UserDropdown } from "@/components/user-dropdown";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const NAV_ITEMS = [
   { href: "/", label: "Bảng điều khiển", icon: LayoutDashboard },
@@ -31,10 +32,10 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-[#fbf9f5] dark:bg-[#080c14] overflow-x-hidden">
       {/* Sidebar - Solid White on warm Claude-style ivory background */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-[#ebe7df] dark:border-border bg-white dark:bg-[#0c121e] md:flex shadow-[1px_0_3px_rgba(0,0,0,0.02)]">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-[#0c121e] md:flex shadow-[1px_0_3px_rgba(0,0,0,0.02)]">
         {/* Brand Header */}
-        <div className="flex h-16 items-center gap-3 border-b border-[#ebe7df] dark:border-border px-6 bg-white dark:bg-[#0c121e]">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
+        <div className="flex h-16 items-center gap-3 border-b border-zinc-200/60 dark:border-zinc-800/60 px-6 bg-white dark:bg-[#0c121e]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
             <Terminal className="h-5 w-5" />
           </div>
           <div>
@@ -59,10 +60,10 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
                   isActive
                     ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-[#f3f0e8] dark:hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-zinc-100/70 dark:hover:bg-zinc-800/60 hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -76,17 +77,18 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col md:pl-64 min-w-0 w-full max-w-full overflow-x-hidden">
         {/* Top Header */}
-        <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-[#ebe7df] dark:border-border bg-white dark:bg-[#0c121e] px-4 sm:px-6 lg:px-8 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-[#0c121e]/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 shadow-xs">
           <div className="flex items-center gap-2 text-xs">
             <span className="text-muted-foreground">Console</span>
             <span className="text-muted-foreground/50">/</span>
-            <span className="font-medium text-foreground">
+            <span className="font-semibold text-foreground">
               {NAV_ITEMS.find((item) => item.href === pathname)?.label || "Bảng điều khiển"}
             </span>
           </div>
 
-          {/* User Profile Dropdown */}
-          <div className="flex items-center shrink-0">
+          {/* Top Actions: Theme Switcher & User Profile Dropdown */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <ThemeToggle />
             <UserDropdown />
           </div>
         </header>
