@@ -5,6 +5,7 @@ import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
 import type { DashboardStats } from "@/components/dashboard/dashboard-types";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { WorkersServicesOverview } from "@/components/dashboard/workers-services-overview";
 import { RecentCodesTable } from "@/components/dashboard/recent-codes-table";
 import { RegisteredClientsCard } from "@/components/dashboard/registered-clients-card";
 
@@ -35,6 +36,7 @@ function DashboardContent() {
   return (
     <div className="space-y-6 max-w-7xl min-w-0 w-full max-w-full">
       <DashboardHeader stats={stats} />
+      <WorkersServicesOverview />
       <RecentCodesTable stats={stats} />
       <RegisteredClientsCard stats={stats} />
     </div>

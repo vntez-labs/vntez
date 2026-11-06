@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Database, Check, Copy, ExternalLink } from "lucide-react";
+import { ShieldCheck, Check, Copy, ExternalLink } from "lucide-react";
 import { useAuthStore } from "@workspace/auth/store";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { buttonVariants } from "@workspace/ui/components/button";
@@ -61,7 +61,7 @@ export function DashboardHeader({ stats }: DashboardHeaderProps) {
 
       <div className="flex items-center gap-2.5 shrink-0">
         <Link
-          href="/tables"
+          href="/permissions"
           className={buttonVariants({
             variant: "outline",
             size: "sm",
@@ -69,8 +69,8 @@ export function DashboardHeader({ stats }: DashboardHeaderProps) {
               "gap-1.5 text-xs bg-white dark:bg-card border-0 text-foreground hover:bg-[#f6f3eb] h-9 shadow-xs",
           })}
         >
-          <Database className="h-4 w-4 text-primary" />
-          <span>Xem Bảng Dữ liệu</span>
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          <span>Ma trận Phân quyền</span>
         </Link>
 
         <a
