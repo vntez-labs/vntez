@@ -22,7 +22,8 @@ export function RoleSelector() {
       <div className="flex flex-wrap items-center gap-2">
         {roles.map((r) => {
           const isSelected = r.id === selectedRoleId;
-          const permCount = rolePermissions[r.id]?.size || 0;
+          const perms = rolePermissions[r.id];
+          const permCount = perms?.has("*:*") ? 35 : perms?.size || 0;
           return (
             <button
               key={r.id}

@@ -1,5 +1,11 @@
 import { create } from "zustand";
 import type { RoleDefinition } from "./permissions-types";
+import {
+  STANDARD_RESOURCES,
+  STANDARD_ACTIONS,
+  ALL_PERMISSIONS,
+  INITIAL_ROLE_PERMS,
+} from "./permissions-constants";
 
 const IAM_API_URL = process.env.NEXT_PUBLIC_IAM_API_URL || "https://iam.hnamhocit.workers.dev";
 
@@ -14,21 +20,20 @@ interface PermissionsState {
   saveMessage: string | null;
   saveError: string | null;
 
-  // New role modal
   isCreateRoleOpen: boolean;
   newRoleName: string;
   newRoleDescription: string;
 
-  // Evaluator tool
   evalUserId: string;
   evalPermission: string;
   evalResult: { allowed: boolean; message: string } | null;
   isEvaluating: boolean;
 
-  // Actions
   fetchMatrix: () => Promise<void>;
   setSelectedRoleId: (roleId: string) => void;
   togglePermission: (roleId: string, permission: string) => void;
+  grantAllRolePermissions: (roleId: string) => void;
+  revokeAllRolePermissions: (roleId: string) => void;
   saveRolePermissions: (roleId: string) => Promise<void>;
   openCreateRoleModal: () => void;
   closeCreateRoleModal: () => void;
@@ -41,8 +46,8 @@ interface PermissionsState {
 }
 
 export const usePermissionsStore = create<PermissionsState>((set, get) => ({
-  resources: ["users", "files", "messages", "clients", "roles"],
-  actions: ["create", "read:self", "read:all", "update:self", "update:all", "delete:self", "delete:all"],
+  resources: STANDARD_RESOURCES,
+  actions: STANDARD_ACTIONS,
   roles: [
     { id: "admin", name: "Administrator", description: "Toàn quyền quản trị hệ sinh thái", is_system: true, permissions: [] },
     { id: "developer", name: "Developer", description: "Quyền đọc/ghi tài nguyên đối tác", is_system: true, permissions: [] },
@@ -50,7 +55,7 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     { id: "viewer", name: "Viewer", description: "Chỉ có quyền đọc", is_system: true, permissions: [] },
   ],
   selectedRoleId: "developer",
-  rolePermissions: {},
+  rolePermissions: INITIAL_ROLE_PERMS,
   isLoading: false,
   isSaving: false,
   saveMessage: null,
@@ -72,10 +77,11 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
-      const permsMap: Record<string, Set<string>> = {};
+      const permsMap: Record<string, Set<string>> = { ...INITIAL_ROLE_PERMS };
       if (data.built_in_roles) {
         for (const [rName, pList] of Object.entries(data.built_in_roles)) {
-          permsMap[rName] = new Set(pList as string[]);
+          const list = pList as string[];
+          permsMap[rName] = list.includes("*:*") ? new Set(ALL_PERMISSIONS) : new Set(list);
         }
       }
 
@@ -85,16 +91,8 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
         rolePermissions: permsMap,
         isLoading: false,
       });
-    } catch (err) {
-      console.warn("Using offline fallback matrix:", err);
-      // Fallback built-in sets
-      const fallbackMap: Record<string, Set<string>> = {
-        admin: new Set(["*:*"]),
-        developer: new Set(["clients:read:self", "clients:update:self", "files:create", "files:read:all", "messages:create"]),
-        member: new Set(["users:read:self", "users:update:self", "files:create", "files:read:self", "messages:create"]),
-        viewer: new Set(["users:read:self", "files:read:self"]),
-      };
-      set({ rolePermissions: fallbackMap, isLoading: false });
+    } catch {
+      set({ rolePermissions: INITIAL_ROLE_PERMS, isLoading: false });
     }
   },
 
@@ -108,19 +106,45 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     } else {
       updated.add(permission);
     }
+    if (updated.has("*:*")) {
+      updated.delete("*:*");
+    }
     set({
       rolePermissions: {
         ...get().rolePermissions,
         [roleId]: updated,
       },
       saveMessage: null,
+      saveError: null,
+    });
+  },
+
+  grantAllRolePermissions: (roleId) => {
+    set({
+      rolePermissions: {
+        ...get().rolePermissions,
+        [roleId]: new Set(ALL_PERMISSIONS),
+      },
+      saveMessage: `Đã cấp toàn bộ ${ALL_PERMISSIONS.length} quyền cho Role [${roleId}].`,
+      saveError: null,
+    });
+  },
+
+  revokeAllRolePermissions: (roleId) => {
+    set({
+      rolePermissions: {
+        ...get().rolePermissions,
+        [roleId]: new Set<string>(),
+      },
+      saveMessage: `Đã thu hồi tất cả quyền của Role [${roleId}].`,
+      saveError: null,
     });
   },
 
   saveRolePermissions: async (roleId) => {
     set({ isSaving: true, saveError: null, saveMessage: null });
+    const currentPerms = Array.from(get().rolePermissions[roleId] || []);
     try {
-      const currentPerms = Array.from(get().rolePermissions[roleId] || []);
       const res = await fetch(`${IAM_API_URL}/api/iam/roles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -132,22 +156,21 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       });
 
       if (!res.ok) {
-        // Fallback for demo when remote worker is not connected to writeable db
         set({
           isSaving: false,
-          saveMessage: `Đã lưu thành công ${currentPerms.length} quyền cho Role [${roleId}].`,
+          saveMessage: `Đã cập nhật ${currentPerms.length} quyền cho [${roleId}].`,
         });
         return;
       }
 
       set({
         isSaving: false,
-        saveMessage: `Đã lưu thành công ${currentPerms.length} quyền cho Role [${roleId}] lên IAM Worker!`,
+        saveMessage: `Đã lưu ${currentPerms.length} quyền cho [${roleId}] lên IAM Worker!`,
       });
-    } catch (err: any) {
+    } catch {
       set({
         isSaving: false,
-        saveMessage: `Đã lưu cục bộ (${get().rolePermissions[roleId]?.size || 0} quyền).`,
+        saveMessage: `Đã lưu cục bộ (${currentPerms.length} quyền).`,
       });
     }
   },
@@ -180,7 +203,7 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       isCreateRoleOpen: false,
       newRoleName: "",
       newRoleDescription: "",
-      saveMessage: `Đã tạo Role [${newRole.name}]. Hãy tick chọn ma trận quyền bên dưới.`,
+      saveMessage: `Đã tạo Role [${newRole.name}]. Hãy chọn các ô quyền trên bảng ma trận.`,
     });
   },
 
@@ -214,10 +237,9 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
         return;
       }
     } catch {
-      // offline evaluation logic
+      // offline fallback
     }
 
-    // Offline check against current role
     const currentSet = rolePermissions[selectedRoleId] || new Set();
     const isAllowed = currentSet.has("*:*") || currentSet.has(evalPermission);
     set({
