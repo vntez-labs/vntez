@@ -16,11 +16,8 @@ export function RoleSelector() {
   } = usePermissionsStore();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ebe7df] dark:border-border pb-4">
-      <div>
-        <h3 className="text-sm font-semibold text-foreground">Vai trò trong Hệ thống (Roles)</h3>
-        <p className="text-xs text-muted-foreground">Chọn vai trò để xem và tick chỉnh sửa ma trận quyền bên dưới</p>
-      </div>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <h3 className="text-sm font-bold text-foreground">Vai trò trong Hệ thống</h3>
 
       <div className="flex flex-wrap items-center gap-2">
         {roles.map((r) => {
@@ -31,19 +28,21 @@ export function RoleSelector() {
               key={r.id}
               type="button"
               onClick={() => setSelectedRoleId(r.id)}
-              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium transition-all shadow-xs cursor-pointer ${
                 isSelected
-                  ? "bg-primary text-white shadow-sm ring-2 ring-primary/30"
-                  : "bg-white dark:bg-[#0c121e] border border-[#ebe7df] dark:border-border text-foreground hover:bg-[#f5f2ea] dark:hover:bg-muted"
+                  ? "bg-primary text-white"
+                  : "bg-white dark:bg-card text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800"
               }`}
             >
               <Shield className={`h-3.5 w-3.5 ${isSelected ? "text-white" : "text-primary"}`} />
               <span className="capitalize">{r.name}</span>
               <Badge
                 variant={isSelected ? "secondary" : "outline"}
-                className={`text-[10px] px-1.5 py-0 ${isSelected ? "bg-white/20 text-white border-transparent" : ""}`}
+                className={`text-[10px] px-1.5 py-0 border-0 ${
+                  isSelected ? "bg-white/20 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-muted-foreground"
+                }`}
               >
-                {permCount} quyền
+                {permCount}
               </Badge>
               {isSelected && <Check className="h-3.5 w-3.5 text-white ml-0.5" />}
             </button>
@@ -54,10 +53,10 @@ export function RoleSelector() {
           variant="outline"
           size="sm"
           onClick={openCreateRoleModal}
-          className="gap-1.5 text-xs rounded-xl"
+          className="gap-1.5 text-xs rounded-xl bg-white dark:bg-card shadow-xs border-0"
         >
           <Plus className="h-3.5 w-3.5" />
-          Tạo Role mới
+          Tạo Role
         </Button>
       </div>
     </div>

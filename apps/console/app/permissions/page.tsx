@@ -27,20 +27,19 @@ function PermissionsContent() {
   }, [fetchMatrix]);
 
   return (
-    <div className="space-y-6 max-w-7xl min-w-0 w-full">
+    <div className="space-y-5 max-w-7xl min-w-0 w-full">
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold font-display text-foreground tracking-tight">
-          Ma Trận Phân Quyền Hệ Thống (Permission Matrix)
+          Ma Trận Phân Quyền (IAM)
         </h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          Quản lý tài nguyên, phân quyền chi tiết (RBAC) và phân định phạm vi self / all kết nối trực tiếp với IAM Worker.
-        </p>
       </div>
 
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center rounded-2xl border border-[#ebe7df] dark:border-border bg-white dark:bg-[#0c121e]">
-          <span className="text-xs text-muted-foreground animate-pulse">Đang tải ma trận quyền từ IAM Worker...</span>
+        <div className="flex h-64 items-center justify-center rounded-2xl bg-white dark:bg-card shadow-xs">
+          <span className="text-xs text-muted-foreground animate-pulse">
+            Đang tải dữ liệu phân quyền...
+          </span>
         </div>
       ) : (
         <>

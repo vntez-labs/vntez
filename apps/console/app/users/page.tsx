@@ -8,6 +8,7 @@ import { UsersTableHeader } from "./components/users-table-header";
 import { UsersTable } from "./components/users-table";
 import { UserDetailDrawer } from "./components/user-detail-drawer";
 import { UsersModals } from "./components/users-modals";
+import { UserEditModal } from "./components/user-edit-modal";
 
 export default function UsersPage() {
   return (
@@ -32,6 +33,7 @@ function UsersContent() {
       <UsersTable />
       <UserDetailDrawer />
       <UsersModals />
+      <UserEditModal />
     </div>
   );
 }

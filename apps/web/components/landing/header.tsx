@@ -12,7 +12,6 @@ import { ThemeToggle } from "./theme-toggle"
 const NAV_LINKS = [
   { label: "Sản phẩm", href: "/products" },
   { label: "Kiến trúc", href: "/#architecture" },
-  { label: "Tài liệu", href: "/docs" },
   { label: "Blog", href: "/blog" },
 ]
 

@@ -9,8 +9,41 @@ import {
   Check,
   Trash2,
   Eye,
+  Pencil,
+  Shield,
 } from "lucide-react";
 import { useUsersStore } from "../users-store";
+import type { SupabaseAuthUser } from "@/app/api/users/route";
+
+function getRoleBadge(roleStr: string) {
+  const r = roleStr.toLowerCase();
+  if (r.includes("admin")) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-md bg-violet-500/10 px-2 py-0.5 text-xs font-semibold text-violet-700 dark:text-violet-300">
+        <Shield className="h-3 w-3" /> Admin
+      </span>
+    );
+  }
+  if (r.includes("dev")) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
+        Developer
+      </span>
+    );
+  }
+  if (r.includes("operator")) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
+        Operator
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+      Viewer
+    </span>
+  );
+}
 
 export function UsersTable() {
   const {
@@ -21,11 +54,12 @@ export function UsersTable() {
     handleCopy,
     selectedUser,
     setSelectedUser,
+    openEditUserModal,
     setDeletingUser,
   } = useUsersStore();
 
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "-";
+    if (!dateStr) return "Chưa đăng nhập";
     try {
       const d = new Date(dateStr);
       return d.toLocaleDateString("vi-VN", {
@@ -46,19 +80,17 @@ export function UsersTable() {
       u.name.toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       u.id.toLowerCase().includes(q) ||
-      (u.phone && u.phone.includes(q))
+      u.role.toLowerCase().includes(q)
     );
   });
 
   return (
-    <div className="border-0 bg-white dark:bg-card shadow-[0_1px_4px_rgba(0,0,0,0.03)] rounded-2xl rounded-t-none -mt-6 overflow-hidden w-full max-w-full">
+    <div className="bg-white/80 dark:bg-card/70 shadow-xs rounded-2xl overflow-hidden w-full max-w-full backdrop-blur-md">
       <div className="p-0 w-full max-w-full">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-xs text-muted-foreground">
-              Đang tải danh sách người dùng từ Supabase...
-            </p>
+            <p className="text-xs text-muted-foreground">Đang tải danh sách người dùng...</p>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-16 text-xs text-muted-foreground space-y-2">
@@ -67,31 +99,28 @@ export function UsersTable() {
           </div>
         ) : (
           <div className="w-full max-w-full overflow-x-auto">
-            <table className="w-full text-left text-sm min-w-[920px]">
-              <thead className="bg-[#faf8f4] dark:bg-muted/40 text-[#6e6a61] dark:text-slate-300 font-mono uppercase text-xs tracking-wider">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-zinc-50/70 dark:bg-zinc-900/40 text-muted-foreground text-xs uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-3 px-5">Tên hiển thị & Email</th>
-                  <th className="py-3 px-5">UID (User ID)</th>
-                  <th className="py-3 px-5">Số điện thoại</th>
-                  <th className="py-3 px-5">Providers</th>
-                  <th className="py-3 px-5">Ngày tạo</th>
-                  <th className="py-3 px-5">Đăng nhập cuối</th>
-                  <th className="py-3 px-5 text-right">Thao tác</th>
+                  <th className="py-3.5 px-6">Người dùng</th>
+                  <th className="py-3.5 px-5">UID</th>
+                  <th className="py-3.5 px-5">Vai trò (Role)</th>
+                  <th className="py-3.5 px-5">Đăng nhập cuối</th>
+                  <th className="py-3.5 px-6 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f5f2eb] dark:divide-border/30 text-sm">
-                {filteredUsers.map((item) => (
+              <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40 text-sm">
+                {filteredUsers.map((item: SupabaseAuthUser) => (
                   <tr
                     key={item.id}
                     onClick={() => setSelectedUser(item)}
-                    className={`hover:bg-[#fbf9f5] dark:hover:bg-muted/20 transition-colors cursor-pointer ${
-                      selectedUser?.id === item.id
-                        ? "bg-[#f8f5ed] dark:bg-muted/30"
-                        : ""
+                    className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer ${
+                      selectedUser?.id === item.id ? "bg-zinc-50/90 dark:bg-zinc-800/40" : ""
                     }`}
                   >
-                    <td className="py-3.5 px-5">
-                      <div className="flex items-center gap-2.5">
+                    {/* User display name & email */}
+                    <td className="py-3.5 px-6">
+                      <div className="flex items-center gap-3">
                         {item.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -100,14 +129,12 @@ export function UsersTable() {
                             className="h-8 w-8 rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary shrink-0">
-                            {item.name
-                              ? item.name.slice(0, 2).toUpperCase()
-                              : "US"}
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0">
+                            {item.name ? item.name.slice(0, 2).toUpperCase() : "US"}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <div className="font-semibold text-foreground truncate max-w-[190px] flex items-center gap-1.5">
+                          <div className="font-semibold text-foreground truncate max-w-[200px] flex items-center gap-1.5">
                             <span>{item.name}</span>
                             {item.isCurrentUser && (
                               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-primary/10 text-primary">
@@ -115,7 +142,7 @@ export function UsersTable() {
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-muted-foreground flex items-center gap-1 font-mono truncate max-w-[190px]">
+                          <div className="text-xs text-muted-foreground flex items-center gap-1 font-mono truncate max-w-[200px]">
                             <Mail className="h-3 w-3 shrink-0" />
                             {item.email}
                           </div>
@@ -123,10 +150,11 @@ export function UsersTable() {
                       </div>
                     </td>
 
+                    {/* UID */}
                     <td className="py-3.5 px-5 font-mono text-xs">
                       <div className="flex items-center gap-1.5 text-muted-foreground group">
                         <Fingerprint className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span className="truncate max-w-[140px]" title={item.id}>
+                        <span className="truncate max-w-[130px]" title={item.id}>
                           {item.id}
                         </span>
                         <button
@@ -147,45 +175,42 @@ export function UsersTable() {
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-5 font-mono text-xs text-muted-foreground">
-                      {item.phone || "-"}
-                    </td>
+                    {/* Role Column */}
+                    <td className="py-3.5 px-5">{getRoleBadge(item.role)}</td>
 
-                    <td className="py-3.5 px-5">
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.providers.map((p) => (
-                          <span
-                            key={p}
-                            className="text-xs font-medium px-2 py-0.5 rounded-md bg-[#f4f1ea] dark:bg-muted text-[#6b675e] capitalize"
-                          >
-                            {p}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-5 text-muted-foreground font-mono text-xs whitespace-nowrap">
-                      {formatDate(item.createdAt)}
-                    </td>
-
+                    {/* Last login */}
                     <td className="py-3.5 px-5 text-muted-foreground font-mono text-xs whitespace-nowrap">
                       {formatDate(item.lastSignInAt)}
                     </td>
 
-                    <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                    {/* Actions: Edit, View, Delete */}
+                    <td className="py-3.5 px-6 text-right whitespace-nowrap">
                       <div
-                        className="flex items-center justify-end gap-1.5"
+                        className="flex items-center justify-end gap-1"
                         onClick={(e) => e.stopPropagation()}
                       >
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          onClick={() => openEditUserModal(item)}
+                          title="Chỉnh sửa vai trò & người dùng"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground bg-zinc-100/70 hover:bg-zinc-200/70 dark:bg-zinc-800/60 dark:hover:bg-zinc-700/60 transition-colors cursor-pointer"
+                        >
+                          <Pencil className="h-3 w-3" />
+                          <span>Sửa</span>
+                        </button>
+
+                        {/* View Drawer */}
                         <button
                           type="button"
                           onClick={() => setSelectedUser(item)}
                           title="Xem chi tiết người dùng"
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-[#f4f1ea] dark:hover:bg-muted transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3.5 w-3.5" />
                         </button>
 
+                        {/* Delete */}
                         <button
                           type="button"
                           disabled={item.isCurrentUser}
@@ -198,10 +223,10 @@ export function UsersTable() {
                           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                             item.isCurrentUser
                               ? "opacity-30 cursor-not-allowed text-muted-foreground"
-                              : "text-destructive hover:bg-destructive/10"
+                              : "text-rose-500 hover:bg-rose-500/10"
                           }`}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>

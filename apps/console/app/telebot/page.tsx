@@ -26,15 +26,12 @@ function TelebotContent() {
   }, [fetchData]);
 
   return (
-    <div className="space-y-6 max-w-7xl min-w-0 w-full">
+    <div className="space-y-5 max-w-7xl min-w-0 w-full">
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold font-display text-foreground tracking-tight">
-          Quản Lý TeleBot Worker (Telegram Bot Hub)
+          TeleBot Hub
         </h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          Theo dõi trạng thái webhook, giám sát danh sách người dùng đăng ký và gửi tin nhắn broadcast tập trung.
-        </p>
       </div>
 
       <WebhookStatusCard />

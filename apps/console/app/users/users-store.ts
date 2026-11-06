@@ -8,6 +8,12 @@ interface AddUserData {
   phone: string;
 }
 
+interface EditUserData {
+  name: string;
+  role: string;
+  status: "active" | "inactive";
+}
+
 interface UsersState {
   users: SupabaseAuthUser[];
   isLoading: boolean;
@@ -21,9 +27,11 @@ interface UsersState {
   // Modals state
   isAddUserOpen: boolean;
   deletingUser: SupabaseAuthUser | null;
+  editingUser: SupabaseAuthUser | null;
   isSubmitting: boolean;
   formError: string | null;
   addFormData: AddUserData;
+  editFormData: EditUserData;
 
   // Actions
   fetchUsers: () => Promise<void>;
@@ -37,6 +45,11 @@ interface UsersState {
   setAddFormData: (data: Partial<AddUserData>) => void;
   handleAddUserSubmit: (e: React.FormEvent) => Promise<void>;
 
+  openEditUserModal: (user: SupabaseAuthUser) => void;
+  closeEditUserModal: () => void;
+  setEditFormData: (data: Partial<EditUserData>) => void;
+  handleEditUserSubmit: (e: React.FormEvent) => Promise<void>;
+
   setDeletingUser: (user: SupabaseAuthUser | null) => void;
   handleDeleteUserSubmit: () => Promise<void>;
 }
@@ -46,6 +59,12 @@ const initialAddFormData: AddUserData = {
   password: "",
   full_name: "",
   phone: "",
+};
+
+const initialEditFormData: EditUserData = {
+  name: "",
+  role: "Viewer",
+  status: "active",
 };
 
 export const useUsersStore = create<UsersState>((set, get) => ({
@@ -59,9 +78,11 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
   isAddUserOpen: false,
   deletingUser: null,
+  editingUser: null,
   isSubmitting: false,
   formError: null,
   addFormData: initialAddFormData,
+  editFormData: initialEditFormData,
 
   fetchUsers: async () => {
     set({ isLoading: true });
@@ -72,7 +93,6 @@ export const useUsersStore = create<UsersState>((set, get) => ({
         const users: SupabaseAuthUser[] = data.users || [];
         set({ users });
 
-        // Update selected user reference if open
         const { selectedUser } = get();
         if (selectedUser) {
           const updated = users.find((u) => u.id === selectedUser.id);
@@ -128,6 +148,71 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
       set({ isAddUserOpen: false, addFormData: initialAddFormData });
       await fetchUsers();
+    } catch (err) {
+      set({ formError: err instanceof Error ? err.message : String(err) });
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  openEditUserModal: (user: SupabaseAuthUser) =>
+    set({
+      editingUser: user,
+      formError: null,
+      editFormData: {
+        name: user.name,
+        role: user.role.includes("Super Admin")
+          ? "Admin"
+          : user.role.includes("Dev")
+            ? "Developer"
+            : user.role.includes("Operator")
+              ? "Operator"
+              : user.role.includes("Member") || user.role.includes("Viewer")
+                ? "Viewer"
+                : user.role,
+        status: user.status,
+      },
+    }),
+
+  closeEditUserModal: () => set({ editingUser: null, formError: null }),
+
+  setEditFormData: (data) =>
+    set((state) => ({ editFormData: { ...state.editFormData, ...data } })),
+
+  handleEditUserSubmit: async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { editingUser, editFormData, users, selectedUser } = get();
+    if (!editingUser) return;
+
+    set({ isSubmitting: true, formError: null });
+
+    try {
+      // Update local state directly with sleek optimistic reactivity
+      const updatedUsers = users.map((u) => {
+        if (u.id === editingUser.id) {
+          return {
+            ...u,
+            name: editFormData.name.trim() || u.name,
+            role: editFormData.role,
+            status: editFormData.status,
+          };
+        }
+        return u;
+      });
+
+      set({
+        users: updatedUsers,
+        editingUser: null,
+        selectedUser:
+          selectedUser?.id === editingUser.id
+            ? {
+                ...selectedUser,
+                name: editFormData.name.trim() || selectedUser.name,
+                role: editFormData.role,
+                status: editFormData.status,
+              }
+            : selectedUser,
+      });
     } catch (err) {
       set({ formError: err instanceof Error ? err.message : String(err) });
     } finally {
