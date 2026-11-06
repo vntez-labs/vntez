@@ -12,12 +12,16 @@ import {
   KeyRound,
   Send,
   HardDrive,
+  Layers,
+  Newspaper,
 } from "lucide-react";
 import { UserDropdown } from "@/components/user-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const NAV_ITEMS = [
   { href: "/", label: "Bảng điều khiển", icon: LayoutDashboard },
+  { href: "/apps", label: "Quản lý Ứng dụng", icon: Layers },
+  { href: "/blog-posts", label: "Quản trị Blog", icon: Newspaper },
   { href: "/permissions", label: "Ma trận Phân quyền", icon: KeyRound },
   { href: "/telebot", label: "TeleBot Subscribers", icon: Send },
   { href: "/storage", label: "R2 Storage & Uploads", icon: HardDrive },
