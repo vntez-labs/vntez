@@ -4,7 +4,6 @@ import {
   STANDARD_RESOURCES,
   STANDARD_ACTIONS,
   ALL_PERMISSIONS,
-  INITIAL_ROLE_PERMS,
 } from "./permissions-constants";
 
 const IAM_API_URL = process.env.NEXT_PUBLIC_IAM_API_URL || "https://iam.hnamhocit.workers.dev";
@@ -49,13 +48,13 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
   resources: STANDARD_RESOURCES,
   actions: STANDARD_ACTIONS,
   roles: [
-    { id: "admin", name: "Administrator", description: "Toàn quyền quản trị hệ sinh thái", is_system: true, permissions: [] },
-    { id: "developer", name: "Developer", description: "Quyền đọc/ghi tài nguyên đối tác", is_system: true, permissions: [] },
-    { id: "member", name: "Member", description: "Thành viên tiêu chuẩn với quyền self", is_system: true, permissions: [] },
-    { id: "viewer", name: "Viewer", description: "Chỉ có quyền đọc", is_system: true, permissions: [] },
+    { id: "admin", name: "Quản trị viên (Admin)", description: "Toàn quyền kiểm soát mọi tài nguyên trên hệ thống", is_system: true, permissions: [] },
+    { id: "developer", name: "Lập trình viên (Developer)", description: "Toàn quyền với Storage, TeleBot, OAuth Clients", is_system: true, permissions: [] },
+    { id: "member", name: "Thành viên (Member)", description: "Chỉ quản lý tài nguyên của chính mình (Self scope)", is_system: true, permissions: [] },
+    { id: "viewer", name: "Người xem (Viewer)", description: "Chỉ được xem thông tin công khai", is_system: true, permissions: [] },
   ],
   selectedRoleId: "developer",
-  rolePermissions: INITIAL_ROLE_PERMS,
+  rolePermissions: {},
   isLoading: false,
   isSaving: false,
   saveMessage: null,
@@ -65,8 +64,8 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
   newRoleName: "",
   newRoleDescription: "",
 
-  evalUserId: "user_demo_01",
-  evalPermission: "users:read:self",
+  evalUserId: "admin_user_01",
+  evalPermission: "users:read:all",
   evalResult: null,
   isEvaluating: false,
 
@@ -75,25 +74,48 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     try {
       const res = await fetch(`${IAM_API_URL}/api/iam/matrix`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const json = await res.json();
 
-      const permsMap: Record<string, Set<string>> = { ...INITIAL_ROLE_PERMS };
-      if (data.built_in_roles) {
-        for (const [rName, pList] of Object.entries(data.built_in_roles)) {
-          const list = pList as string[];
-          permsMap[rName] = list.includes("*:*") ? new Set(ALL_PERMISSIONS) : new Set(list);
+      if (json.ok && json.data) {
+        const { resources, roles, allActions } = json.data;
+        const resKeys = Array.isArray(resources) ? resources.map((r: { id: string }) => r.id) : STANDARD_RESOURCES;
+        const actKeys = Array.isArray(allActions) ? allActions.map((a: { key: string }) => a.key) : STANDARD_ACTIONS;
+
+        const roleDefs: RoleDefinition[] = [];
+        const permsMap: Record<string, Set<string>> = {};
+
+        if (Array.isArray(roles)) {
+          for (const r of roles) {
+            roleDefs.push({
+              id: r.id,
+              name: r.name,
+              description: r.description,
+              is_system: r.is_system,
+              permissions: r.permissions || [],
+            });
+
+            const pList: string[] = r.permissions || [];
+            if (pList.includes("*:*")) {
+              permsMap[r.id] = new Set(ALL_PERMISSIONS);
+            } else {
+              permsMap[r.id] = new Set(pList);
+            }
+          }
         }
-      }
 
-      set({
-        resources: data.standard_resources || get().resources,
-        actions: data.standard_actions || get().actions,
-        rolePermissions: permsMap,
-        isLoading: false,
-      });
-    } catch {
-      set({ rolePermissions: INITIAL_ROLE_PERMS, isLoading: false });
+        set({
+          resources: resKeys,
+          actions: actKeys,
+          roles: roleDefs.length > 0 ? roleDefs : get().roles,
+          rolePermissions: permsMap,
+          isLoading: false,
+        });
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to load real IAM matrix:", err);
     }
+    set({ isLoading: false });
   },
 
   setSelectedRoleId: (roleId) => set({ selectedRoleId: roleId, saveMessage: null, saveError: null }),
@@ -158,14 +180,14 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       if (!res.ok) {
         set({
           isSaving: false,
-          saveMessage: `Đã cập nhật ${currentPerms.length} quyền cho [${roleId}].`,
+          saveMessage: `Đã lưu cục bộ ${currentPerms.length} quyền cho [${roleId}].`,
         });
         return;
       }
 
       set({
         isSaving: false,
-        saveMessage: `Đã lưu ${currentPerms.length} quyền cho [${roleId}] lên IAM Worker!`,
+        saveMessage: `Đã đồng bộ ${currentPerms.length} quyền của [${roleId}] lên IAM Worker!`,
       });
     } catch {
       set({
@@ -213,13 +235,20 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
   runEvaluation: async () => {
     const { evalUserId, evalPermission, selectedRoleId, rolePermissions } = get();
     set({ isEvaluating: true });
+
+    // Split permission into resource and action (e.g. "users:read:self" -> resource="users", action="read:self")
+    const parts = evalPermission.split(":");
+    const resource = parts[0] || "users";
+    const action = parts.slice(1).join(":") || "read:self";
+
     try {
       const res = await fetch(`${IAM_API_URL}/api/iam/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: evalUserId,
-          permission: evalPermission,
+          resource,
+          action,
         }),
       });
 
@@ -228,16 +257,14 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
         set({
           isEvaluating: false,
           evalResult: {
-            allowed: data.allowed,
-            message: data.allowed
-              ? `Cho phép (${data.matched_roles?.join(", ") || "Active role"})`
-              : "Từ chối: Không đủ thẩm quyền",
+            allowed: Boolean(data.allowed),
+            message: data.reason || (data.allowed ? "Cho phép: Thẩm quyền hợp lệ" : "Từ chối: Không đủ quyền truy cập"),
           },
         });
         return;
       }
-    } catch {
-      // offline fallback
+    } catch (err) {
+      console.warn("IAM evaluation remote call failed:", err);
     }
 
     const currentSet = rolePermissions[selectedRoleId] || new Set();

@@ -30,98 +30,9 @@ const ART_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ecosystem: IsometricEcosystemArt,
 };
 
-const FALLBACK_APPS: AppItem[] = [
-  {
-    id: "storage",
-    name: "vntez Storage & Edge",
-    category: "Lưu trữ đối tượng",
-    description: "Lưu trữ đối tượng chuẩn AWS S3 API trên cụm NVMe nội địa, tối ưu độ trễ truy xuất và miễn phí băng thông tải về.",
-    releaseDate: "10/2024",
-    platforms: ["AWS S3 API", "Node.js", "Go", "Python", "CLI"],
-    color: "#fb291a",
-    ctaLink: "/docs#storage-api",
-    avatarUrl: null,
-    illustrationKey: "storage",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "vntez-iam",
-    name: "vntez-iam",
-    category: "Định danh & Phân quyền IAM",
-    description: "Hệ thống IAM toàn diện: Quản lý định danh người dùng, ma trận phân quyền RBAC/ABAC, Single Sign-On (SSO) và xác thực an toàn chuẩn Enterprise.",
-    releaseDate: "08/2024",
-    platforms: ["Web SPA", "iOS", "Android", "REST API", "OIDC"],
-    color: "#fb291a",
-    ctaLink: "/docs#vntez-iam",
-    avatarUrl: null,
-    illustrationKey: "security",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "bman-pos",
-    name: "BMAN POS",
-    category: "Bán lẻ & Điểm bán",
-    description: "Máy bán lẻ Offline-First chạy cơ sở dữ liệu SQLite cục bộ, duy trì quét mã và in bill trơn tru ngay cả khi mất mạng.",
-    releaseDate: "05/2024",
-    platforms: ["Windows", "macOS", "Linux", "Android POS"],
-    color: "#06b6d4",
-    ctaLink: "/blog/offline-first-pos-architecture",
-    avatarUrl: null,
-    illustrationKey: "offline",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "supply-chain",
-    name: "vntez WMS & Fleet",
-    category: "Kho vận & Logistics",
-    description: "Hệ thống quản lý kho vận thông minh và thuật toán định tuyến giao hàng chặng cuối theo thời gian thực cho chuỗi phân phối.",
-    releaseDate: "03/2024",
-    platforms: ["Web Dashboard", "Android", "iOS"],
-    color: "#10b981",
-    ctaLink: "/docs#logistics-wms",
-    avatarUrl: null,
-    illustrationKey: "supply-chain",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "telemetry",
-    name: "vntez Telemetry",
-    category: "Giám sát & Vết lỗi",
-    description: "Bộ công cụ thu thập log, tracing chuẩn OpenTelemetry và bắt lỗi runtime thời gian thực với SDK siêu nhẹ (< 8KB).",
-    releaseDate: "01/2024",
-    platforms: ["Web", "Node.js", "React Native", "Flutter"],
-    color: "#f77241",
-    ctaLink: "/docs#telemetry-sdk",
-    avatarUrl: null,
-    illustrationKey: "telemetry",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "ecosystem",
-    name: "vntez SDK & Tools",
-    category: "Bộ công cụ SDK",
-    description: "Bộ thư viện đa ngôn ngữ với Type Definition hoàn chỉnh đơn giản hóa việc tích hợp TypeScript, Go, C# (.NET) và Python.",
-    releaseDate: "11/2023",
-    platforms: ["TypeScript", "Go", "C# (.NET)", "Python"],
-    color: "#8b5cf6",
-    ctaLink: "/docs",
-    avatarUrl: null,
-    illustrationKey: "ecosystem",
-    status: "active",
-    updatedAt: "2026-10-29T12:00:00Z",
-  },
-];
-
 export default async function ProductsPage() {
   const liveApps = await fetchLiveApps();
-  const products = (liveApps.length > 0 ? liveApps : FALLBACK_APPS).filter(
-    (p) => p.status !== "draft"
-  );
+  const products = liveApps.filter((p) => p.status !== "draft");
 
   return (
     <div className="mx-auto max-w-6xl px-6 pt-10 sm:pt-14 pb-20 sm:pb-28 space-y-20">

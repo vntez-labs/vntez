@@ -1,130 +1,165 @@
 "use client";
 
 import React from "react";
+import { Clock, User, Calendar, Eye, Heart, MessageSquare } from "lucide-react";
 
 interface MarkdownPreviewProps {
+  title?: string;
+  category?: string;
+  author?: string;
+  date?: string;
+  readTime?: string;
+  thumbnailUrl?: string;
   content: string;
 }
 
-export function MarkdownPreview({ content }: MarkdownPreviewProps) {
-  if (!content.trim()) {
-    return (
-      <div className="py-12 text-center text-xs text-muted-foreground italic">
-        Chưa có nội dung Markdown. Hãy nhập nội dung ở tab Soạn thảo.
-      </div>
-    );
-  }
+export function MarkdownPreview({
+  title,
+  category = "Kiến trúc hệ thống",
+  author = "Core Engineering Team",
+  date,
+  readTime = "5 phút đọc",
+  thumbnailUrl,
+  content,
+}: MarkdownPreviewProps) {
+  const displayDate = date || new Date().toLocaleDateString("vi-VN");
 
-  // Parse lines into structured elements
+  return (
+    <article className="max-w-3xl mx-auto space-y-6 text-foreground">
+      {/* Header Preview */}
+      <header className="space-y-4 pb-6 border-b border-zinc-200/80 dark:border-zinc-800">
+        <div className="flex items-center gap-2.5">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-2xs">
+            <span className="size-2 rounded-full bg-primary" />
+            {category}
+          </span>
+          <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
+            <Clock className="size-3.5" />
+            <span>{readTime}</span>
+          </span>
+        </div>
+
+        <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight">
+          {title || "Tiêu đề bài viết chưa được nhập..."}
+        </h1>
+
+        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground font-sans pt-1">
+          <div className="flex items-center gap-1.5 font-medium text-foreground">
+            <User className="size-4 opacity-60" />
+            <span>{author}</span>
+          </div>
+          <span>•</span>
+          <div className="flex items-center gap-1.5 font-mono">
+            <Calendar className="size-4 opacity-60" />
+            <span>{displayDate}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Banner / Thumbnail */}
+      {thumbnailUrl && (
+        <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-xs">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={thumbnailUrl} alt={title} className="size-full object-cover" />
+        </div>
+      )}
+
+      {/* Rendered Body */}
+      <div className="py-2">
+        {!content.trim() ? (
+          <div className="py-12 text-center text-xs text-muted-foreground italic">
+            Chưa có nội dung Markdown. Hãy nhập nội dung ở tab Soạn thảo.
+          </div>
+        ) : (
+          <RenderMarkdownBody content={content} />
+        )}
+      </div>
+
+      {/* Footer Stats Preview */}
+      <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-muted-foreground font-mono">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1 text-cyan-600">
+            <Eye className="size-3.5" /> 0 lượt xem
+          </span>
+          <span className="flex items-center gap-1 text-rose-500">
+            <Heart className="size-3.5" /> 0 lượt tim
+          </span>
+          <span className="flex items-center gap-1 text-amber-500">
+            <MessageSquare className="size-3.5" /> 0 bình luận
+          </span>
+        </div>
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground/60">
+          Chế độ xem trước thời gian thực
+        </span>
+      </div>
+    </article>
+  );
+}
+
+function RenderMarkdownBody({ content }: { content: string }) {
   const lines = content.split("\n");
   const elements: React.ReactNode[] = [];
-  let inCodeBlock = false;
-  let codeBuffer: string[] = [];
+  let inCode = false;
+  let codeLines: string[] = [];
   let codeLang = "";
 
   lines.forEach((line, idx) => {
-    // Code block start / end
     if (line.trim().startsWith("```")) {
-      if (inCodeBlock) {
-        // End code block
+      if (inCode) {
         elements.push(
-          <div key={`code-${idx}`} className="my-3 rounded-xl bg-zinc-900 text-zinc-100 p-3.5 font-mono text-xs overflow-x-auto shadow-inner">
+          <div key={`code-${idx}`} className="my-4 rounded-xl bg-zinc-900 text-zinc-100 p-4 font-mono text-xs overflow-x-auto shadow-inner border border-zinc-800">
             {codeLang && <div className="text-[10px] text-zinc-400 uppercase pb-1 mb-2 border-b border-zinc-800">{codeLang}</div>}
-            <pre><code>{codeBuffer.join("\n")}</code></pre>
+            <pre><code>{codeLines.join("\n")}</code></pre>
           </div>
         );
-        codeBuffer = [];
-        inCodeBlock = false;
+        codeLines = [];
+        inCode = false;
         codeLang = "";
       } else {
-        // Start code block
-        inCodeBlock = true;
+        inCode = true;
         codeLang = line.trim().slice(3).trim();
       }
       return;
     }
 
-    if (inCodeBlock) {
-      codeBuffer.push(line);
+    if (inCode) {
+      codeLines.push(line);
       return;
     }
 
-    // Headings
     if (line.startsWith("# ")) {
-      elements.push(
-        <h1 key={idx} className="text-xl font-bold text-foreground mt-4 mb-2 pb-1 border-b border-zinc-200 dark:border-zinc-800 font-display">
-          {renderInline(line.slice(2))}
-        </h1>
-      );
+      elements.push(<h1 key={idx} className="text-xl sm:text-2xl font-bold text-foreground mt-6 mb-3 font-display border-b border-zinc-200/80 dark:border-zinc-800 pb-2">{renderInline(line.slice(2))}</h1>);
       return;
     }
     if (line.startsWith("## ")) {
-      elements.push(
-        <h2 key={idx} className="text-lg font-bold text-foreground mt-4 mb-2 font-display">
-          {renderInline(line.slice(3))}
-        </h2>
-      );
+      elements.push(<h2 key={idx} className="text-lg sm:text-xl font-bold text-foreground mt-5 mb-2.5 font-display">{renderInline(line.slice(3))}</h2>);
       return;
     }
     if (line.startsWith("### ")) {
-      elements.push(
-        <h3 key={idx} className="text-sm font-bold text-foreground mt-3 mb-1">
-          {renderInline(line.slice(4))}
-        </h3>
-      );
+      elements.push(<h3 key={idx} className="text-base font-bold text-foreground mt-4 mb-2">{renderInline(line.slice(4))}</h3>);
       return;
     }
-
-    // Blockquotes
     if (line.startsWith("> ")) {
-      elements.push(
-        <blockquote key={idx} className="my-2 pl-3.5 py-1 border-l-3 border-primary bg-primary/5 rounded-r-lg text-xs italic text-foreground">
-          {renderInline(line.slice(2))}
-        </blockquote>
-      );
+      elements.push(<blockquote key={idx} className="my-3 pl-4 py-1.5 border-l-4 border-primary bg-primary/5 rounded-r-lg text-xs sm:text-sm italic text-foreground leading-relaxed">{renderInline(line.slice(2))}</blockquote>);
       return;
     }
-
-    // Unordered List
     if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
-      elements.push(
-        <li key={idx} className="ml-4 list-disc text-xs text-foreground/90 my-1 leading-relaxed">
-          {renderInline(line.trim().slice(2))}
-        </li>
-      );
+      elements.push(<li key={idx} className="ml-5 list-disc text-xs sm:text-sm text-foreground/90 my-1 leading-relaxed">{renderInline(line.trim().slice(2))}</li>);
       return;
     }
 
-    // Ordered List
-    const numMatch = line.trim().match(/^(\d+)\.\s+(.*)/);
-    if (numMatch) {
-      elements.push(
-        <li key={idx} className="ml-4 list-decimal text-xs text-foreground/90 my-1 leading-relaxed">
-          {renderInline(numMatch[2] || "")}
-        </li>
-      );
-      return;
-    }
-
-    // Empty lines
     if (!line.trim()) {
       elements.push(<div key={idx} className="h-2" />);
       return;
     }
 
-    // Regular paragraphs
-    elements.push(
-      <p key={idx} className="text-xs text-foreground/90 leading-relaxed my-1.5">
-        {renderInline(line)}
-      </p>
-    );
+    elements.push(<p key={idx} className="text-xs sm:text-sm leading-relaxed text-foreground/90 my-2">{renderInline(line)}</p>);
   });
 
-  return <div className="space-y-1 text-xs">{elements}</div>;
+  return <div className="space-y-1">{elements}</div>;
 }
 
 function renderInline(text: string): React.ReactNode {
-  // Bold **text**
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
@@ -134,19 +169,11 @@ function renderInline(text: string): React.ReactNode {
       return <em key={i} className="italic">{part.slice(1, -1)}</em>;
     }
     if (part.startsWith("`") && part.endsWith("`")) {
-      return (
-        <code key={i} className="rounded bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 text-[11px] font-mono text-primary">
-          {part.slice(1, -1)}
-        </code>
-      );
+      return <code key={i} className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-primary">{part.slice(1, -1)}</code>;
     }
     const linkMatch = part.match(/^\[(.*?)\]\((.*?)\)$/);
     if (linkMatch) {
-      return (
-        <a key={i} href={linkMatch[2]} target="_blank" rel="noreferrer" className="text-primary underline font-medium">
-          {linkMatch[1]}
-        </a>
-      );
+      return <a key={i} href={linkMatch[2]} target="_blank" rel="noreferrer" className="text-primary underline font-medium hover:underline">{linkMatch[1]}</a>;
     }
     return part;
   });

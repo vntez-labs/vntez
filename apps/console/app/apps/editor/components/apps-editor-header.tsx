@@ -2,18 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Edit3, Eye, Columns } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 
 interface AppsEditorHeaderProps {
   isEditing: boolean;
   isSaving: boolean;
+  activeTab: "form" | "preview" | "split";
+  setActiveTab: (tab: "form" | "preview" | "split") => void;
   onSave: () => void;
 }
 
 export function AppsEditorHeader({
   isEditing,
   isSaving,
+  activeTab,
+  setActiveTab,
   onSave,
 }: AppsEditorHeaderProps) {
   return (
@@ -33,6 +37,46 @@ export function AppsEditorHeader({
       </div>
 
       <div className="flex items-center gap-2">
+        {/* View Mode Switcher */}
+        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800/70 p-1 rounded-xl gap-0.5">
+          <button
+            type="button"
+            onClick={() => setActiveTab("form")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all flex items-center gap-1 ${
+              activeTab === "form"
+                ? "bg-white dark:bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Edit3 className="h-3 w-3" />
+            <span>Biểu mẫu</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("preview")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all flex items-center gap-1 ${
+              activeTab === "preview"
+                ? "bg-white dark:bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Eye className="h-3 w-3" />
+            <span>Xem trước</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("split")}
+            className={`hidden md:flex px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all items-center gap-1 ${
+              activeTab === "split"
+                ? "bg-white dark:bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Columns className="h-3 w-3" />
+            <span>Song song</span>
+          </button>
+        </div>
+
         <Link href="/apps">
           <Button
             type="button"

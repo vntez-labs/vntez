@@ -242,8 +242,15 @@ function BlogEditorContent() {
               )}
 
               {(activeTab === "preview" || activeTab === "split") && (
-                <div className="p-4 rounded-2xl bg-zinc-50/70 dark:bg-zinc-900/40 min-h-[300px]">
-                  <MarkdownPreview content={content} />
+                <div className="p-6 rounded-2xl bg-zinc-50/70 dark:bg-zinc-900/40 min-h-[400px]">
+                  <MarkdownPreview
+                    title={title}
+                    category={category}
+                    author={author}
+                    readTime={readTime}
+                    thumbnailUrl={thumbnailUrl}
+                    content={content}
+                  />
                 </div>
               )}
             </div>
