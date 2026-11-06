@@ -26,7 +26,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
  * Server-side Admin Supabase client.
  * Uses SUPABASE_SERVICE_ROLE_KEY if configured in environment, otherwise falls back to SUPABASE_PUBLISHABLE_KEY.
  *
- * NOTE: External SSO tokens (like VNTEZ ID OAuth tokens) must NOT be passed to Supabase
+ * NOTE: External SSO tokens (like VNTEZ IAM OAuth tokens) must NOT be passed to Supabase
  * in the Authorization Bearer header, because Supabase PostgREST validates tokens with
  * its own internal JWT secret.
  */

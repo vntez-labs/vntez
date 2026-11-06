@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(authorizeUrl);
   } catch (error) {
-    console.error("Failed to initiate VNTEZ ID PKCE login:", error);
+    console.error("Failed to initiate VNTEZ IAM PKCE login:", error);
     return NextResponse.json(
       {
         error: "OAuth PKCE initialization failed",

@@ -8,7 +8,7 @@ Bảng điều khiển quản trị đám mây tập trung (Cloud Management Con
 - **Framework**: Next.js 16.4.2 (App Router, Turbopack, React 19).
 - **Styling**: Tailwind CSS v4, `@workspace/ui`.
 - **State Management**: Zustand v5 (quản lý state độc lập theo từng tính năng).
-- **Bảo mật & Phiên làm việc**: `@workspace/auth` tích hợp SSO OAuth 2.0 PKCE với VNTEZ ID.
+- **Bảo mật & Phiên làm việc**: `@workspace/auth` tích hợp SSO OAuth 2.0 PKCE với VNTEZ IAM.
 - **Icons**: `lucide-react`.
 
 ---
@@ -29,7 +29,7 @@ Bảng điều khiển quản trị đám mây tập trung (Cloud Management Con
   - Viewer dữ liệu bảng trực tiếp, bộ lọc cột, pagination.
 - **`/audit-logs`**: Trang nhật ký kiểm toán hệ thống (dùng component `UnderConstructionView`).
 - **`/settings`**: Kiểm tra thông tin phiên làm việc, trạng thái token và nút đăng xuất.
-- **`/login` & `/auth/callback`**: Luồng xác thực đăng nhập một chạm qua VNTEZ ID PKCE.
+- **`/login` & `/auth/callback`**: Luồng xác thực đăng nhập một chạm qua VNTEZ IAM PKCE.
 - **`app/error.tsx` & `app/not-found.tsx`**: Trang bắt lỗi ErrorBoundary và trang 404 tích hợp từ `@workspace/ui`.
 
 ---

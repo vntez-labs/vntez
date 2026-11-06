@@ -52,7 +52,7 @@ export function AuthGuard({
               Xác thực phiên bảo mật
             </p>
             <p className="text-xs text-muted-foreground">
-              Đang kiểm tra chứng chỉ VNTEZ ID OAuth 2.0 PKCE...
+              Đang kiểm tra chứng chỉ xác thực VNTEZ IAM...
             </p>
           </div>
         </div>

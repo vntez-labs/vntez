@@ -1,5 +1,5 @@
 /**
- * VNTEZ ID OAuth 2.0 PKCE Data Types & Interfaces
+ * VNTEZ IAM OAuth 2.0 PKCE Data Types & Interfaces
  * RFC 7636 & RFC 6749
  */
 

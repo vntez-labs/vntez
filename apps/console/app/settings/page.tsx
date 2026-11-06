@@ -41,7 +41,7 @@ function SettingsContent() {
               Phiên Đăng nhập Hiện tại
             </h3>
             <p className="text-xs text-muted-foreground">
-              Thông tin phiên làm việc quản trị được cấp bởi VNTEZ ID
+              Thông tin phiên làm việc quản trị được cấp bởi VNTEZ IAM
             </p>
           </div>
 
@@ -52,7 +52,7 @@ function SettingsContent() {
             </div>
             <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-[#f7f5ef] dark:bg-muted/40">
               <span className="text-muted-foreground">Loại phiên:</span>
-              <span className="font-semibold text-foreground">VNTEZ ID SSO (PKCE)</span>
+              <span className="font-semibold text-foreground">VNTEZ IAM SSO (PKCE)</span>
             </div>
             <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-[#f7f5ef] dark:bg-muted/40">
               <span className="text-muted-foreground">Thời hạn hiệu lực:</span>
@@ -85,7 +85,7 @@ function SettingsContent() {
 
           <div className="p-3.5 rounded-xl bg-destructive/5 text-destructive/90 text-xs leading-relaxed">
             Khi bạn đăng xuất, toàn bộ cookies HTTP-only chứa token và phiên xác thực sẽ bị xóa khỏi trình duyệt.
-            Bạn sẽ cần đăng nhập lại qua VNTEZ ID để tiếp tục truy cập bảng điều khiển.
+            Bạn sẽ cần đăng nhập lại qua VNTEZ IAM để tiếp tục truy cập bảng điều khiển.
           </div>
 
           <Button

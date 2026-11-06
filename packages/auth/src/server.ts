@@ -28,7 +28,7 @@ export interface CallbackResult {
 /**
  * Step 1 & 2: Initiate the PKCE Flow
  * Generates code_verifier, code_challenge (S256), state and sets secure HTTP-only cookies.
- * Returns the VNTEZ ID Authorization URL.
+ * Returns the VNTEZ IAM Authorization URL.
  */
 export async function initiatePKCEFlow({
   clientId,
@@ -59,7 +59,7 @@ export async function initiatePKCEFlow({
     });
   }
 
-  // Generate VNTEZ ID authorize URL
+  // Generate VNTEZ IAM authorize URL
   return buildAuthorizeUrl({
     baseUrl,
     clientId,
@@ -92,7 +92,7 @@ export async function handleOAuthCallback({
   const cookieStore = await cookies();
 
   if (!code) {
-    return { success: false, error: 'Thiếu Authorization Code từ VNTEZ ID.' };
+    return { success: false, error: 'Thiếu Authorization Code từ VNTEZ IAM.' };
   }
 
   // 1. Validate State against Cookie (Anti-CSRF)
@@ -160,7 +160,7 @@ export async function handleOAuthCallback({
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Lỗi trong quá trình xác thực VNTEZ ID',
+      error: error instanceof Error ? error.message : 'Lỗi trong quá trình xác thực VNTEZ IAM',
     };
   }
 }

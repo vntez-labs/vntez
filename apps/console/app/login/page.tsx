@@ -4,7 +4,7 @@ import { IsometricConsoleArt } from "@/components/isometric-console-art";
 
 export const metadata: Metadata = {
   title: "Đăng nhập | VNTEZ Console",
-  description: "Xác thực danh tính qua VNTEZ ID Single Sign-On",
+  description: "Xác thực danh tính qua VNTEZ IAM Single Sign-On",
 };
 
 interface LoginPageProps {
@@ -120,7 +120,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             >
               <div className="flex items-center gap-3">
                 <KeyRound className="size-4.5 shrink-0" />
-                <span>Đăng nhập bằng VNTEZ ID</span>
+                <span>Đăng nhập bằng VNTEZ IAM</span>
               </div>
               <ArrowRight className="size-4.5 shrink-0 transition-transform group-hover:translate-x-1" />
             </a>

@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
 import { Plus, Search, Newspaper, RefreshCw, Eye, Heart, MessageSquare } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 import { BlogCard } from "./components/blog-card";
-import { BlogEditorModal } from "./components/blog-editor-modal";
 
 export default function BlogPostsAdminPage() {
   return (
@@ -20,13 +20,11 @@ export default function BlogPostsAdminPage() {
 }
 
 function BlogManagementContent() {
+  const router = useRouter();
   const [posts, setPosts] = useState<BlogPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<BlogPostItem | null>(null);
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -82,13 +80,11 @@ function BlogManagementContent() {
   }, [posts, searchTerm, selectedCategory]);
 
   const handleEdit = (post: BlogPostItem) => {
-    setEditingPost(post);
-    setIsModalOpen(true);
+    router.push(`/blog-posts/editor?slug=${encodeURIComponent(post.slug)}`);
   };
 
   const handleCreate = () => {
-    setEditingPost(null);
-    setIsModalOpen(true);
+    router.push("/blog-posts/editor");
   };
 
   const handleDelete = async (slug: string) => {
@@ -104,18 +100,6 @@ function BlogManagementContent() {
     } catch (err: any) {
       alert(err.message);
     }
-  };
-
-  const handleSaved = (savedPost: BlogPostItem) => {
-    setPosts((prev) => {
-      const index = prev.findIndex((p) => p.slug === savedPost.slug);
-      if (index >= 0) {
-        const next = [...prev];
-        next[index] = savedPost;
-        return next;
-      }
-      return [savedPost, ...prev];
-    });
   };
 
   return (
@@ -257,13 +241,7 @@ function BlogManagementContent() {
         </div>
       )}
 
-      {/* Blog Editor Modal */}
-      <BlogEditorModal
-        isOpen={isModalOpen}
-        initialPost={editingPost}
-        onClose={() => setIsModalOpen(false)}
-        onSaved={handleSaved}
-      />
+      {/* Blog Editor Modal removed in favor of dedicated full-page editor at /blog-posts/editor */}
     </div>
   );
 }

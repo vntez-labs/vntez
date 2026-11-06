@@ -1,6 +1,6 @@
 /**
  * @workspace/auth
- * Enterprise OAuth 2.0 PKCE authentication module for VNTEZ ID
+ * Enterprise OAuth 2.0 PKCE authentication module for VNTEZ IAM
  */
 
 export * from './types';

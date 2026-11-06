@@ -31,7 +31,7 @@ export interface ExchangeTokenParams {
 }
 
 /**
- * Builds the VNTEZ ID OAuth 2.0 authorization URL with PKCE parameters
+ * Builds the VNTEZ IAM OAuth 2.0 authorization URL with PKCE parameters
  */
 export function buildAuthorizeUrl({
   baseUrl = VNTEZ_DEFAULT_BASE_URL,

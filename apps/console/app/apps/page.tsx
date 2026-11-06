@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
 import { Plus, Search, Layers, RefreshCw } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 import { AppCard } from "./components/app-card";
-import { AppEditModal } from "./components/app-edit-modal";
 
 export default function AppsPage() {
   return (
@@ -20,13 +20,11 @@ export default function AppsPage() {
 }
 
 function AppsManagementContent() {
+  const router = useRouter();
   const [apps, setApps] = useState<AppItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingApp, setEditingApp] = useState<AppItem | null>(null);
 
   const fetchApps = async () => {
     setIsLoading(true);
@@ -70,13 +68,11 @@ function AppsManagementContent() {
   }, [apps, searchTerm, selectedCategory]);
 
   const handleEdit = (app: AppItem) => {
-    setEditingApp(app);
-    setIsModalOpen(true);
+    router.push(`/apps/editor?id=${encodeURIComponent(app.id)}`);
   };
 
   const handleCreate = () => {
-    setEditingApp(null);
-    setIsModalOpen(true);
+    router.push("/apps/editor");
   };
 
   const handleDelete = async (id: string) => {
@@ -92,18 +88,6 @@ function AppsManagementContent() {
     } catch (err: any) {
       alert(err.message);
     }
-  };
-
-  const handleSaved = (savedApp: AppItem) => {
-    setApps((prev) => {
-      const index = prev.findIndex((a) => a.id === savedApp.id);
-      if (index >= 0) {
-        const next = [...prev];
-        next[index] = savedApp;
-        return next;
-      }
-      return [savedApp, ...prev];
-    });
   };
 
   return (
@@ -210,13 +194,7 @@ function AppsManagementContent() {
         </div>
       )}
 
-      {/* Edit / Create Modal */}
-      <AppEditModal
-        isOpen={isModalOpen}
-        initialApp={editingApp}
-        onClose={() => setIsModalOpen(false)}
-        onSaved={handleSaved}
-      />
+      {/* Edit / Create Modal removed in favor of dedicated full-page editor at /apps/editor */}
     </div>
   );
 }

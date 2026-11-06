@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     template: "%s | VNTEZ Console",
   },
   description:
-    "Hệ thống điều hành và bảng điều khiển quản trị trung tâm được bảo vệ bởi VNTEZ ID OAuth 2.0 PKCE.",
+    "Hệ thống điều hành và bảng điều khiển quản trị trung tâm được bảo vệ bởi VNTEZ IAM OAuth 2.0 PKCE.",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },

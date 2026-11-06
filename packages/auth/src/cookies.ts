@@ -1,5 +1,5 @@
 /**
- * Security Cookie Names and Configuration for VNTEZ ID OAuth 2.0 PKCE
+ * Security Cookie Names and Configuration for VNTEZ IAM OAuth 2.0 PKCE
  */
 
 export const COOKIE_NAMES = {

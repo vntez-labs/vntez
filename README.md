@@ -14,7 +14,7 @@ Hệ thống sử dụng **Turborepo** và **Bun** để quản lý workspace:
 │   ├── console/       # Bảng điều khiển quản trị hạ tầng & dữ liệu đối tác (Next.js 16)
 │   └── id/
 │       ├── api/       # API định danh & OAuth 2.0 PKCE backend
-│       └── web/       # Cổng định danh VNTEZ ID & Desktop OS Sandbox ảo (Next.js 16)
+│       └── web/       # Cổng định danh VNTEZ IAM & Desktop OS Sandbox ảo (Next.js 16)
 ├── packages/
 │   ├── ui/            # Thư viện component dùng chung (@workspace/ui)
 │   ├── auth/          # Quản lý phiên đăng nhập và token (@workspace/auth)
