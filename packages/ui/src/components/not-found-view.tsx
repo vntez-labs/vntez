@@ -5,7 +5,7 @@ import { ArrowLeft, Home, BookOpen, LayoutDashboard, ShieldCheck } from "lucide-
 export function NotFoundView({
   appName = "VNTEZ Ecosystem",
   homeHref = "/",
-  docsHref = "/docs",
+  docsHref = "https://vntez-docs.vercel.app",
   consoleHref = "https://console.vntez.cloud",
   idHref = "https://vntez-iam.vercel.app",
 }: {

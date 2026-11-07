@@ -7,6 +7,9 @@ import {
   IconArrowUpRight,
 } from "@tabler/icons-react"
 
+const DOCS_URL =
+  process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"
+
 export function Footer() {
   return (
     <footer className="bg-slate-50/70 dark:bg-[#060a10] py-16 sm:py-20 text-slate-600 dark:text-slate-400 transition-colors duration-200 border-t border-black/[0.04] dark:border-white/[0.04]">
@@ -102,9 +105,9 @@ export function Footer() {
             </h4>
             <ul className="mt-4 space-y-3 text-sm">
               <li>
-                <Link href="/docs" className="hover:text-[#fb291a] transition-colors">
+                <a href={DOCS_URL} className="hover:text-[#fb291a] transition-colors">
                   Tài liệu kỹ thuật (Docs)
-                </Link>
+                </a>
               </li>
               <li>
                 <Link href="/blog" className="hover:text-[#fb291a] transition-colors">
@@ -112,9 +115,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/docs#quickstart" className="hover:text-[#fb291a] transition-colors">
+                <a href={`${DOCS_URL}/docs/workers-hub`} className="hover:text-[#fb291a] transition-colors">
                   Hướng dẫn cài đặt SDK
-                </Link>
+                </a>
               </li>
               <li>
                 <a

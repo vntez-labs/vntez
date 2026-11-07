@@ -8,7 +8,7 @@ export function UnderConstructionView({
   phase = "Beta Testing",
   progressPercent = 75,
   backHref = "/",
-  docsHref = "/docs",
+  docsHref = "https://vntez-docs.vercel.app",
 }: {
   featureName?: string;
   phase?: string;

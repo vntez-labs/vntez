@@ -61,7 +61,9 @@ export default async function ProductsPage() {
           {products.map((prod) => {
             const ThumbnailComponent = ART_MAP[prod.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
             const hasLink = Boolean(prod.ctaLink && prod.ctaLink.trim().length > 0);
-            const targetHref = hasLink ? prod.ctaLink.trim() : undefined;
+            const rawHref = hasLink ? prod.ctaLink.trim() : undefined;
+            const docsBaseUrl = process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app";
+            const targetHref = rawHref?.startsWith("/docs") ? `${docsBaseUrl}${rawHref}` : rawHref;
             const isExternal = Boolean(targetHref && targetHref.startsWith("http"));
 
             return (
@@ -192,8 +194,8 @@ export default async function ProductsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <Link
-            href="/docs"
+          <a
+            href={process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"}
             className={buttonVariants({
               variant: "outline",
               size: "sm",
@@ -201,7 +203,7 @@ export default async function ProductsPage() {
             })}
           >
             Tài liệu kỹ thuật
-          </Link>
+          </a>
           <Link
             href="https://vntez-console.vercel.app"
             className={buttonVariants({

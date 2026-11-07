@@ -13,7 +13,7 @@ export default function AuditLogsPage() {
           phase="Private Beta"
           progressPercent={85}
           backHref="/"
-          docsHref="https://vntez.cloud/docs"
+          docsHref="https://vntez-docs.vercel.app"
         />
       </ConsoleShell>
     </AuthGuard>

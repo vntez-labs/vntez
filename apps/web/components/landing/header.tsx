@@ -10,11 +10,14 @@ import { VntezLogo } from "./vntez-logo"
 import { ThemeToggle } from "./theme-toggle"
 import { HeaderUserMenu } from "./header-user-menu"
 
+const DOCS_URL =
+  process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"
+
 const NAV_LINKS = [
-  { label: "Sản phẩm", href: "/products" },
-  { label: "Tài liệu", href: "/docs" },
-  { label: "Kiến trúc", href: "/#architecture" },
-  { label: "Blog", href: "/blog" },
+  { label: "Sản phẩm", href: "/products", isExternal: false },
+  { label: "Tài liệu", href: `${DOCS_URL}/docs/workers-hub`, isExternal: true },
+  { label: "Kiến trúc", href: "/#architecture", isExternal: false },
+  { label: "Blog", href: "/blog", isExternal: false },
 ]
 
 export function Header() {
@@ -57,8 +60,21 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
           {NAV_LINKS.map((link) => {
             const isActive =
-              link.href === pathname ||
-              (link.href !== "/" && pathname.startsWith(link.href))
+              !link.isExternal &&
+              (link.href === pathname ||
+                (link.href !== "/" && pathname.startsWith(link.href)))
+
+            if (link.isExternal) {
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="relative py-1 transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                >
+                  {link.label}
+                </a>
+              )
+            }
 
             return (
               <Link
@@ -115,8 +131,21 @@ export function Header() {
           >
             {NAV_LINKS.map((link) => {
               const isActive =
-                link.href === pathname ||
-                (link.href !== "/" && pathname.startsWith(link.href))
+                !link.isExternal &&
+                (link.href === pathname ||
+                  (link.href !== "/" && pathname.startsWith(link.href)))
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="block py-2 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                  >
+                    {link.label}
+                  </a>
+                )
+              }
 
               return (
                 <Link

@@ -29,7 +29,7 @@ export function ErrorBoundaryView({
   reset,
   appName = "VNTEZ Console",
   homeHref = "/",
-  docsHref = "https://vntez.cloud/docs",
+  docsHref = "https://vntez-docs.vercel.app",
   consoleHref = "https://console.vntez.cloud",
 }: ErrorBoundaryViewProps) {
   const [showDetails, setShowDetails] = useState(false);
