@@ -1,11 +1,22 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Edit2, Trash2, ExternalLink, Globe, Layers } from "lucide-react";
+import {
+  IconEdit,
+  IconTrash,
+  IconExternalLink,
+  IconWorld,
+  IconApps,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import type { AppItem } from "@workspace/ui/lib/content-types";
+
+const WEB_PORTAL_URL =
+  process.env.NEXT_PUBLIC_WEB_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:3002"
+    : "https://vntez.net");
 
 interface AppCardProps {
   app: AppItem;
@@ -14,6 +25,12 @@ interface AppCardProps {
 }
 
 export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
+  const targetUrl = app.ctaLink
+    ? app.ctaLink.startsWith("http")
+      ? app.ctaLink
+      : `${WEB_PORTAL_URL}${app.ctaLink}`
+    : `${WEB_PORTAL_URL}/products#${app.id}`;
+
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-white dark:bg-card p-5 shadow-xs hover:shadow-sm transition-all duration-200">
       <div className="space-y-3.5">
@@ -32,7 +49,7 @@ export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
                 className="flex h-12 w-12 items-center justify-center rounded-xl text-white font-bold shrink-0 shadow-xs"
                 style={{ backgroundColor: app.color || "#fb291a" }}
               >
-                <Layers className="h-6 w-6" />
+                <IconApps className="h-6 w-6" />
               </div>
             )}
             <div className="min-w-0">
@@ -67,7 +84,7 @@ export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
               key={plat}
               className="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-300"
             >
-              <Globe className="h-2.5 w-2.5 opacity-60" />
+              <IconWorld className="h-2.5 w-2.5 opacity-60" />
               {plat}
             </span>
           ))}
@@ -81,34 +98,32 @@ export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
         </span>
 
         <div className="flex items-center gap-1">
-          {app.ctaLink && (
-            <a
-              href={app.ctaLink}
-              target="_blank"
-              rel="noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
-              title="Xem trang sản phẩm"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-          )}
+          <a
+            href={targetUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
+            title="Mở liên kết sản phẩm / tài liệu"
+          >
+            <IconExternalLink className="h-3.5 w-3.5" />
+          </a>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onEdit(app)}
-            className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground"
+            className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
             title="Sửa ứng dụng"
           >
-            <Edit2 className="h-3.5 w-3.5" />
+            <IconEdit className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onDelete(app.id)}
-            className="h-7 w-7 p-0 rounded-lg text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
+            className="h-7 w-7 p-0 rounded-lg text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 cursor-pointer"
             title="Xóa ứng dụng"
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <IconTrash className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>

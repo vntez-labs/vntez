@@ -60,14 +60,17 @@ export default async function ProductsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-20 lg:gap-y-24">
           {products.map((prod) => {
             const ThumbnailComponent = ART_MAP[prod.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
-            const docHref = prod.ctaLink && !prod.ctaLink.startsWith("/docs") ? prod.ctaLink : `/docs/${prod.id}`;
+            const targetHref = prod.ctaLink || `/docs/${prod.id}`;
+            const isExternal = targetHref.startsWith("http");
 
             return (
               <article key={prod.id} id={prod.id} className="scroll-mt-28 group flex flex-col justify-between">
                 <div>
                   {/* Thumbnail Frame */}
-                  <Link
-                    href={docHref}
+                  <a
+                    href={targetHref}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noreferrer" : undefined}
                     className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block"
                   >
                     {/* Category badge */}
@@ -91,14 +94,19 @@ export default async function ProductsPage() {
                         <ThumbnailComponent className="size-full object-contain" />
                       </div>
                     )}
-                  </Link>
+                  </a>
 
                   {/* Title & Interactive Arrow */}
                   <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
-                    <Link href={docHref} className="inline-flex items-center gap-1.5">
+                    <a
+                      href={targetHref}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noreferrer" : undefined}
+                      className="inline-flex items-center gap-1.5"
+                    >
                       <span>{prod.name}</span>
                       <IconArrowUpRight className="size-4 opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[#fb291a]" />
-                    </Link>
+                    </a>
                   </h2>
 
                   {/* Description */}
@@ -107,20 +115,40 @@ export default async function ProductsPage() {
                   </p>
                 </div>
 
-                {/* Platforms footer */}
-                {prod.platforms && prod.platforms.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-1.5 pt-2">
-                    {prod.platforms.map((plat) => (
-                      <span
-                        key={plat}
-                        className="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400"
-                      >
-                        <IconDeviceDesktop className="size-2.5 opacity-60" />
-                        {plat}
-                      </span>
-                    ))}
+                {/* Platforms & Product Action Links */}
+                <div className="space-y-3 pt-4">
+                  {prod.platforms && prod.platforms.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {prod.platforms.map((plat) => (
+                        <span
+                          key={plat}
+                          className="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400"
+                        >
+                          <IconDeviceDesktop className="size-2.5 opacity-60" />
+                          {plat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                    <a
+                      href={targetHref}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noreferrer" : undefined}
+                      className="inline-flex items-center gap-1 font-semibold text-[#fb291a] hover:text-[#d91f12] transition-colors"
+                    >
+                      <span>Khám phá sản phẩm</span>
+                      <IconArrowUpRight className="size-3.5" />
+                    </a>
+                    <Link
+                      href="/docs"
+                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors font-medium text-[11px]"
+                    >
+                      Tài liệu API &rarr;
+                    </Link>
                   </div>
-                )}
+                </div>
               </article>
             );
           })}

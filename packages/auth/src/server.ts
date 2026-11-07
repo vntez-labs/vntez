@@ -134,16 +134,25 @@ export async function handleOAuthCallback({
       name: fixVietnameseEncoding(rawUser.name),
     };
 
-    // Save access token cookie
+    // 1. Save access token cookie (lifespan at least 2 hours or tokenResponse.expires_in)
+    const accessCookieMaxAge = Math.max(tokenResponse.expires_in || 3600, 7200);
     cookieStore.set(COOKIE_NAMES.ACCESS_TOKEN, tokenResponse.access_token, {
       ...DEFAULT_COOKIE_OPTIONS,
-      maxAge: tokenResponse.expires_in || DEFAULT_SESSION_MAX_AGE,
+      maxAge: accessCookieMaxAge,
     });
 
-    // Save session payload cookie (URL encoded to prevent header ASCII encoding corruption)
+    // 2. Save refresh token if provided
+    if (tokenResponse.refresh_token) {
+      cookieStore.set(COOKIE_NAMES.REFRESH_TOKEN, tokenResponse.refresh_token, {
+        ...DEFAULT_COOKIE_OPTIONS,
+        maxAge: DEFAULT_SESSION_MAX_AGE,
+      });
+    }
+
+    // 3. Save User Session cookie with long persistent lifespan (30 days)
     cookieStore.set(COOKIE_NAMES.USER_SESSION, encodeURIComponent(JSON.stringify(user)), {
       ...DEFAULT_COOKIE_OPTIONS,
-      maxAge: tokenResponse.expires_in || DEFAULT_SESSION_MAX_AGE,
+      maxAge: DEFAULT_SESSION_MAX_AGE,
     });
 
     // Cleanup transient PKCE cookies
@@ -171,14 +180,16 @@ export async function handleOAuthCallback({
 export async function getServerSession(): Promise<{
   user: VntezUser | null;
   accessToken: string | null;
+  refreshToken: string | null;
 }> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value || null;
+    const refreshToken = cookieStore.get(COOKIE_NAMES.REFRESH_TOKEN)?.value || null;
     const sessionCookie = cookieStore.get(COOKIE_NAMES.USER_SESSION)?.value;
 
     if (!sessionCookie) {
-      return { user: null, accessToken: null };
+      return { user: null, accessToken: null, refreshToken: null };
     }
 
     let jsonStr = sessionCookie;
@@ -192,9 +203,32 @@ export async function getServerSession(): Promise<{
       name: fixVietnameseEncoding(parsed.name),
     };
 
-    return { user, accessToken: token };
+    return { user, accessToken: token, refreshToken };
   } catch {
-    return { user: null, accessToken: null };
+    return { user: null, accessToken: null, refreshToken: null };
+  }
+}
+
+/**
+ * Refresh (slide) the persistent user session cookie for another 30 days
+ */
+export async function refreshServerSessionCookie(user?: VntezUser): Promise<void> {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(COOKIE_NAMES.USER_SESSION)?.value;
+  if (!sessionCookie && !user) return;
+
+  let sessionData = user;
+  if (!sessionData && sessionCookie) {
+    try {
+      sessionData = JSON.parse(decodeURIComponent(sessionCookie));
+    } catch {}
+  }
+
+  if (sessionData) {
+    cookieStore.set(COOKIE_NAMES.USER_SESSION, encodeURIComponent(JSON.stringify(sessionData)), {
+      ...DEFAULT_COOKIE_OPTIONS,
+      maxAge: DEFAULT_SESSION_MAX_AGE,
+    });
   }
 }
 
@@ -215,6 +249,7 @@ export async function updateServerSessionUser(updatedUser: VntezUser): Promise<v
 export async function clearServerSession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAMES.ACCESS_TOKEN);
+  cookieStore.delete(COOKIE_NAMES.REFRESH_TOKEN);
   cookieStore.delete(COOKIE_NAMES.USER_SESSION);
   cookieStore.delete(COOKIE_NAMES.CODE_VERIFIER);
   cookieStore.delete(COOKIE_NAMES.STATE);

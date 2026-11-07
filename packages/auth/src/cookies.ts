@@ -6,6 +6,7 @@ export const COOKIE_NAMES = {
   CODE_VERIFIER: 'vntez_code_verifier',
   STATE: 'vntez_oauth_state',
   ACCESS_TOKEN: 'vntez_access_token',
+  REFRESH_TOKEN: 'vntez_refresh_token',
   USER_SESSION: 'vntez_user_session',
   REDIRECT_TARGET: 'vntez_auth_redirect',
 } as const;
@@ -24,6 +25,6 @@ export const DEFAULT_COOKIE_OPTIONS = {
 export const PKCE_COOKIE_MAX_AGE = 5 * 60; // 300 seconds
 
 /**
- * Default session lifespan (7 days) if token expires_in is not specified
+ * Default persistent session lifespan (30 days) for seamless long-lived logins
  */
-export const DEFAULT_SESSION_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
+export const DEFAULT_SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days (2,592,000s)

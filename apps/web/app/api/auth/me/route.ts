@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { getServerSession, refreshServerSessionCookie } from "@workspace/auth/server";
 
 export async function GET() {
   const { user, accessToken } = await getServerSession();
@@ -7,6 +7,9 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ authenticated: false, user: null }, { status: 401 });
   }
+
+  // Sliding session: extend persistent cookie lifespan for another 30 days
+  await refreshServerSessionCookie(user);
 
   return NextResponse.json({
     authenticated: true,

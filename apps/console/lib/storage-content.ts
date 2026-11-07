@@ -53,6 +53,7 @@ export async function getStoredApps(): Promise<AppItem[]> {
 }
 
 export async function saveStoredApps(apps: AppItem[]): Promise<boolean> {
+  let supabaseSuccess = false;
   // 1. Try syncing to Supabase Postgres
   try {
     const supabase = getSupabaseAdminClient();
@@ -71,10 +72,11 @@ export async function saveStoredApps(apps: AppItem[]): Promise<boolean> {
         status: a.status,
         updated_at: new Date().toISOString(),
       }));
-      await supabase.from("apps").upsert(records);
+      const { error } = await supabase.from("apps").upsert(records);
+      if (!error) supabaseSuccess = true;
     }
-  } catch {
-    // Non-fatal if table not created yet
+  } catch (err) {
+    console.warn("Could not sync to Supabase table:", err);
   }
 
   // 2. Persist to Cloudflare R2
@@ -91,8 +93,8 @@ export async function saveStoredApps(apps: AppItem[]): Promise<boolean> {
     );
     return true;
   } catch (err) {
-    console.error("Error saving stored apps to R2:", err);
-    return false;
+    console.warn("Error saving stored apps to R2:", err);
+    return supabaseSuccess;
   }
 }
 

@@ -26,9 +26,7 @@ export async function POST(req: Request) {
     const id = body.id || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const apps = await getStoredApps();
 
-    if (apps.some((a) => a.id === id)) {
-      return NextResponse.json({ error: `App ID [${id}] đã tồn tại` }, { status: 400 });
-    }
+    const existingIndex = apps.findIndex((a) => a.id === id);
 
     const newApp: AppItem = {
       id,
@@ -45,9 +43,13 @@ export async function POST(req: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    apps.unshift(newApp);
+    if (existingIndex >= 0) {
+      apps[existingIndex] = newApp;
+    } else {
+      apps.unshift(newApp);
+    }
     const saved = await saveStoredApps(apps);
-    if (!saved) throw new Error("Lưu thất bại");
+    if (!saved) throw new Error("Lưu vào cơ sở dữ liệu thất bại");
 
     return NextResponse.json({ success: true, app: newApp });
   } catch (err: any) {

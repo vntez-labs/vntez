@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { getServerSession, updateServerSessionUser } from "@workspace/auth/server";
+import {
+  getServerSession,
+  updateServerSessionUser,
+  refreshServerSessionCookie,
+} from "@workspace/auth/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import type { VntezUser } from "@workspace/auth/types";
 
@@ -12,6 +16,9 @@ export async function GET() {
       { status: 401 }
     );
   }
+
+  // Sliding session: extend persistent cookie lifespan for another 30 days
+  await refreshServerSessionCookie(user);
 
   return NextResponse.json({
     authenticated: true,

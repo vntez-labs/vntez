@@ -158,3 +158,56 @@ export async function fetchUserInfo(
 
   return user;
 }
+
+export interface RefreshTokenParams {
+  baseUrl?: string;
+  clientId: string;
+  clientSecret?: string;
+  refreshToken: string;
+}
+
+/**
+ * Exchanges a valid refresh_token for a fresh access_token
+ * Endpoint: POST /oauth/token (grant_type: 'refresh_token')
+ */
+export async function refreshAccessToken({
+  baseUrl = VNTEZ_DEFAULT_BASE_URL,
+  clientId,
+  clientSecret,
+  refreshToken,
+}: RefreshTokenParams): Promise<VntezTokenResponse> {
+  const tokenUrl = new URL('/oauth/token', baseUrl).toString();
+
+  const payload: Record<string, string> = {
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    client_id: clientId,
+  };
+
+  if (clientSecret) {
+    payload.client_secret = clientSecret;
+  }
+
+  const response = await fetch(tokenUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    let errorDetail = '';
+    try {
+      const errJson = await response.json();
+      errorDetail = errJson.error_description || errJson.error || JSON.stringify(errJson);
+    } catch {
+      errorDetail = await response.text();
+    }
+    throw new Error(`VNTEZ Token Refresh failed (${response.status}): ${errorDetail}`);
+  }
+
+  return (await response.json()) as VntezTokenResponse;
+}
