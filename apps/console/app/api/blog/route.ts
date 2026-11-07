@@ -25,8 +25,27 @@ export async function POST(req: Request) {
     const slug = body.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const posts = await getStoredBlogPosts();
 
-    if (posts.some((p) => p.slug === slug)) {
-      return NextResponse.json({ error: `Slug [${slug}] đã tồn tại` }, { status: 400 });
+    const existingIndex = posts.findIndex((p) => p.slug === slug);
+    if (existingIndex !== -1) {
+      posts[existingIndex] = {
+        ...posts[existingIndex],
+        ...body,
+        slug,
+        title: title.trim(),
+        excerpt: excerpt?.trim() || title.trim(),
+        content: content.trim(),
+        category: category?.trim() || "Kỹ thuật & Kiến trúc",
+        color: color || "#fb291a",
+        author: author?.trim() || (user.name || "Engineering Team"),
+        readTime: readTime || `${Math.max(2, Math.round(content.split(/\s+/).length / 200))} phút đọc`,
+        illustrationKey: illustrationKey || "ecosystem",
+        thumbnailUrl: thumbnailUrl || null,
+        status: status === "draft" ? "draft" : "published",
+        updatedAt: new Date().toISOString(),
+      };
+      const saved = await saveStoredBlogPosts(posts);
+      if (!saved) throw new Error("Lưu bài viết thất bại");
+      return NextResponse.json({ success: true, post: posts[existingIndex] });
     }
 
     const newPost: BlogPostItem = {
@@ -67,22 +86,30 @@ export async function PUT(req: Request) {
 
   try {
     const body = await req.json();
-    const { slug } = body;
-    if (!slug) {
+    const { slug, originalSlug } = body;
+    const targetSlug = originalSlug || slug;
+    if (!targetSlug && !slug) {
       return NextResponse.json({ error: "Thiếu slug bài viết" }, { status: 400 });
     }
 
     const posts = await getStoredBlogPosts();
-    const index = posts.findIndex((p) => p.slug === slug);
+    let index = posts.findIndex((p) => p.slug === targetSlug || p.slug === slug);
     if (index === -1) {
-      return NextResponse.json({ error: "Không tìm thấy bài viết" }, { status: 404 });
+      const newPost: BlogPostItem = {
+        ...body,
+        slug: slug || targetSlug,
+        updatedAt: new Date().toISOString(),
+      };
+      posts.unshift(newPost);
+      index = 0;
+    } else {
+      posts[index] = {
+        ...posts[index],
+        ...body,
+        slug: slug || targetSlug,
+        updatedAt: new Date().toISOString(),
+      };
     }
-
-    posts[index] = {
-      ...posts[index],
-      ...body,
-      updatedAt: new Date().toISOString(),
-    };
 
     const saved = await saveStoredBlogPosts(posts);
     if (!saved) throw new Error("Lưu bài viết thất bại");

@@ -153,6 +153,7 @@ export async function getStoredBlogPosts(): Promise<BlogPostItem[]> {
 }
 
 export async function saveStoredBlogPosts(posts: BlogPostItem[]): Promise<boolean> {
+  let supabaseSuccess = false;
   // 1. Try syncing to Supabase Postgres
   try {
     const supabase = getSupabaseAdminClient();
@@ -176,10 +177,12 @@ export async function saveStoredBlogPosts(posts: BlogPostItem[]): Promise<boolea
         comments: p.comments || [],
         updated_at: new Date().toISOString(),
       }));
-      await supabase.from("blog_posts").upsert(records);
+      const { error } = await supabase.from("blog_posts").upsert(records);
+      if (!error) supabaseSuccess = true;
+      else console.error("Supabase blog_posts upsert error:", error);
     }
-  } catch {
-    // Non-fatal if table not created yet
+  } catch (err) {
+    console.warn("Could not sync blog to Supabase table:", err);
   }
 
   // 2. Persist to Cloudflare R2
@@ -196,8 +199,8 @@ export async function saveStoredBlogPosts(posts: BlogPostItem[]): Promise<boolea
     );
     return true;
   } catch (err) {
-    console.error("Error saving stored blog posts to R2:", err);
-    return false;
+    console.warn("Error saving stored blog posts to R2:", err);
+    return supabaseSuccess;
   }
 }
 

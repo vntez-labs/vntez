@@ -164,7 +164,10 @@ function BlogEditorContent() {
       const res = await fetch("/api/blog", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          originalSlug: editSlug || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Lưu bài viết thất bại");
