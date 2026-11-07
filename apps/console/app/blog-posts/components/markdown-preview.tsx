@@ -141,7 +141,31 @@ function RenderMarkdownBody({ content }: { content: string }) {
     }
 
     if (inCode) {
-      codeLines.push(line);
+      if (line.trim().endsWith("```") && line.trim().length > 3) {
+        codeLines.push(line.replace(/```$/, ""));
+        elements.push(
+          <div key={`code-${idx}`} className="my-4 rounded-xl bg-zinc-900 text-zinc-100 p-4 font-mono text-xs overflow-x-auto shadow-inner border border-zinc-800">
+            {codeLang && <div className="text-[10px] text-zinc-400 uppercase pb-1 mb-2 border-b border-zinc-800 font-bold">{codeLang}</div>}
+            <pre className="m-0 p-0 leading-relaxed font-mono"><code>{codeLines.join("\n")}</code></pre>
+          </div>
+        );
+        codeLines = [];
+        inCode = false;
+        codeLang = "";
+      } else {
+        codeLines.push(line);
+      }
+      return;
+    }
+
+    // Math / Formula block
+    if (line.trim().startsWith("$$") && line.trim().endsWith("$$")) {
+      const formula = line.trim().slice(2, -2).trim().replace(/\\text\{([^}]+)\}/g, "$1");
+      elements.push(
+        <div key={idx} className="my-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-center font-mono text-xs sm:text-sm text-foreground overflow-x-auto">
+          {formula}
+        </div>
+      );
       return;
     }
 

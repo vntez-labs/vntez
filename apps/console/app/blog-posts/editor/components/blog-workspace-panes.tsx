@@ -62,6 +62,11 @@ export function BlogWorkspacePanes({
               value={content}
               onChange={(e) => onChangeContent(e.target.value)}
               placeholder="# Bắt đầu soạn thảo bài viết bằng Markdown...&#10;&#10;## 1. Giới thiệu&#10;&#10;```ts&#10;const fast = true;&#10;```"
+              spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="off"
+              data-gramm="false"
+              data-enable-grammarly="false"
               className="flex-1 w-full resize-none font-mono text-sm leading-relaxed bg-transparent border-0 outline-none text-foreground placeholder:text-zinc-400 dark:placeholder:text-zinc-600 overflow-y-auto focus:ring-0 p-1"
             />
           </div>

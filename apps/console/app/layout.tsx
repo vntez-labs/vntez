@@ -113,7 +113,10 @@ export default async function RootLayout({
         "font-sans antialiased"
       )}
     >
-      <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary">
+      <body
+        spellCheck={false}
+        className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary"
+      >
         <ThemeProvider>
           <TopProgressBar />
           <AuthProvider initialUser={user} initialToken={accessToken}>

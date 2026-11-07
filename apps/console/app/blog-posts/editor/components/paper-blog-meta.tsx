@@ -79,6 +79,9 @@ export function PaperBlogMeta({
           type="text"
           placeholder="Nhập tiêu đề bài viết phân tích hoặc kỹ thuật..."
           value={title}
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
           onChange={(e) => {
             setTitle(e.target.value);
             if (!isEdit) {
@@ -107,6 +110,9 @@ export function PaperBlogMeta({
             placeholder="duong-dan-bai-viet"
             value={slug}
             disabled={isEdit}
+            spellCheck={false}
+            autoCorrect="off"
+            autoCapitalize="off"
             onChange={(e) => setSlug(e.target.value)}
             className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs font-mono text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors disabled:opacity-60"
           />
@@ -120,6 +126,9 @@ export function PaperBlogMeta({
             type="text"
             placeholder="Kiến trúc hệ thống, Bảo mật..."
             value={category}
+            spellCheck={false}
+            autoCorrect="off"
+            autoCapitalize="off"
             onChange={(e) => setCategory(e.target.value)}
             className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
           />
@@ -190,6 +199,9 @@ export function PaperBlogMeta({
                 type="text"
                 placeholder="Hoặc dán URL ảnh bìa trực tiếp..."
                 value={thumbnailUrl}
+                spellCheck={false}
+                autoCorrect="off"
+                autoCapitalize="off"
                 onChange={(e) => setThumbnailUrl(e.target.value)}
                 className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
               />

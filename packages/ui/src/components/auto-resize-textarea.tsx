@@ -57,6 +57,8 @@ export const AutoResizeTextarea = forwardRef<
       rows={minRows}
       value={value}
       onChange={handleChange}
+      spellCheck={props.spellCheck ?? false}
+      autoCorrect="off"
       className={`w-full resize-none overflow-hidden bg-transparent border-0 outline-none transition-[height] duration-75 text-foreground placeholder:text-muted-foreground/50 focus:ring-0 ${className}`}
       {...props}
     />

@@ -195,7 +195,10 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased font-sans transition-colors duration-200">
+      <body
+        spellCheck={false}
+        className="min-h-screen bg-background text-foreground antialiased font-sans transition-colors duration-200"
+      >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AuthProvider initialUser={user} initialToken={accessToken}>
             <TopProgressBar />

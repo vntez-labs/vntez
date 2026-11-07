@@ -9,36 +9,123 @@ interface BlogMarkdownReaderProps {
 export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
   const lines = content.split("\n");
   const elements: React.ReactNode[] = [];
-  let inCodeBlock = false;
+  let inCode = false;
   let codeBuffer: string[] = [];
   let codeLang = "";
+  let tableBuffer: string[] = [];
+
+  const flushTable = (key: string) => {
+    if (tableBuffer.length === 0) return;
+    const rows = tableBuffer
+      .map((r) => r.trim())
+      .filter((r) => r.startsWith("|") && r.endsWith("|"))
+      .map((r) =>
+        r
+          .slice(1, -1)
+          .split("|")
+          .map((c) => c.trim())
+      );
+    tableBuffer = [];
+    if (rows.length === 0) return;
+
+    // Filter out separator row e.g. | :--- | :--- |
+    const validRows = rows.filter((r) => !r.every((c) => /^:?-+:?$/.test(c)));
+    if (validRows.length === 0) return;
+
+    const [header, ...bodyRows] = validRows;
+    elements.push(
+      <div key={key} className="my-6 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-2xs">
+        <table className="w-full text-left text-xs sm:text-sm font-sans">
+          {header && (
+            <thead className="bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                {header.map((col, ci) => (
+                  <th key={ci} className="px-4 py-3">{renderInlineText(col)}</th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-[#070b14]">
+            {bodyRows.map((row, ri) => (
+              <tr key={ri} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                {row.map((col, ci) => (
+                  <td key={ci} className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                    {renderInlineText(col)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const flushCode = (key: string) => {
+    if (!inCode && codeBuffer.length === 0) return;
+    elements.push(
+      <div key={key} className="my-5 rounded-2xl bg-slate-900 dark:bg-black/90 text-slate-100 p-4 sm:p-5 font-mono text-xs overflow-x-auto shadow-md border border-slate-800">
+        {codeLang && (
+          <div className="text-[10px] text-slate-400 uppercase tracking-wider pb-2 mb-3 border-b border-slate-800 flex items-center justify-between font-semibold">
+            <span>{codeLang}</span>
+          </div>
+        )}
+        <pre className="leading-relaxed"><code>{codeBuffer.join("\n")}</code></pre>
+      </div>
+    );
+    codeBuffer = [];
+    inCode = false;
+    codeLang = "";
+  };
 
   lines.forEach((line, idx) => {
-    // Code block toggle
-    if (line.trim().startsWith("```")) {
-      if (inCodeBlock) {
-        elements.push(
-          <div key={`code-${idx}`} className="my-5 rounded-2xl bg-slate-900 dark:bg-black/80 text-slate-100 p-4 sm:p-5 font-mono text-xs overflow-x-auto shadow-md border border-slate-800">
-            {codeLang && (
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider pb-2 mb-3 border-b border-slate-800 flex items-center justify-between">
-                <span>{codeLang}</span>
-              </div>
-            )}
-            <pre className="leading-relaxed"><code>{codeBuffer.join("\n")}</code></pre>
-          </div>
-        );
-        codeBuffer = [];
-        inCodeBlock = false;
-        codeLang = "";
+    const trimmed = line.trim();
+
+    // Check code blocks
+    if (trimmed.startsWith("```")) {
+      flushTable(`table-${idx}`);
+      if (inCode) {
+        flushCode(`code-${idx}`);
       } else {
-        inCodeBlock = true;
-        codeLang = line.trim().slice(3).trim();
+        inCode = true;
+        codeLang = trimmed.slice(3).trim();
       }
       return;
     }
 
-    if (inCodeBlock) {
-      codeBuffer.push(line);
+    if (inCode) {
+      // Check if line ends with ``` closing backticks
+      if (trimmed.endsWith("```") && trimmed.length > 3) {
+        codeBuffer.push(line.replace(/```$/, ""));
+        flushCode(`code-${idx}`);
+      } else {
+        codeBuffer.push(line);
+      }
+      return;
+    }
+
+    // Check tables
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      tableBuffer.push(trimmed);
+      return;
+    } else {
+      flushTable(`table-${idx}`);
+    }
+
+    // Dividers
+    if (trimmed === "---" || trimmed === "***" || trimmed === "___") {
+      elements.push(<hr key={idx} className="my-8 border-slate-200 dark:border-white/[0.08]" />);
+      return;
+    }
+
+    // Math / Formula block
+    if (trimmed.startsWith("$$") && trimmed.endsWith("$$")) {
+      const formula = trimmed.slice(2, -2).trim().replace(/\\text\{([^}]+)\}/g, "$1");
+      elements.push(
+        <div key={idx} className="my-6 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#0c121e] border border-slate-200 dark:border-white/[0.08] text-center font-mono text-sm sm:text-base text-slate-800 dark:text-slate-200 shadow-2xs overflow-x-auto">
+          {formula}
+        </div>
+      );
       return;
     }
 
@@ -53,7 +140,7 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
     }
     if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={idx} className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-7 mb-3 tracking-tight">
+        <h2 key={idx} className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">
           {renderInlineText(line.slice(3))}
         </h2>
       );
@@ -61,7 +148,7 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
     }
     if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={idx} className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-5 mb-2">
+        <h3 key={idx} className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-6 mb-2">
           {renderInlineText(line.slice(4))}
         </h3>
       );
@@ -79,17 +166,17 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
     }
 
     // Unordered List
-    if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
       elements.push(
         <li key={idx} className="ml-5 list-disc text-sm text-slate-700 dark:text-slate-300 my-1 leading-relaxed">
-          {renderInlineText(line.trim().slice(2))}
+          {renderInlineText(trimmed.slice(2))}
         </li>
       );
       return;
     }
 
     // Ordered List
-    const numMatch = line.trim().match(/^(\d+)\.\s+(.*)/);
+    const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
     if (numMatch) {
       elements.push(
         <li key={idx} className="ml-5 list-decimal text-sm text-slate-700 dark:text-slate-300 my-1 leading-relaxed">
@@ -100,7 +187,7 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
     }
 
     // Empty line spacer
-    if (!line.trim()) {
+    if (!trimmed) {
       elements.push(<div key={idx} className="h-3" />);
       return;
     }
@@ -112,6 +199,9 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
       </p>
     );
   });
+
+  flushTable("table-end");
+  flushCode("code-end");
 
   return <div className="space-y-1">{elements}</div>;
 }
