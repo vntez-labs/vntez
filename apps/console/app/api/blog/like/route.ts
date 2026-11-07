@@ -3,7 +3,7 @@ import { getStoredBlogPosts, saveStoredBlogPosts } from "@/lib/storage-content";
 
 export async function POST(req: Request) {
   try {
-    const { slug } = await req.json();
+    const { slug, action } = await req.json();
     if (!slug) {
       return NextResponse.json({ error: "Thiếu slug bài viết" }, { status: 400 });
     }
@@ -14,14 +14,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Không tìm thấy bài viết" }, { status: 404 });
     }
 
-    target.likesCount = (target.likesCount || 0) + 1;
+    if (action === "unlike") {
+      target.likesCount = Math.max(0, (target.likesCount || 0) - 1);
+    } else {
+      target.likesCount = (target.likesCount || 0) + 1;
+    }
+
     await saveStoredBlogPosts(posts);
 
     return NextResponse.json({
       success: true,
       likesCount: target.likesCount,
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Lỗi xử lý like" }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Lỗi xử lý like";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

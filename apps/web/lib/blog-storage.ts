@@ -78,20 +78,35 @@ export async function incrementView(slug: string): Promise<number> {
   return target.viewsCount;
 }
 
-export async function incrementLike(slug: string): Promise<number> {
+export async function toggleLike(
+  slug: string,
+  action: "like" | "unlike" = "like"
+): Promise<number> {
   const posts = await getLiveBlogPosts();
   const target = posts.find((p) => p.slug === slug);
   if (!target) return 0;
 
-  target.likesCount = (target.likesCount || 0) + 1;
+  if (action === "unlike") {
+    target.likesCount = Math.max(0, (target.likesCount || 0) - 1);
+  } else {
+    target.likesCount = (target.likesCount || 0) + 1;
+  }
+
   await saveLiveBlogPosts(posts);
   return target.likesCount;
+}
+
+export async function incrementLike(slug: string): Promise<number> {
+  return toggleLike(slug, "like");
 }
 
 export async function addComment(
   slug: string,
   author: string,
-  content: string
+  content: string,
+  parentId?: string | null,
+  replyToAuthor?: string,
+  avatar?: string
 ): Promise<{ comment: BlogComment; count: number } | null> {
   const posts = await getLiveBlogPosts();
   const target = posts.find((p) => p.slug === slug);
@@ -99,9 +114,13 @@ export async function addComment(
 
   const newComment: BlogComment = {
     id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    parentId: parentId || null,
+    replyToAuthor: replyToAuthor?.trim() || undefined,
     author: author.trim(),
+    avatar: avatar?.trim() || undefined,
     content: content.trim(),
     createdAt: new Date().toISOString(),
+    likesCount: 0,
   };
 
   if (!Array.isArray(target.comments)) {
@@ -112,4 +131,26 @@ export async function addComment(
 
   await saveLiveBlogPosts(posts);
   return { comment: newComment, count: target.commentsCount };
+}
+
+export async function deleteComment(
+  slug: string,
+  commentId: string
+): Promise<{ success: boolean; count: number }> {
+  const posts = await getLiveBlogPosts();
+  const target = posts.find((p) => p.slug === slug);
+  if (!target) return { success: false, count: 0 };
+
+  const idsToDelete = new Set<string>([commentId]);
+  (target.comments || []).forEach((c) => {
+    if (c.parentId && idsToDelete.has(c.parentId)) {
+      idsToDelete.add(c.id);
+    }
+  });
+
+  target.comments = (target.comments || []).filter((c) => !idsToDelete.has(c.id));
+  target.commentsCount = target.comments.length;
+
+  await saveLiveBlogPosts(posts);
+  return { success: true, count: target.commentsCount };
 }

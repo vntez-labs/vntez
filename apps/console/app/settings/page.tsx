@@ -6,6 +6,7 @@ import { useAuthStore } from "@workspace/auth/store";
 import { ConsoleShell } from "@/components/console-shell";
 import { Button } from "@workspace/ui/components/button";
 import { Settings, LogOut, ShieldAlert, Database, RefreshCw } from "lucide-react";
+import { ProfileEditCard } from "./components/profile-edit-card";
 
 export default function SettingsPage() {
   return (
@@ -21,16 +22,19 @@ function SettingsContent() {
   const { logout, user } = useAuthStore();
 
   return (
-    <div className="space-y-6 max-w-4xl min-w-0 w-full">
+    <div className="space-y-8 max-w-4xl min-w-0 w-full">
       <div>
         <h1 className="text-xl font-bold font-display text-foreground flex items-center gap-2">
           <Settings className="h-5 w-5 text-primary" />
           Thiết lập Hệ thống Console
         </h1>
         <p className="text-xs text-muted-foreground mt-1">
-          Quản lý cấu hình phiên làm việc và bảo mật tài khoản
+          Quản lý cấu hình hồ sơ cá nhân, phiên làm việc và bảo mật tài khoản
         </p>
       </div>
+
+      {/* Profile Update Card */}
+      <ProfileEditCard />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Session Card - Borderless */}

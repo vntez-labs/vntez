@@ -26,23 +26,32 @@ export function BlogCommentsManager({ comments, onDeleteComment }: BlogCommentsM
           {comments.map((c) => (
             <div
               key={c.id}
-              className="flex items-start justify-between gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/40"
+              className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 ${
+                c.parentId
+                  ? "bg-zinc-100/50 dark:bg-zinc-900/60 ml-4 sm:ml-6"
+                  : "bg-zinc-50 dark:bg-zinc-900/30"
+              }`}
             >
-              <div>
-                <div className="flex items-center gap-2">
-                  <strong className="text-foreground">{c.author}</strong>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong className="text-foreground text-xs">{c.author}</strong>
+                  {c.replyToAuthor && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-primary/10 text-primary font-medium">
+                      ↳ Phản hồi @{c.replyToAuthor}
+                    </span>
+                  )}
                   <span className="text-[10px] text-muted-foreground font-mono">
                     {new Date(c.createdAt).toLocaleString("vi-VN")}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-foreground/90">{c.content}</p>
+                <p className="text-xs text-foreground/90 leading-relaxed">{c.content}</p>
               </div>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => onDeleteComment(c.id)}
-                className="h-7 w-7 p-0 text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                className="h-7 w-7 p-0 text-rose-500 hover:bg-rose-500/10 cursor-pointer shrink-0"
                 title="Xóa bình luận"
               >
                 <Trash2 className="h-3.5 w-3.5" />

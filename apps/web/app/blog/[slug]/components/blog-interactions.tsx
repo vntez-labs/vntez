@@ -17,8 +17,13 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
   const [copied, setCopied] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
-  // Auto record view on mount
+  // Restore liked state from localStorage & record live view
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(`vntez_liked_${slug}`);
+      if (stored) setHasLiked(true);
+    }
+
     fetch("/api/blog/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,31 +31,44 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.viewsCount) {
+        if (data.success && typeof data.viewsCount === "number") {
           setViews(data.viewsCount);
         }
       })
       .catch(() => {});
   }, [slug]);
 
-  const handleLike = async () => {
+  const handleToggleLike = async () => {
     if (isLiking) return;
     setIsLiking(true);
-    setHasLiked(true);
-    setLikes((prev) => prev + 1);
+
+    const nextLiked = !hasLiked;
+    const action = nextLiked ? "like" : "unlike";
+
+    // Optimistic UI update
+    setHasLiked(nextLiked);
+    setLikes((prev) => (nextLiked ? prev + 1 : Math.max(0, prev - 1)));
+
+    if (typeof window !== "undefined") {
+      if (nextLiked) {
+        localStorage.setItem(`vntez_liked_${slug}`, "1");
+      } else {
+        localStorage.removeItem(`vntez_liked_${slug}`);
+      }
+    }
 
     try {
       const res = await fetch("/api/blog/like", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug }),
+        body: JSON.stringify({ slug, action }),
       });
       const data = await res.json();
-      if (data.success && data.likesCount) {
+      if (data.success && typeof data.likesCount === "number") {
         setLikes(data.likesCount);
       }
     } catch {
-      // Keep optimistic update
+      // Retain optimistic state on network failure
     } finally {
       setIsLiking(false);
     }
@@ -71,13 +89,14 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
         <Button
           variant="outline"
           size="sm"
-          onClick={handleLike}
-          disabled={hasLiked}
+          onClick={handleToggleLike}
+          disabled={isLiking}
           className={`h-9 gap-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
             hasLiked
               ? "bg-rose-50 border-rose-200 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/40 dark:text-rose-400"
               : "hover:text-rose-600"
           }`}
+          title={hasLiked ? "Nhấn để bỏ thích bài viết" : "Nhấn để thả tim bài viết"}
         >
           <IconHeart className={`size-4 ${hasLiked ? "fill-rose-500 text-rose-500 scale-110" : ""}`} />
           <span>{likes} Thả tim</span>

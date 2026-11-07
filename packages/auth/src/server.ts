@@ -199,6 +199,17 @@ export async function getServerSession(): Promise<{
 }
 
 /**
+ * Update current user session cookie
+ */
+export async function updateServerSessionUser(updatedUser: VntezUser): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAMES.USER_SESSION, encodeURIComponent(JSON.stringify(updatedUser)), {
+    ...DEFAULT_COOKIE_OPTIONS,
+    maxAge: DEFAULT_SESSION_MAX_AGE,
+  });
+}
+
+/**
  * Clear user session cookies (Logout)
  */
 export async function clearServerSession(): Promise<void> {

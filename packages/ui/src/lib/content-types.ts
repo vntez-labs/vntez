@@ -15,10 +15,38 @@ export interface AppItem {
 
 export interface BlogComment {
   id: string;
+  parentId?: string | null;
+  replyToAuthor?: string;
   author: string;
   avatar?: string;
   content: string;
   createdAt: string;
+  likesCount?: number;
+  replies?: BlogComment[];
+}
+
+export function buildCommentTree(comments?: BlogComment[]): BlogComment[] {
+  if (!comments || !Array.isArray(comments)) return [];
+
+  const map = new Map<string, BlogComment>();
+  const roots: BlogComment[] = [];
+
+  for (const c of comments) {
+    map.set(c.id, { ...c, replies: [] });
+  }
+
+  for (const c of comments) {
+    const node = map.get(c.id);
+    if (!node) continue;
+
+    if (c.parentId && map.has(c.parentId)) {
+      map.get(c.parentId)!.replies!.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
 }
 
 export interface BlogPostItem {
