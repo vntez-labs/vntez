@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { BlogCodeBlock } from "./blog-code-block";
 
 interface BlogMarkdownReaderProps {
   content: string;
@@ -64,14 +65,11 @@ export function BlogMarkdownReader({ content }: BlogMarkdownReaderProps) {
   const flushCode = (key: string) => {
     if (!inCode && codeBuffer.length === 0) return;
     elements.push(
-      <div key={key} className="my-5 rounded-2xl bg-slate-900 dark:bg-black/90 text-slate-100 p-4 sm:p-5 font-mono text-xs overflow-x-auto shadow-md border border-slate-800">
-        {codeLang && (
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider pb-2 mb-3 border-b border-slate-800 flex items-center justify-between font-semibold">
-            <span>{codeLang}</span>
-          </div>
-        )}
-        <pre className="leading-relaxed"><code>{codeBuffer.join("\n")}</code></pre>
-      </div>
+      <BlogCodeBlock
+        key={key}
+        code={codeBuffer.join("\n")}
+        language={codeLang}
+      />
     );
     codeBuffer = [];
     inCode = false;
