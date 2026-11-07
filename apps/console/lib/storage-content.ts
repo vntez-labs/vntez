@@ -82,14 +82,17 @@ export async function saveStoredBlogPosts(posts: BlogPostItem[]): Promise<boolea
 
 export async function uploadAssetFile(
   folder: "avatars" | "thumbnails",
-  file: File
+  file: File,
+  entityId?: string | null
 ): Promise<string | null> {
   try {
     const s3 = getR2Client();
     const bucket = getR2BucketName();
     const ext = file.name.split(".").pop() || "png";
     const cleanName = file.name.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 20);
-    const key = `${folder}/${Date.now()}_${cleanName}.${ext}`;
+    const key = entityId
+      ? `${folder}/apps/${entityId}/${Date.now()}_${cleanName}.${ext}`
+      : `${folder}/${Date.now()}_${cleanName}.${ext}`;
     const arrayBuffer = await file.arrayBuffer();
 
     await s3.send(
@@ -98,6 +101,11 @@ export async function uploadAssetFile(
         Key: key,
         Body: Buffer.from(arrayBuffer),
         ContentType: file.type || "image/png",
+        Metadata: {
+          "entity-id": entityId || "common",
+          "uploaded-at": new Date().toISOString(),
+          "original-name": encodeURIComponent(file.name.slice(0, 50)),
+        },
       })
     );
 

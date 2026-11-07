@@ -16,6 +16,7 @@ export interface CustomSelectProps {
   options: CustomSelectOption[];
   placeholder?: string;
   className?: string;
+  variant?: "underline" | "outline";
   searchable?: boolean;
   searchPlaceholder?: string;
   disabled?: boolean;
@@ -27,6 +28,7 @@ export function CustomSelect({
   options,
   placeholder = "Chọn một tùy chọn...",
   className = "",
+  variant = "underline",
   searchable = false,
   searchPlaceholder = "Tìm kiếm...",
   disabled = false,
@@ -77,7 +79,7 @@ export function CustomSelect({
 
   return (
     <div className={`relative w-full ${className}`} ref={containerRef}>
-      {/* Trigger Button - Clean Paper Bottom-Border or Subtle Trigger */}
+      {/* Trigger Button */}
       <button
         type="button"
         disabled={disabled}
@@ -87,9 +89,19 @@ export function CustomSelect({
             setQuery("");
           }
         }}
-        className={`w-full flex items-center justify-between gap-2 bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary py-2 text-xs text-foreground outline-none transition-colors cursor-pointer text-left ${
-          disabled ? "opacity-50 cursor-not-allowed" : "hover:border-zinc-400 dark:hover:border-zinc-600"
-        }`}
+        className={
+          variant === "outline"
+            ? `w-full h-11 px-4 bg-secondary/30 dark:bg-zinc-900/60 border border-border rounded-xl focus:border-primary text-xs font-medium text-foreground flex items-center justify-between gap-2 transition-all cursor-pointer text-left ${
+                disabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:border-border/80 focus:ring-2 focus:ring-primary/20"
+              }`
+            : `w-full flex items-center justify-between gap-2 bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary py-2 text-xs text-foreground outline-none transition-colors cursor-pointer text-left ${
+                disabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:border-zinc-400 dark:hover:border-zinc-600"
+              }`
+        }
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >

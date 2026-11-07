@@ -1,17 +1,39 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { DOC_SECTIONS, APP_FILTERS } from "./docs-data"
 import type { DocSection, AppFilter } from "./types"
 import { generateOpenApiSpec } from "./openapi-generator"
 
 const defaultApp = APP_FILTERS[0]!
 
-export function useDocsHub() {
-  const [activeFilter, setActiveFilter] = useState<string>(defaultApp.id)
+export function useDocsHub(initialAppId?: string) {
+  const resolvedInitialApp = useMemo(() => {
+    if (initialAppId && APP_FILTERS.some((f) => f.id === initialAppId)) {
+      return initialAppId
+    }
+    return defaultApp.id
+  }, [initialAppId])
+
+  const initialSection = useMemo(() => {
+    const first = DOC_SECTIONS.find((s) => s.appId === resolvedInitialApp)
+    return first?.id || DOC_SECTIONS[0]!.id
+  }, [resolvedInitialApp])
+
+  const [activeFilter, setActiveFilter] = useState<string>(resolvedInitialApp)
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const [activeSectionId, setActiveSectionId] = useState<string>(DOC_SECTIONS[0]!.id)
+  const [activeSectionId, setActiveSectionId] = useState<string>(initialSection)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (initialAppId && APP_FILTERS.some((f) => f.id === initialAppId)) {
+      setActiveFilter(initialAppId)
+      const first = DOC_SECTIONS.find((s) => s.appId === initialAppId)
+      if (first) {
+        setActiveSectionId(first.id)
+      }
+    }
+  }, [initialAppId])
 
   const currentApp: AppFilter = useMemo(() => {
     return APP_FILTERS.find((f) => f.id === activeFilter) || defaultApp
@@ -56,6 +78,9 @@ export function useDocsHub() {
     const firstOfApp = DOC_SECTIONS.find((s) => s.appId === appId)
     if (firstOfApp) {
       setActiveSectionId(firstOfApp.id)
+    }
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/docs/${appId}`)
     }
   }
 

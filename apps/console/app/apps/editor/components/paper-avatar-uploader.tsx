@@ -9,6 +9,7 @@ interface PaperAvatarUploaderProps {
   color: string;
   isUploading: boolean;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemove?: () => void;
 }
 
 export function PaperAvatarUploader({
@@ -17,6 +18,7 @@ export function PaperAvatarUploader({
   color,
   isUploading,
   onFileUpload,
+  onRemove,
 }: PaperAvatarUploaderProps) {
   return (
     <div className="space-y-3">
@@ -46,8 +48,14 @@ export function PaperAvatarUploader({
           {avatarUrl && (
             <button
               type="button"
-              onClick={() => setAvatarUrl("")}
-              title="Xóa ảnh"
+              onClick={() => {
+                if (onRemove) {
+                  onRemove();
+                } else {
+                  setAvatarUrl("");
+                }
+              }}
+              title="Xóa ảnh và dọn dẹp bộ nhớ"
               className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-rose-500 text-white shadow-xs hover:bg-rose-600 cursor-pointer transition-colors"
             >
               <X className="h-3 w-3" />

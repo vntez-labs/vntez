@@ -6,7 +6,11 @@ import { DocsSidebar } from "./components/docs-sidebar"
 import { DocsContentColumn } from "./components/docs-content-column"
 import { DocsCodeConsole } from "./components/docs-code-console"
 
-export function DocsHubClient() {
+interface DocsHubClientProps {
+  initialAppId?: string
+}
+
+export function DocsHubClient({ initialAppId }: DocsHubClientProps = {}) {
   const {
     activeFilter,
     setActiveFilter,
@@ -19,7 +23,7 @@ export function DocsHubClient() {
     filteredSections,
     copiedId,
     handleCopy,
-  } = useDocsHub()
+  } = useDocsHub(initialAppId)
 
   return (
     <div className="w-full border-t border-black/[0.06] dark:border-white/[0.06] bg-background">

@@ -40,13 +40,14 @@ export default async function ProductsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-20 lg:gap-y-24">
         {products.map((prod) => {
           const ThumbnailComponent = ART_MAP[prod.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
+          const docHref = prod.ctaLink && !prod.ctaLink.startsWith("/docs") ? prod.ctaLink : `/docs/${prod.id}`;
 
           return (
             <article key={prod.id} id={prod.id} className="scroll-mt-28 group flex flex-col justify-between">
               <div>
                 {/* Thumbnail Frame */}
                 <Link
-                  href={prod.ctaLink || `/docs#${prod.id}`}
+                  href={docHref}
                   className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block"
                 >
                   {/* Category badge */}
@@ -74,7 +75,7 @@ export default async function ProductsPage() {
 
                 {/* Title & Interactive Arrow */}
                 <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
-                  <Link href={prod.ctaLink || `/docs#${prod.id}`} className="inline-flex items-center gap-1.5">
+                  <Link href={docHref} className="inline-flex items-center gap-1.5">
                     <span>{prod.name}</span>
                     <IconArrowUpRight className="size-4 opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[#fb291a]" />
                   </Link>

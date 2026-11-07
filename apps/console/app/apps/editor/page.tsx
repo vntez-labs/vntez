@@ -95,6 +95,12 @@ function AppsEditorContent() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      if (avatarUrl) {
+        formData.append("oldUrl", avatarUrl);
+      }
+      if (id) {
+        formData.append("appId", id);
+      }
       const res = await fetch("/api/apps/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload thất bại");
@@ -104,6 +110,19 @@ function AppsEditorContent() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (avatarUrl) {
+      try {
+        await fetch(`/api/apps/upload?url=${encodeURIComponent(avatarUrl)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.warn("Failed to delete avatar from R2:", err);
+      }
+    }
+    setAvatarUrl("");
   };
 
   const handleSave = async () => {
@@ -222,6 +241,7 @@ function AppsEditorContent() {
                 color={color}
                 isUploading={isUploading}
                 onFileUpload={handleFileUpload}
+                onRemove={handleRemoveAvatar}
               />
             </div>
 

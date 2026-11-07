@@ -15,6 +15,7 @@ import {
   Layers,
   Newspaper,
   ArrowLeft,
+  BookOpen,
 } from "lucide-react";
 import { UserDropdown } from "@/components/user-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -110,8 +111,18 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Top Actions: Theme Switcher & User Profile Dropdown */}
+          {/* Top Actions: Docs Shortcut, Theme Switcher & User Profile Dropdown */}
           <div className="flex items-center gap-2.5 shrink-0">
+            <a
+              href="http://localhost:3002/docs"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              title="Xem Tài liệu kỹ thuật VNTEZ"
+            >
+              <BookOpen className="h-3.5 w-3.5 text-primary" />
+              <span>Tài liệu API</span>
+            </a>
             <ThemeToggle />
             <UserDropdown />
           </div>

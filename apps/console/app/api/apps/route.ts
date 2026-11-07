@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@workspace/auth/server";
 import { getStoredApps, saveStoredApps } from "@/lib/storage-content";
+import { deleteR2AssetByUrl } from "@/lib/r2-gc";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 
 export async function GET() {
@@ -73,6 +74,12 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Không tìm thấy app" }, { status: 404 });
     }
 
+    // Purge old avatar from R2 if avatarUrl is being updated or removed
+    const oldAvatar = apps[index]?.avatarUrl;
+    if (oldAvatar && body.avatarUrl !== undefined && body.avatarUrl !== oldAvatar) {
+      await deleteR2AssetByUrl(oldAvatar);
+    }
+
     apps[index] = {
       ...apps[index],
       ...body,
@@ -83,8 +90,9 @@ export async function PUT(req: Request) {
     if (!saved) throw new Error("Lưu thất bại");
 
     return NextResponse.json({ success: true, app: apps[index] });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Lỗi cập nhật app" }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Lỗi cập nhật app";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
@@ -102,12 +110,20 @@ export async function DELETE(req: Request) {
     }
 
     const apps = await getStoredApps();
+    const targetApp = apps.find((a) => a.id === id);
+
+    // Purge associated avatar image from R2 to prevent orphan garbage
+    if (targetApp?.avatarUrl) {
+      await deleteR2AssetByUrl(targetApp.avatarUrl);
+    }
+
     const filtered = apps.filter((a) => a.id !== id);
     const saved = await saveStoredApps(filtered);
     if (!saved) throw new Error("Xóa thất bại");
 
     return NextResponse.json({ success: true, id });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Lỗi xóa app" }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Lỗi xóa app";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

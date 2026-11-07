@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { UserCheck, X, Shield, AlertTriangle, Loader2, Check } from "lucide-react";
+import { UserCheck, X, Shield, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { CustomSelect } from "@workspace/ui/components/custom-select";
 import { useUsersStore } from "../users-store";
 
 const AVAILABLE_ROLES = [
@@ -106,38 +107,23 @@ export function UserEditModal() {
             />
           </div>
 
-          {/* Role Selection */}
-          <div className="space-y-3">
+          {/* Role Selection (Dropdown with Search) */}
+          <div className="space-y-2.5">
             <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Vai trò hệ thống (Role)
             </label>
-            <div className="grid grid-cols-2 gap-3 pt-0.5">
-              {AVAILABLE_ROLES.map((r) => {
-                const isSelected = editFormData.role.toLowerCase() === r.id.toLowerCase();
-                return (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setEditFormData({ role: r.label })}
-                    className={`flex flex-col text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-primary/5 border-primary text-foreground ring-1 ring-primary/30 shadow-xs"
-                        : "bg-secondary/30 dark:bg-zinc-900/40 border-border text-muted-foreground hover:bg-secondary/70 hover:text-foreground hover:border-border/80"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span className={`font-bold text-xs ${isSelected ? "text-primary" : "text-foreground"}`}>
-                        {r.label}
-                      </span>
-                      {isSelected && <Check className="h-4 w-4 text-primary" />}
-                    </div>
-                    <span className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
-                      {r.desc}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <CustomSelect
+              value={editFormData.role}
+              onChange={(val) => setEditFormData({ role: val })}
+              options={AVAILABLE_ROLES.map((r) => ({
+                value: r.label,
+                label: r.label,
+                description: r.desc,
+              }))}
+              variant="outline"
+              searchable
+              searchPlaceholder="Tìm kiếm vai trò hệ thống..."
+            />
           </div>
 
           {/* Status Selection */}
