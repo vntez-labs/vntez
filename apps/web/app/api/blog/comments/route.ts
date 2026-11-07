@@ -1,5 +1,28 @@
 import { NextResponse } from "next/server";
-import { addComment, deleteComment } from "@/lib/blog-storage";
+import { addComment, deleteComment, getLiveBlogPosts } from "@/lib/blog-storage";
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get("slug");
+    if (!slug) {
+      return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+    }
+
+    const posts = await getLiveBlogPosts();
+    const target = posts.find((p) => p.slug === slug);
+    if (!target) return NextResponse.json({ error: "Post not found" }, { status: 404 });
+
+    return NextResponse.json({
+      success: true,
+      comments: target.comments || [],
+      commentsCount: target.commentsCount || 0,
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Error fetching comments";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {

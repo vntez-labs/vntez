@@ -24,6 +24,9 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
       if (stored) setHasLiked(true);
     }
 
+    if (initialViews > 0) setViews((v) => Math.max(v, initialViews));
+    if (initialLikes > 0) setLikes((l) => Math.max(l, initialLikes));
+
     fetch("/api/blog/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,7 +39,7 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
         }
       })
       .catch(() => {});
-  }, [slug]);
+  }, [slug, initialViews, initialLikes]);
 
   const handleToggleLike = async () => {
     if (isLiking) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IconMessageCircle, IconSend } from "@tabler/icons-react";
@@ -26,6 +26,18 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
   const pathname = usePathname();
 
   const loggedInName = user?.name ? fixVietnameseEncoding(user.name) : "";
+
+  // Refresh latest comments on client mount
+  useEffect(() => {
+    fetch(`/api/blog/comments?slug=${encodeURIComponent(slug)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.comments)) {
+          setComments(data.comments);
+        }
+      })
+      .catch(() => {});
+  }, [slug]);
 
   const commentTree = useMemo(() => {
     return buildCommentTree(comments);
@@ -152,7 +164,10 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
                 required
                 placeholder="Tên của bạn *"
                 value={author}
-                onChange={(e) => setAuthor(e.target.value)}
+                onChange={(e) => {
+                  setAuthor(e.target.value);
+                  if (error) setError(null);
+                }}
                 className="w-full rounded-xl bg-white dark:bg-[#131b2e] px-3 py-2 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden"
               />
             </div>
@@ -174,7 +189,10 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
           required
           placeholder="Chia sẻ góc nhìn, phản biện hoặc thắc mắc của bạn về kiến trúc này..."
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            setContent(e.target.value);
+            if (error) setError(null);
+          }}
           className="w-full rounded-xl bg-white dark:bg-[#131b2e] p-3 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden resize-none"
         />
 

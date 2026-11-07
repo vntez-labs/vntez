@@ -1,99 +1,126 @@
-import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSupabaseAdminClient } from "./supabase";
 import type { BlogPostItem, BlogComment } from "@workspace/ui/lib/content-types";
-
-let r2Client: S3Client | null = null;
-
-function getClient(): S3Client {
-  if (r2Client) return r2Client;
-  const accountId = process.env.R2_ACCOUNT_ID;
-  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  const endpoint =
-    process.env.R2_ENDPOINT ||
-    (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : undefined);
-
-  if (!endpoint || !accessKeyId || !secretAccessKey) {
-    throw new Error(
-      "Missing required R2 environment variables (R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)"
-    );
-  }
-
-  r2Client = new S3Client({
-    region: "auto",
-    endpoint,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-  });
-  return r2Client;
-}
-
-const BUCKET = process.env.R2_BUCKET_NAME || "vntez-bucket";
 
 export async function getLiveBlogPosts(): Promise<BlogPostItem[]> {
   try {
-    const s3 = getClient();
-    const res = await s3.send(
-      new GetObjectCommand({
-        Bucket: BUCKET,
-        Key: "blog_posts.json",
-      })
-    );
-    const text = await res.Body?.transformToString();
-    if (!text) return [];
-    const data = JSON.parse(text);
-    return Array.isArray(data) ? data : [];
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      return data.map((r) => ({
+        slug: String(r.slug),
+        title: String(r.title || ""),
+        excerpt: String(r.excerpt || ""),
+        content: String(r.content || ""),
+        category: String(r.category || ""),
+        color: typeof r.color === "string" ? r.color : "#fb291a",
+        author: String(r.author || ""),
+        date: String(r.date || ""),
+        readTime: String(r.read_time || "5 phút đọc"),
+        commentsCount: typeof r.comments_count === "number" ? r.comments_count : 0,
+        likesCount: typeof r.likes_count === "number" ? r.likes_count : 0,
+        viewsCount: typeof r.views_count === "number" ? r.views_count : 0,
+        illustrationKey: typeof r.illustration_key === "string" ? r.illustration_key : undefined,
+        thumbnailUrl: typeof r.thumbnail_url === "string" ? r.thumbnail_url : undefined,
+        status: (r.status as BlogPostItem["status"]) || "published",
+        comments: Array.isArray(r.comments) ? (r.comments as BlogComment[]) : [],
+        updatedAt: typeof r.updated_at === "string" ? r.updated_at : new Date().toISOString(),
+      }));
+    }
   } catch (err) {
-    console.error("Error reading live blog posts from R2:", err);
-    return [];
+    console.error("Error reading blog posts from Supabase:", err);
   }
+  return [];
 }
 
 export async function saveLiveBlogPosts(posts: BlogPostItem[]): Promise<boolean> {
   try {
-    const s3 = getClient();
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: BUCKET,
-        Key: "blog_posts.json",
-        Body: Buffer.from(JSON.stringify(posts, null, 2)),
-        ContentType: "application/json",
-      })
-    );
+    const supabase = getSupabaseAdminClient();
+    if (posts.length > 0) {
+      const records = posts.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt,
+        content: p.content,
+        category: p.category,
+        color: p.color,
+        author: p.author,
+        date: p.date,
+        read_time: p.readTime,
+        comments_count: p.commentsCount || 0,
+        likes_count: p.likesCount || 0,
+        views_count: p.viewsCount || 0,
+        illustration_key: p.illustrationKey,
+        thumbnail_url: p.thumbnailUrl,
+        status: p.status,
+        comments: p.comments || [],
+        updated_at: new Date().toISOString(),
+      }));
+      const { error } = await supabase.from("blog_posts").upsert(records);
+      if (!error) return true;
+    }
     return true;
   } catch (err) {
-    console.error("Error saving live blog posts to R2:", err);
+    console.error("Error saving blog posts in Supabase:", err);
     return false;
   }
 }
 
 export async function incrementView(slug: string): Promise<number> {
-  const posts = await getLiveBlogPosts();
-  const target = posts.find((p) => p.slug === slug);
-  if (!target) return 0;
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: current } = await supabase
+      .from("blog_posts")
+      .select("views_count")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  target.viewsCount = (target.viewsCount || 0) + 1;
-  await saveLiveBlogPosts(posts);
-  return target.viewsCount;
+    if (!current) return 0;
+
+    const newViews = (current.views_count || 0) + 1;
+    await supabase
+      .from("blog_posts")
+      .update({ views_count: newViews, updated_at: new Date().toISOString() })
+      .eq("slug", slug);
+
+    return newViews;
+  } catch (err) {
+    console.error("Error incrementing view in Supabase:", err);
+    return 0;
+  }
 }
 
 export async function toggleLike(
   slug: string,
   action: "like" | "unlike" = "like"
 ): Promise<number> {
-  const posts = await getLiveBlogPosts();
-  const target = posts.find((p) => p.slug === slug);
-  if (!target) return 0;
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: current } = await supabase
+      .from("blog_posts")
+      .select("likes_count")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  if (action === "unlike") {
-    target.likesCount = Math.max(0, (target.likesCount || 0) - 1);
-  } else {
-    target.likesCount = (target.likesCount || 0) + 1;
+    if (!current) return 0;
+
+    const currentLikes = current.likes_count || 0;
+    const newLikes =
+      action === "unlike" ? Math.max(0, currentLikes - 1) : currentLikes + 1;
+
+    await supabase
+      .from("blog_posts")
+      .update({ likes_count: newLikes, updated_at: new Date().toISOString() })
+      .eq("slug", slug);
+
+    return newLikes;
+  } catch (err) {
+    console.error("Error toggling like in Supabase:", err);
+    return 0;
   }
-
-  await saveLiveBlogPosts(posts);
-  return target.likesCount;
 }
 
 export async function incrementLike(slug: string): Promise<number> {
@@ -108,49 +135,98 @@ export async function addComment(
   replyToAuthor?: string,
   avatar?: string
 ): Promise<{ comment: BlogComment; count: number } | null> {
-  const posts = await getLiveBlogPosts();
-  const target = posts.find((p) => p.slug === slug);
-  if (!target) return null;
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: current, error } = await supabase
+      .from("blog_posts")
+      .select("comments, comments_count")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  const newComment: BlogComment = {
-    id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-    parentId: parentId || null,
-    replyToAuthor: replyToAuthor?.trim() || undefined,
-    author: author.trim(),
-    avatar: avatar?.trim() || undefined,
-    content: content.trim(),
-    createdAt: new Date().toISOString(),
-    likesCount: 0,
-  };
+    if (error || !current) {
+      console.warn(`Post with slug "${slug}" not found in Supabase:`, error);
+      return null;
+    }
 
-  if (!Array.isArray(target.comments)) {
-    target.comments = [];
+    const newComment: BlogComment = {
+      id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      parentId: parentId || null,
+      replyToAuthor: replyToAuthor?.trim() || undefined,
+      author: author.trim(),
+      avatar: avatar?.trim() || undefined,
+      content: content.trim(),
+      createdAt: new Date().toISOString(),
+      likesCount: 0,
+    };
+
+    const existingComments: BlogComment[] = Array.isArray(current.comments)
+      ? (current.comments as BlogComment[])
+      : [];
+
+    const updatedComments = [newComment, ...existingComments];
+    const newCount = updatedComments.length;
+
+    const { error: updateError } = await supabase
+      .from("blog_posts")
+      .update({
+        comments: updatedComments,
+        comments_count: newCount,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("slug", slug);
+
+    if (updateError) {
+      console.error("Error updating comments in Supabase:", updateError);
+      return null;
+    }
+
+    return { comment: newComment, count: newCount };
+  } catch (err) {
+    console.error("Error adding comment in Supabase:", err);
+    return null;
   }
-  target.comments.unshift(newComment);
-  target.commentsCount = target.comments.length;
-
-  await saveLiveBlogPosts(posts);
-  return { comment: newComment, count: target.commentsCount };
 }
 
 export async function deleteComment(
   slug: string,
   commentId: string
 ): Promise<{ success: boolean; count: number }> {
-  const posts = await getLiveBlogPosts();
-  const target = posts.find((p) => p.slug === slug);
-  if (!target) return { success: false, count: 0 };
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: current, error } = await supabase
+      .from("blog_posts")
+      .select("comments, comments_count")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  const idsToDelete = new Set<string>([commentId]);
-  (target.comments || []).forEach((c) => {
-    if (c.parentId && idsToDelete.has(c.parentId)) {
-      idsToDelete.add(c.id);
-    }
-  });
+    if (error || !current) return { success: false, count: 0 };
 
-  target.comments = (target.comments || []).filter((c) => !idsToDelete.has(c.id));
-  target.commentsCount = target.comments.length;
+    const existingComments: BlogComment[] = Array.isArray(current.comments)
+      ? (current.comments as BlogComment[])
+      : [];
 
-  await saveLiveBlogPosts(posts);
-  return { success: true, count: target.commentsCount };
+    const idsToDelete = new Set<string>([commentId]);
+    existingComments.forEach((c) => {
+      if (c.parentId && idsToDelete.has(c.parentId)) {
+        idsToDelete.add(c.id);
+      }
+    });
+
+    const filtered = existingComments.filter((c) => !idsToDelete.has(c.id));
+    const newCount = filtered.length;
+
+    await supabase
+      .from("blog_posts")
+      .update({
+        comments: filtered,
+        comments_count: newCount,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("slug", slug);
+
+    return { success: true, count: newCount };
+  } catch (err) {
+    console.error("Error deleting comment in Supabase:", err);
+    return { success: false, count: 0 };
+  }
 }
