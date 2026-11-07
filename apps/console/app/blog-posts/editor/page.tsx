@@ -198,6 +198,7 @@ function BlogEditorContent() {
         onToggleFullscreen={() => setIsFullscreen((prev) => !prev)}
         showMeta={showMeta}
         onToggleMeta={() => setShowMeta((prev) => !prev)}
+        previewSlug={editSlug || (slug.trim() ? slug.trim() : undefined)}
       />
 
       {errorMessage && (

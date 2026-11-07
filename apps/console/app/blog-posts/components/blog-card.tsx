@@ -5,6 +5,7 @@ import { Edit2, Trash2, ExternalLink, Eye, Heart, MessageSquare, Newspaper } fro
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
+import { getPublicBlogPostUrl } from "@/lib/portal-url";
 
 interface BlogCardProps {
   post: BlogPostItem;
@@ -95,11 +96,11 @@ export function BlogCard({ post, onEdit, onDelete }: BlogCardProps) {
         {/* Actions */}
         <div className="flex items-center gap-1">
           <a
-            href={`/blog/${post.slug}`}
+            href={getPublicBlogPostUrl(post.slug)}
             target="_blank"
             rel="noreferrer"
             className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
-            title="Xem bài viết trên Web"
+            title="Xem bài viết trên Web Portal"
           >
             <ExternalLink className="h-3.5 w-3.5" />
           </a>

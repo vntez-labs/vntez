@@ -12,8 +12,10 @@ import {
   IconColumns,
   IconEdit,
   IconEye,
+  IconExternalLink,
 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { getPublicBlogPostUrl } from "@/lib/portal-url";
 
 export type EditorViewMode = "split" | "editor" | "preview";
 
@@ -26,6 +28,7 @@ interface BlogEditorHeaderProps {
   onToggleFullscreen: () => void;
   showMeta: boolean;
   onToggleMeta: () => void;
+  previewSlug?: string;
 }
 
 export function BlogEditorHeader({
@@ -37,6 +40,7 @@ export function BlogEditorHeader({
   onToggleFullscreen,
   showMeta,
   onToggleMeta,
+  previewSlug,
 }: BlogEditorHeaderProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-zinc-200/80 dark:border-zinc-800">
@@ -113,8 +117,21 @@ export function BlogEditorHeader({
         </button>
       </div>
 
-      {/* Right Actions: Fullscreen & Save */}
+      {/* Right Actions: Preview on Portal, Fullscreen & Save */}
       <div className="flex items-center gap-2">
+        {previewSlug && (
+          <a
+            href={getPublicBlogPostUrl(previewSlug)}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            title="Mở bài viết trực tiếp trên Web Portal"
+          >
+            <IconExternalLink className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[11px] font-medium hidden sm:inline">Xem trên Web</span>
+          </a>
+        )}
+
         {/* Fullscreen Zen Mode Button */}
         <button
           type="button"

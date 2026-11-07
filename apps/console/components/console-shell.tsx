@@ -30,6 +30,7 @@ import {
 } from "@tabler/icons-react";
 import { UserDropdown } from "@/components/user-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getPortalBaseUrl } from "@/lib/portal-url";
 
 export const NAV_ITEMS = [
   {
@@ -176,7 +177,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
           {/* Top Actions: Docs Shortcut, Theme Switcher & User Profile Dropdown */}
           <div className="flex items-center gap-2.5 shrink-0">
             <a
-              href="http://localhost:3002/docs"
+              href={`${getPortalBaseUrl()}/docs`}
               target="_blank"
               rel="noreferrer"
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
