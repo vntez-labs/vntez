@@ -60,57 +60,87 @@ export default async function ProductsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-20 lg:gap-y-24">
           {products.map((prod) => {
             const ThumbnailComponent = ART_MAP[prod.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
-            const targetHref = prod.ctaLink || `/docs/${prod.id}`;
-            const isExternal = targetHref.startsWith("http");
+            const hasLink = Boolean(prod.ctaLink && prod.ctaLink.trim().length > 0);
+            const targetHref = hasLink ? prod.ctaLink.trim() : undefined;
+            const isExternal = Boolean(targetHref && targetHref.startsWith("http"));
 
             return (
               <article key={prod.id} id={prod.id} className="scroll-mt-28 group flex flex-col justify-between">
                 <div>
                   {/* Thumbnail Frame */}
-                  <a
-                    href={targetHref}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noreferrer" : undefined}
-                    className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block"
-                  >
-                    {/* Category badge */}
-                    <div className="absolute top-3.5 left-3.5 z-10">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
-                        <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
-                        {prod.category}
-                      </span>
-                    </div>
-
-                    {/* Thumbnail: Render avatar image or Isometric Illustration */}
-                    {prod.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={prod.avatarUrl}
-                        alt={prod.name}
-                        className="size-24 rounded-2xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 pointer-events-none"
-                      />
-                    ) : (
-                      <div className="relative size-full max-h-32 max-w-44 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 pointer-events-none">
-                        <ThumbnailComponent className="size-full object-contain" />
-                      </div>
-                    )}
-                  </a>
-
-                  {/* Title & Interactive Arrow */}
-                  <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+                  {hasLink ? (
                     <a
                       href={targetHref}
                       target={isExternal ? "_blank" : undefined}
                       rel={isExternal ? "noreferrer" : undefined}
-                      className="inline-flex items-center gap-1.5"
+                      className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block cursor-pointer"
                     >
-                      <span>{prod.name}</span>
-                      <IconArrowUpRight className="size-4 opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[#fb291a]" />
+                      {/* Category badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                          <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
+                          {prod.category}
+                        </span>
+                      </div>
+
+                      {/* Thumbnail: Render avatar image or Isometric Illustration */}
+                      {prod.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={prod.avatarUrl}
+                          alt={prod.name}
+                          className="size-24 rounded-2xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+                        />
+                      ) : (
+                        <div className="relative size-full max-h-32 max-w-44 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 pointer-events-none">
+                          <ThumbnailComponent className="size-full object-contain" />
+                        </div>
+                      )}
                     </a>
+                  ) : (
+                    <div className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden">
+                      {/* Category badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                          <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
+                          {prod.category}
+                        </span>
+                      </div>
+
+                      {prod.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={prod.avatarUrl}
+                          alt={prod.name}
+                          className="size-24 rounded-2xl object-cover shadow-sm pointer-events-none"
+                        />
+                      ) : (
+                        <div className="relative size-full max-h-32 max-w-44 flex items-center justify-center pointer-events-none">
+                          <ThumbnailComponent className="size-full object-contain" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Title & Interactive Arrow */}
+                  <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+                    {hasLink ? (
+                      <a
+                        href={targetHref}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noreferrer" : undefined}
+                        className="inline-flex items-center gap-1.5"
+                      >
+                        <span>{prod.name}</span>
+                        <IconArrowUpRight className="size-4 opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[#fb291a]" />
+                      </a>
+                    ) : (
+                      <span>{prod.name}</span>
+                    )}
                   </h2>
 
-                  {/* Description */}
-                  <p className="mt-2.5 text-[13px] sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-sans">
+                  {/* Description - Clamped to 3 lines */}
+                  <p className="mt-2.5 text-[13px] sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-sans line-clamp-3">
                     {prod.description}
                   </p>
                 </div>
@@ -131,23 +161,19 @@ export default async function ProductsPage() {
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
-                    <a
-                      href={targetHref}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noreferrer" : undefined}
-                      className="inline-flex items-center gap-1 font-semibold text-[#fb291a] hover:text-[#d91f12] transition-colors"
-                    >
-                      <span>Khám phá sản phẩm</span>
-                      <IconArrowUpRight className="size-3.5" />
-                    </a>
-                    <Link
-                      href="/docs"
-                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors font-medium text-[11px]"
-                    >
-                      Tài liệu API &rarr;
-                    </Link>
-                  </div>
+                  {hasLink && (
+                    <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                      <a
+                        href={targetHref}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noreferrer" : undefined}
+                        className="inline-flex items-center gap-1 font-semibold text-[#fb291a] hover:text-[#d91f12] transition-colors"
+                      >
+                        <span>Khám phá sản phẩm</span>
+                        <IconArrowUpRight className="size-3.5" />
+                      </a>
+                    </div>
+                  )}
                 </div>
               </article>
             );

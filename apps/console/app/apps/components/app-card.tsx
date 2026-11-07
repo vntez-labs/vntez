@@ -12,12 +12,6 @@ import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 
-const WEB_PORTAL_URL =
-  process.env.NEXT_PUBLIC_WEB_URL ||
-  (typeof window !== "undefined" && window.location.hostname === "localhost"
-    ? "http://localhost:3002"
-    : "https://vntez.net");
-
 interface AppCardProps {
   app: AppItem;
   onEdit: (app: AppItem) => void;
@@ -25,11 +19,9 @@ interface AppCardProps {
 }
 
 export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
-  const targetUrl = app.ctaLink
-    ? app.ctaLink.startsWith("http")
-      ? app.ctaLink
-      : `${WEB_PORTAL_URL}${app.ctaLink}`
-    : `${WEB_PORTAL_URL}/products#${app.id}`;
+  const hasLink = Boolean(app.ctaLink && app.ctaLink.trim().length > 0);
+  const targetUrl = hasLink ? app.ctaLink.trim() : undefined;
+  const isExternal = Boolean(targetUrl && targetUrl.startsWith("http"));
 
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-white dark:bg-card p-5 shadow-xs hover:shadow-sm transition-all duration-200">
@@ -73,7 +65,7 @@ export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
         </div>
 
         {/* Description */}
-        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
           {app.description}
         </p>
 
@@ -98,15 +90,17 @@ export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
         </span>
 
         <div className="flex items-center gap-1">
-          <a
-            href={targetUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
-            title="Mở liên kết sản phẩm / tài liệu"
-          >
-            <IconExternalLink className="h-3.5 w-3.5" />
-          </a>
+          {hasLink && (
+            <a
+              href={targetUrl}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noreferrer" : undefined}
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800 cursor-pointer"
+              title="Mở liên kết xem riêng sản phẩm"
+            >
+              <IconExternalLink className="h-3.5 w-3.5" />
+            </a>
+          )}
           <Button
             variant="ghost"
             size="sm"
