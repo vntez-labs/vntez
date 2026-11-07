@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next"
 import { Be_Vietnam_Pro, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@workspace/auth/provider"
+import { getServerSession } from "@workspace/auth/server"
 import { cn } from "@workspace/ui/lib/utils"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
@@ -168,11 +170,13 @@ const jsonLd = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const { user, accessToken } = await getServerSession()
+
   return (
     <html
       lang="vi"
@@ -192,15 +196,17 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased font-sans transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <TopProgressBar />
-          <div className="min-h-screen flex flex-col bg-background text-foreground antialiased font-sans transition-colors duration-200">
-            <Header />
-            <div className="flex-1">
-              {children}
+          <AuthProvider initialUser={user} initialToken={accessToken}>
+            <TopProgressBar />
+            <div className="min-h-screen flex flex-col bg-background text-foreground antialiased font-sans transition-colors duration-200">
+              <Header />
+              <div className="flex-1">
+                {children}
+              </div>
+              <Footer />
+              <ScrollToTop />
             </div>
-            <Footer />
-            <ScrollToTop />
-          </div>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

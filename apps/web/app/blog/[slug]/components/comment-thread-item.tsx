@@ -3,12 +3,20 @@
 import React, { useState } from "react";
 import { IconUser, IconCornerDownRight, IconHeart, IconSend, IconX } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { useAuthStore } from "@workspace/auth/store";
+import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import type { BlogComment } from "@workspace/ui/lib/content-types";
 
 interface CommentThreadItemProps {
   comment: BlogComment;
   depth?: number;
-  onReply: (parentId: string, author: string, content: string, replyToAuthor?: string) => Promise<boolean>;
+  onReply: (
+    parentId: string,
+    author: string,
+    content: string,
+    replyToAuthor?: string,
+    avatar?: string
+  ) => Promise<boolean>;
 }
 
 export function CommentThreadItem({
@@ -16,12 +24,15 @@ export function CommentThreadItem({
   depth = 0,
   onReply,
 }: CommentThreadItemProps) {
+  const { user, isAuthenticated } = useAuthStore();
   const [isReplying, setIsReplying] = useState(false);
   const [replyAuthor, setReplyAuthor] = useState("");
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likes, setLikes] = useState(comment.likesCount || 0);
   const [hasLiked, setHasLiked] = useState(false);
+
+  const loggedInName = user?.name ? fixVietnameseEncoding(user.name) : "";
 
   const handleToggleLike = () => {
     if (hasLiked) {
@@ -35,10 +46,17 @@ export function CommentThreadItem({
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyAuthor.trim() || !replyContent.trim()) return;
+    const effectiveAuthor = isAuthenticated && loggedInName ? loggedInName : replyAuthor.trim();
+    if (!effectiveAuthor || !replyContent.trim()) return;
 
     setIsSubmitting(true);
-    const success = await onReply(comment.id, replyAuthor.trim(), replyContent.trim(), comment.author);
+    const success = await onReply(
+      comment.id,
+      effectiveAuthor,
+      replyContent.trim(),
+      comment.author,
+      user?.avatar
+    );
     setIsSubmitting(false);
 
     if (success) {
@@ -140,14 +158,30 @@ export function CommentThreadItem({
               </button>
             </div>
 
-            <input
-              type="text"
-              required
-              placeholder="Tên của bạn *"
-              value={replyAuthor}
-              onChange={(e) => setReplyAuthor(e.target.value)}
-              className="w-full rounded-lg bg-white dark:bg-[#0c121e] px-3 py-1.5 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden"
-            />
+            {isAuthenticated && loggedInName ? (
+              <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/80 dark:bg-[#0c121e]/80 text-[11px] text-slate-700 dark:text-slate-300">
+                {user?.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.avatar} alt={loggedInName} className="size-5 rounded-full object-cover" />
+                ) : (
+                  <div className="size-5 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[9px]">
+                    {loggedInName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span>
+                  Phản hồi với tư cách: <strong className="text-slate-900 dark:text-white font-semibold">{loggedInName}</strong>
+                </span>
+              </div>
+            ) : (
+              <input
+                type="text"
+                required
+                placeholder="Tên của bạn *"
+                value={replyAuthor}
+                onChange={(e) => setReplyAuthor(e.target.value)}
+                className="w-full rounded-lg bg-white dark:bg-[#0c121e] px-3 py-1.5 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden"
+              />
+            )}
 
             <textarea
               rows={2}

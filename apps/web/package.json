@@ -16,6 +16,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1163.0",
     "@tabler/icons-react": "^3.50.0",
     "@types/prismjs": "^1.26.6",
+    "@workspace/auth": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^1.63.0",
     "motion": "^14.7.1",

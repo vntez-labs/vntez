@@ -32,6 +32,7 @@
     "./pkce": "./src/pkce.ts",
     "./client": "./src/client.ts",
     "./cookies": "./src/cookies.ts",
+    "./encoding": "./src/encoding.ts",
     "./types": "./src/types.ts",
     "./store": "./src/store.ts",
     "./guard": "./src/guard.tsx",

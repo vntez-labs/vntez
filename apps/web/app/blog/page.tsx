@@ -16,6 +16,7 @@ import {
   IsometricTelemetryArt,
   IsometricEcosystemArt,
 } from "@/components/landing/card-illustrations";
+import { buttonVariants } from "@workspace/ui/components/button";
 import { fetchLiveBlogPosts } from "@workspace/ui/lib/content-service";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 
@@ -43,7 +44,27 @@ export default async function BlogPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 pt-10 sm:pt-14 pb-20 sm:pb-28 space-y-16">
       {/* Blog Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-14 sm:gap-y-18">
+      {posts.length === 0 ? (
+        <div className="py-24 text-center space-y-3 bg-slate-50/50 dark:bg-white/[0.02] rounded-3xl border border-dashed border-slate-200 dark:border-white/[0.06] p-8">
+          <p className="text-base font-bold text-slate-800 dark:text-slate-200">Chưa có bài viết nào được xuất bản</p>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            Các bài viết kỹ thuật và kiến trúc hệ thống sẽ hiển thị tại đây sau khi bạn tạo và xuất bản từ VNTEZ Console.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="https://vntez-console.vercel.app/blog-posts/editor"
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+                className: "font-semibold rounded-xl text-xs",
+              })}
+            >
+              Soạn bài viết trong Console
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-14 sm:gap-y-18">
         {posts.map((post) => {
           const ThumbnailComponent = ART_MAP[post.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
 
@@ -131,7 +152,8 @@ export default async function BlogPage() {
             </article>
           );
         })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

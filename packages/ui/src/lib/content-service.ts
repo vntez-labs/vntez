@@ -27,13 +27,13 @@ export async function fetchLiveApps(): Promise<AppItem[]> {
       const res = await fetch(signedUrl, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           return data;
         }
       }
     }
   } catch (err) {
-    console.warn("Using fallback apps data:", err);
+    console.warn("Error fetching apps from R2:", err);
   }
   return [];
 }
@@ -45,13 +45,13 @@ export async function fetchLiveBlogPosts(): Promise<BlogPostItem[]> {
       const res = await fetch(signedUrl, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           return data;
         }
       }
     }
   } catch (err) {
-    console.warn("Using fallback blog posts data:", err);
+    console.warn("Error fetching blog posts from R2:", err);
   }
   return [];
 }

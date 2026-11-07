@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { IconMessageCircle, IconSend } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { useAuthStore } from "@workspace/auth/store";
+import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { buildCommentTree } from "@workspace/ui/lib/content-types";
 import type { BlogComment } from "@workspace/ui/lib/content-types";
 import { CommentThreadItem } from "./comment-thread-item";
@@ -13,11 +17,15 @@ interface BlogCommentsSectionProps {
 }
 
 export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSectionProps) {
+  const { user, isAuthenticated } = useAuthStore();
   const [comments, setComments] = useState<BlogComment[]>(initialComments || []);
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  const loggedInName = user?.name ? fixVietnameseEncoding(user.name) : "";
 
   const commentTree = useMemo(() => {
     return buildCommentTree(comments);
@@ -25,7 +33,8 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
 
   const handleRootSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!author.trim() || !content.trim()) {
+    const effectiveAuthor = isAuthenticated && loggedInName ? loggedInName : author.trim();
+    if (!effectiveAuthor || !content.trim()) {
       setError("Vui lòng nhập tên của bạn và nội dung bình luận.");
       return;
     }
@@ -36,7 +45,12 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
       const res = await fetch("/api/blog/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, author, content }),
+        body: JSON.stringify({
+          slug,
+          author: effectiveAuthor,
+          content,
+          avatar: user?.avatar,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gửi bình luận thất bại");
@@ -56,7 +70,8 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
     parentId: string,
     replyAuthor: string,
     replyContent: string,
-    replyToAuthor?: string
+    replyToAuthor?: string,
+    avatar?: string
   ): Promise<boolean> => {
     try {
       const res = await fetch("/api/blog/comments", {
@@ -68,6 +83,7 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
           content: replyContent,
           parentId,
           replyToAuthor,
+          avatar,
         }),
       });
       const data = await res.json();
@@ -114,16 +130,44 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <input
-            type="text"
-            required
-            placeholder="Tên của bạn *"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            className="w-full rounded-xl bg-white dark:bg-[#131b2e] px-3 py-2 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden"
-          />
-        </div>
+        {isAuthenticated && loggedInName ? (
+          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white dark:bg-[#131b2e] ring-1 ring-slate-200/80 dark:ring-white/[0.08]">
+            {user?.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.avatar} alt={loggedInName} className="size-6 rounded-full object-cover" />
+            ) : (
+              <div className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] font-mono">
+                {loggedInName.slice(0, 2).toUpperCase()}
+              </div>
+            )}
+            <span className="text-xs text-slate-700 dark:text-slate-300">
+              Đang bình luận với tư cách: <strong className="text-slate-900 dark:text-white font-semibold">{loggedInName}</strong>
+            </span>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input
+                type="text"
+                required
+                placeholder="Tên của bạn *"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                className="w-full rounded-xl bg-white dark:bg-[#131b2e] px-3 py-2 text-xs text-slate-900 dark:text-white ring-1 ring-slate-200 dark:ring-white/[0.1] focus:ring-primary focus:outline-hidden"
+              />
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Hoặc{" "}
+              <Link
+                href={`/api/auth/login?redirect=${encodeURIComponent(pathname || "/")}`}
+                className="text-primary hover:underline font-medium"
+              >
+                đăng nhập tài khoản
+              </Link>{" "}
+              để tự động đồng bộ hồ sơ và quyền quản trị.
+            </p>
+          </div>
+        )}
 
         <textarea
           rows={3}

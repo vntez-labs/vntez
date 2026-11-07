@@ -8,6 +8,7 @@ import { IconMenu2, IconX } from "@tabler/icons-react"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { VntezLogo } from "./vntez-logo"
 import { ThemeToggle } from "./theme-toggle"
+import { HeaderUserMenu } from "./header-user-menu"
 
 const NAV_LINKS = [
   { label: "Sản phẩm", href: "/products" },
@@ -84,16 +85,7 @@ export function Header() {
 
         {/* Action Button & Theme Switcher */}
         <div className="flex items-center gap-3">
-          <Link
-            href="https://vntez-console.vercel.app"
-            className={buttonVariants({
-              variant: "default",
-              size: "sm",
-              className: "hidden sm:inline-flex font-semibold shadow-sm px-4",
-            })}
-          >
-            Đăng nhập
-          </Link>
+          <HeaderUserMenu />
 
           {/* Theme Switcher Sun/Moon */}
           <ThemeToggle />
@@ -140,16 +132,8 @@ export function Header() {
                 </Link>
               )
             })}
-            <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.06]">
-              <Link
-                href="https://vntez-console.vercel.app"
-                className={buttonVariants({
-                  variant: "default",
-                  className: "w-full font-semibold",
-                })}
-              >
-                Đăng nhập tài khoản
-              </Link>
+            <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+              <HeaderUserMenu />
             </div>
           </motion.div>
         )}

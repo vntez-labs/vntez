@@ -15,6 +15,7 @@ export const DEFAULT_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
   path: '/',
+  domain: process.env.COOKIE_DOMAIN || undefined,
 };
 
 /**
