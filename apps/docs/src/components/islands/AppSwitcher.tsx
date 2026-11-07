@@ -8,6 +8,7 @@ export interface AppDefinition {
   badge: string;
   href: string;
   description: string;
+  icon?: string;
 }
 
 export const ALL_APPS: AppDefinition[] = [
@@ -18,6 +19,7 @@ export const ALL_APPS: AppDefinition[] = [
     badge: "Cloudflare Edge",
     href: "/docs/workers-hub",
     description: "Quản lý cụm Workers, R2, D1, Telemetry & Instant Cache Purge.",
+    icon: "⚡",
   },
   {
     id: "vntez-iam",
@@ -26,6 +28,7 @@ export const ALL_APPS: AppDefinition[] = [
     badge: "OAuth 2.0 PKCE",
     href: "/docs/vntez-iam",
     description: "Single Sign-On (SSO), OIDC Claims và Ma trận Phân quyền RBAC.",
+    icon: "🛡️",
   },
   {
     id: "gitvn",
@@ -34,6 +37,7 @@ export const ALL_APPS: AppDefinition[] = [
     badge: "Zero-Friction Git",
     href: "/docs/gitvn",
     description: "Git repository local-first, tích hợp Kanban Jira và Confluence Markdown.",
+    icon: "🌿",
   },
   {
     id: "solotype",
@@ -42,6 +46,7 @@ export const ALL_APPS: AppDefinition[] = [
     badge: "Typing Engine",
     href: "/docs/solotype",
     description: "Cẩm nang luyện gõ phím 10 ngón tiếng Việt Telex/VNI và từ vựng code.",
+    icon: "⌨️",
   },
   {
     id: "bonsai-reader",
@@ -50,6 +55,7 @@ export const ALL_APPS: AppDefinition[] = [
     badge: "Minimalist Reader",
     href: "/docs/bonsai-reader",
     description: "Trình đọc sách ePub, PDF & MDX tối giản chuẩn mực typography tiếng Việt.",
+    icon: "📖",
   },
 ];
 

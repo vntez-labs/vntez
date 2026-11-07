@@ -40,7 +40,7 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-main);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -50,6 +50,47 @@ h1, h2, h3, h4, h5, h6 {
 
 code, pre, kbd {
   font-family: var(--font-mono);
+}
+
+/* Shiki Dual-Theme Engine (Light: github-light, Dark: github-dark) */
+.astro-code {
+  border-radius: 0.75rem !important;
+  padding: 1rem 1.25rem !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.65 !important;
+  border: 1px solid var(--border-subtle) !important;
+  overflow-x: auto;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+html:not(.dark) .astro-code,
+html:not(.dark) .astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+  font-style: var(--shiki-light-font-style) !important;
+  font-weight: var(--shiki-light-font-weight) !important;
+  text-decoration: var(--shiki-light-text-decoration) !important;
+}
+
+/* Prevent inline code styles from affecting pre code */
+pre code {
+  color: inherit !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
 }
 
 /* Custom Styled Tables for Human Readability */
@@ -76,6 +117,8 @@ code, pre, kbd {
   text-align: left;
   color: var(--text-main);
   letter-spacing: 0.025em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
 }
 
 .prose td {
@@ -90,4 +133,20 @@ code, pre, kbd {
 
 .dark .prose tr:hover td {
   background-color: rgba(30, 41, 59, 0.3);
+}
+
+/* Custom clean scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
 }

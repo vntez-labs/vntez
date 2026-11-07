@@ -18,10 +18,10 @@ Endpoint cung cấp dữ liệu vi mô thời gian thực đo lường chất l�
 
 ## Tham số Truy vấn (Query Parameters)
 
-| Tham số | Kiểu | Bắt buộc | Mô tả |
-| :--- | :--- | :--- | :--- |
-| `worker_id` | string | Có | Tên định danh Worker (VD: `vntez-iam-worker`). |
-| `timeframe` | string | Không | Khoảng thời gian: `1h`, `24h` hoặc `7d` (mặc định: `1h`). |
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mặc định | Mô tả |
+| :--- | :--- | :--- | :--- | :--- |
+| `worker_id` | `string` | Có | — | Tên định danh Worker cần truy xuất (VD: `vntez-iam-worker`). |
+| `timeframe` | `string` | Không | `1h` | Khoảng thời gian phân tích: `1h`, `24h` hoặc `7d`. |
 
 ## Mã gọi Mẫu đa ngôn ngữ
 
@@ -40,19 +40,25 @@ Endpoint cung cấp dữ liệu vi mô thời gian thực đo lường chất l�
       code: "const response = await fetch(\n  'https://workers.vntez.cloud/api/workers/telemetry?worker_id=vntez-iam-worker&timeframe=24h',\n  {\n    headers: { Authorization: `Bearer ${token}` },\n  }\n);\nconst telemetry = await response.json();",
     },
     {
-      label: "Go",
-      lang: "go",
-      code: "req, _ := http.NewRequest(\"GET\", \"https://workers.vntez.cloud/api/workers/telemetry?worker_id=vntez-iam-worker\", nil)\nreq.Header.Set(\"Authorization\", \"Bearer \" + token)\nres, _ := http.DefaultClient.Do(req)",
-    },
-    {
       label: "Python",
       lang: "python",
-      code: "import requests\n\nres = requests.get(\n  'https://workers.vntez.cloud/api/workers/telemetry',\n  params={'worker_id': 'vntez-iam-worker', 'timeframe': '24h'},\n  headers={'Authorization': f'Bearer {token}'}\n)\ndata = res.json()",
+      code: "import requests\n\nres = requests.get(\n    'https://workers.vntez.cloud/api/workers/telemetry',\n    params={'worker_id': 'vntez-iam-worker', 'timeframe': '24h'},\n    headers={'Authorization': f'Bearer {token}'}\n)\nprint(res.json())",
     },
   ]}
 />
 
 ## Phản hồi Thành công (200 OK)
+
+| Trường dữ liệu | Kiểu | Mô tả |
+| :--- | :--- | :--- |
+| `worker_id` | `string` | Tên Worker được giám sát. |
+| `timeframe` | `string` | Khung thời gian thu thập mẫu số liệu. |
+| `metrics.requests_total` | `number` | Tổng số lượng requests đã xử lý trong kỳ. |
+| `metrics.avg_latency_ms` | `number` | Độ trễ trung bình tính bằng mili-giây. |
+| `metrics.p99_latency_ms` | `number` | Độ trễ phân vị thứ 99 (P99) phản ánh trải nghiệm người dùng chậm nhất. |
+| `metrics.cpu_time_median_ms` | `number` | Thời gian chiếm dụng CPU Wall-Time trung vị. |
+| `metrics.error_5xx_rate` | `string` | Tỷ lệ phần trăm lỗi máy chủ nội bộ HTTP 5xx. |
+| `health_status` | `string` | Trạng thái sức khỏe: `optimal`, `degraded`, hoặc `incident`. |
 
 ```json
 {

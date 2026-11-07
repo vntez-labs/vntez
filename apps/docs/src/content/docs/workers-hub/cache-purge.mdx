@@ -14,9 +14,16 @@ import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
 
 ## Mô tả Endpoint
 
-Lập tức xóa bản sao lưu đệm tại toàn bộ các điểm PoP của Cloudflare. Hỗ trợ vô hiệu hóa theo mảng URL hoặc danh mục nhãn phân loại Cache-Tag.
+Lập tức xóa bản sao lưu đệm tại toàn bộ hơn 300 điểm PoP của Cloudflare. Hỗ trợ vô hiệu hóa theo mảng đường dẫn URL hoặc danh mục nhãn phân loại Cache-Tag mà không gây gián đoạn lưu lượng truy cập.
 
-## Dữ liệu Yêu cầu (Request Body)
+## Tham số Yêu cầu (Request Body)
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mặc định | Mô tả |
+| :--- | :--- | :--- | :--- | :--- |
+| `tags` | `string[]` | Tùy chọn | `[]` | Mảng các nhãn phân loại cache (Cache-Tags) cần vô hiệu hóa đồng thời trên toàn bộ các node PoP. |
+| `urls` | `string[]` | Tùy chọn | `[]` | Danh sách đường dẫn URL tuyệt đối cần loại bỏ khỏi CDN cache tức thời. |
+
+### Cấu trúc JSON Request Mẫu
 
 ```json
 {
@@ -25,6 +32,8 @@ Lập tức xóa bản sao lưu đệm tại toàn bộ các điểm PoP của C
 }
 ```
 
+## Mã gọi Mẫu đa ngôn ngữ
+
 <TabbedCodeBlock
   client:load
   title="Purge Edge Cache"
@@ -32,17 +41,29 @@ Lập tức xóa bản sao lưu đệm tại toàn bộ các điểm PoP của C
     {
       label: "cURL",
       lang: "bash",
-      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/cache/purge\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\"tags\":[\"apps-manifest\"]}'",
+      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/cache/purge\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\n    \"tags\": [\"apps-manifest\"],\n    \"urls\": [\"https://vntez.net/products\"]\n  }'",
     },
     {
       label: "TypeScript",
       lang: "typescript",
-      code: "const res = await fetch('https://workers.vntez.cloud/api/workers/cache/purge', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    Authorization: `Bearer ${token}`,\n  },\n  body: JSON.stringify({ tags: ['apps-manifest'] }),\n});",
+      code: "const res = await fetch('https://workers.vntez.cloud/api/workers/cache/purge', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    Authorization: `Bearer ${token}`,\n  },\n  body: JSON.stringify({\n    tags: ['apps-manifest'],\n    urls: ['https://vntez.net/products'],\n  }),\n});\nconst result = await res.json();",
+    },
+    {
+      label: "Python",
+      lang: "python",
+      code: "import requests\n\nres = requests.post(\n    'https://workers.vntez.cloud/api/workers/cache/purge',\n    headers={'Authorization': f'Bearer {token}'},\n    json={'tags': ['apps-manifest'], 'urls': ['https://vntez.net/products']}\n)\nprint(res.json())",
     },
   ]}
 />
 
 ## Phản hồi Thành công (200 OK)
+
+| Trường dữ liệu | Kiểu | Mô tả |
+| :--- | :--- | :--- |
+| `success` | `boolean` | `true` khi toàn bộ cụm Cloudflare PoP đã tiếp nhận lệnh xóa cache thành công. |
+| `purged_items` | `number` | Tổng số bản ghi cache đã được dọn sạch khỏi bộ nhớ biên. |
+| `execution_time_ms` | `number` | Thời gian hoàn tất tính bằng mili-giây tại cạnh mạng. |
+| `zone_id` | `string` | Mã định danh phân vùng Cloudflare Edge Zone quản lý dịch vụ. |
 
 ```json
 {

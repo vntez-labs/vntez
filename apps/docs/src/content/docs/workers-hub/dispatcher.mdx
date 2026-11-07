@@ -14,9 +14,17 @@ import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
 
 ## Mô tả Endpoint
 
-Kích hoạt các tác vụ xử lý hàng đợi (Queues) hoặc gửi sự kiện khẩn cấp sang Worker xử lý Telegram Bot để thông báo trực tiếp cho đội ngũ DevOps.
+Kích hoạt các tác vụ xử lý hàng đợi (Cloudflare Queues) bất đồng bộ hoặc phát tín hiệu khẩn cấp sang Worker điều phối Telegram Bot để cảnh báo tức thì cho đội ngũ DevOps.
 
-## Dữ liệu Yêu cầu (Request Body)
+## Tham số Yêu cầu (Request Body)
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `target_worker` | `string` | Có | Định danh Worker đích tiếp nhận tác vụ (VD: `telebot-worker`, `audit-worker`). |
+| `event_type` | `string` | Có | Tên phân loại sự kiện (VD: `alert_incident`, `batch_sync`). |
+| `payload` | `object` | Có | Dữ liệu chi tiết của tác vụ, bao gồm cấp độ `severity` và nội dung `message`. |
+
+### Cấu trúc JSON Request Mẫu
 
 ```json
 {
@@ -29,7 +37,7 @@ Kích hoạt các tác vụ xử lý hàng đợi (Queues) hoặc gửi sự ki�
 }
 ```
 
-## Mẫu gọi API đa ngôn ngữ
+## Mã gọi Mẫu đa ngôn ngữ
 
 <TabbedCodeBlock
   client:load
@@ -38,7 +46,7 @@ Kích hoạt các tác vụ xử lý hàng đợi (Queues) hoặc gửi sự ki�
     {
       label: "cURL",
       lang: "bash",
-      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/dispatch\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\"target_worker\":\"telebot-worker\",\"event_type\":\"alert_incident\",\"payload\":{\"severity\":\"critical\",\"message\":\"P99 latency spike\"}}'",
+      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/dispatch\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\n    \"target_worker\": \"telebot-worker\",\n    \"event_type\": \"alert_incident\",\n    \"payload\": {\n      \"severity\": \"critical\",\n      \"message\": \"P99 latency spike in Hanoi POP\"\n    }\n  }'",
     },
     {
       label: "TypeScript",
@@ -48,12 +56,19 @@ Kích hoạt các tác vụ xử lý hàng đợi (Queues) hoặc gửi sự ki�
     {
       label: "Python",
       lang: "python",
-      code: "import requests\n\nres = requests.post(\n  'https://workers.vntez.cloud/api/workers/dispatch',\n  json={\n    'target_worker': 'telebot-worker',\n    'event_type': 'alert_incident',\n    'payload': {'severity': 'critical', 'message': 'P99 latency spike'}\n  },\n  headers={'Authorization': f'Bearer {token}'}\n)",
+      code: "import requests\n\nres = requests.post(\n    'https://workers.vntez.cloud/api/workers/dispatch',\n    headers={'Authorization': f'Bearer {token}'},\n    json={\n        'target_worker': 'telebot-worker',\n        'event_type': 'alert_incident',\n        'payload': {'severity': 'critical', 'message': 'P99 latency spike'}\n    }\n)\nprint(res.json())",
     },
   ]}
 />
 
 ## Phản hồi Đã tiếp nhận (202 Accepted)
+
+| Trường dữ liệu | Kiểu | Mô tả |
+| :--- | :--- | :--- |
+| `success` | `boolean` | `true` khi tác vụ đã được đẩy vào Cloudflare Queue thành công. |
+| `task_id` | `string` | Mã định danh duy nhất của tác vụ nền để tra cứu trạng thái. |
+| `queued_at` | `string` | Dấu thời gian ISO-8601 ghi nhận thời điểm tiếp nhận. |
+| `target` | `string` | Tên Worker đích phụ trách xử lý tác vụ. |
 
 ```json
 {
