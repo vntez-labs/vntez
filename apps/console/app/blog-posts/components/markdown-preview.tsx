@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock, User, Calendar, Eye, Heart, MessageSquare } from "lucide-react";
+import { Clock, User, Calendar } from "lucide-react";
 
 interface MarkdownPreviewProps {
   title?: string;
@@ -25,7 +25,7 @@ export function MarkdownPreview({
   const displayDate = date || new Date().toLocaleDateString("vi-VN");
 
   return (
-    <article className="max-w-3xl mx-auto space-y-6 text-foreground">
+    <article className="max-w-4xl mx-auto space-y-6 text-foreground">
       {/* Header Preview */}
       <header className="space-y-4 pb-6 border-b border-zinc-200/80 dark:border-zinc-800">
         <div className="flex items-center gap-2.5">
@@ -84,14 +84,50 @@ function RenderMarkdownBody({ content }: { content: string }) {
   let inCode = false;
   let codeLines: string[] = [];
   let codeLang = "";
+  let tableRows: string[][] = [];
+  let inTable = false;
+
+  const flushTable = (key: string | number) => {
+    if (tableRows.length > 0) {
+      const header = tableRows[0];
+      const body = tableRows.slice(1).filter((r) => !r.every((c) => /^[:-]+$/.test(c.trim())));
+      elements.push(
+        <div key={`table-${key}`} className="my-4 overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-left text-xs border-collapse">
+            {header && (
+              <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 font-semibold text-foreground">
+                <tr>
+                  {header.map((col, cIdx) => (
+                    <th key={cIdx} className="px-3.5 py-2.5 font-mono uppercase text-[11px]">{renderInline(col.trim())}</th>
+                  ))}
+                </tr>
+              </thead>
+            )}
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+              {body.map((row, rIdx) => (
+                <tr key={rIdx} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40">
+                  {row.map((cell, cIdx) => (
+                    <td key={cIdx} className="px-3.5 py-2 text-foreground/90">{renderInline(cell.trim())}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      tableRows = [];
+      inTable = false;
+    }
+  };
 
   lines.forEach((line, idx) => {
     if (line.trim().startsWith("```")) {
+      if (inTable) flushTable(idx);
       if (inCode) {
         elements.push(
           <div key={`code-${idx}`} className="my-4 rounded-xl bg-zinc-900 text-zinc-100 p-4 font-mono text-xs overflow-x-auto shadow-inner border border-zinc-800">
-            {codeLang && <div className="text-[10px] text-zinc-400 uppercase pb-1 mb-2 border-b border-zinc-800">{codeLang}</div>}
-            <pre><code>{codeLines.join("\n")}</code></pre>
+            {codeLang && <div className="text-[10px] text-zinc-400 uppercase pb-1 mb-2 border-b border-zinc-800 font-bold">{codeLang}</div>}
+            <pre className="m-0 p-0 leading-relaxed font-mono"><code>{codeLines.join("\n")}</code></pre>
           </div>
         );
         codeLines = [];
@@ -109,16 +145,32 @@ function RenderMarkdownBody({ content }: { content: string }) {
       return;
     }
 
+    // Markdown Table Detection
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      const cells = line.trim().slice(1, -1).split("|");
+      tableRows.push(cells);
+      inTable = true;
+      return;
+    } else if (inTable) {
+      flushTable(idx);
+    }
+
+    // Horizontal Rule
+    if (/^(\s*[-*_]\s*){3,}$/.test(line.trim())) {
+      elements.push(<hr key={idx} className="my-6 border-zinc-200 dark:border-zinc-800" />);
+      return;
+    }
+
     if (line.startsWith("# ")) {
       elements.push(<h1 key={idx} className="text-xl sm:text-2xl font-bold text-foreground mt-6 mb-3 font-display border-b border-zinc-200/80 dark:border-zinc-800 pb-2">{renderInline(line.slice(2))}</h1>);
       return;
     }
     if (line.startsWith("## ")) {
-      elements.push(<h2 key={idx} className="text-lg sm:text-xl font-bold text-foreground mt-5 mb-2.5 font-display">{renderInline(line.slice(3))}</h2>);
+      elements.push(<h2 key={idx} className="text-lg sm:text-xl font-bold text-foreground mt-6 mb-2.5 font-display">{renderInline(line.slice(3))}</h2>);
       return;
     }
     if (line.startsWith("### ")) {
-      elements.push(<h3 key={idx} className="text-base font-bold text-foreground mt-4 mb-2">{renderInline(line.slice(4))}</h3>);
+      elements.push(<h3 key={idx} className="text-base font-bold text-foreground mt-5 mb-2">{renderInline(line.slice(4))}</h3>);
       return;
     }
     if (line.startsWith("> ")) {
@@ -137,6 +189,18 @@ function RenderMarkdownBody({ content }: { content: string }) {
 
     elements.push(<p key={idx} className="text-xs sm:text-sm leading-relaxed text-foreground/90 my-2">{renderInline(line)}</p>);
   });
+
+  if (inTable) flushTable("end");
+
+  // Always flush unclosed code block so typing live doesn't truncate the preview
+  if (inCode && codeLines.length > 0) {
+    elements.push(
+      <div key="unclosed-code-end" className="my-4 rounded-xl bg-zinc-900 text-zinc-100 p-4 font-mono text-xs overflow-x-auto shadow-inner border border-zinc-800">
+        {codeLang && <div className="text-[10px] text-zinc-400 uppercase pb-1 mb-2 border-b border-zinc-800 font-bold">{codeLang}</div>}
+        <pre className="m-0 p-0 leading-relaxed font-mono"><code>{codeLines.join("\n")}</code></pre>
+      </div>
+    );
+  }
 
   return <div className="space-y-1">{elements}</div>;
 }

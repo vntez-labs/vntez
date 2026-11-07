@@ -4,12 +4,10 @@ import React, { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
-import { AutoResizeTextarea } from "@workspace/ui/components/auto-resize-textarea";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
-import { BlogEditorHeader } from "./components/blog-editor-header";
+import { BlogEditorHeader, type EditorViewMode } from "./components/blog-editor-header";
 import { PaperBlogMeta } from "./components/paper-blog-meta";
-import { MarkdownToolbar } from "../components/markdown-toolbar";
-import { MarkdownPreview } from "../components/markdown-preview";
+import { BlogWorkspacePanes } from "./components/blog-workspace-panes";
 import { BlogCommentsManager } from "../components/blog-comments-manager";
 
 function computeReadTime(text: string): string {
@@ -40,6 +38,11 @@ function BlogEditorContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Layout View Controls
+  const [viewMode, setViewMode] = useState<EditorViewMode>("split");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showMeta, setShowMeta] = useState(true);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -181,96 +184,95 @@ function BlogEditorContent() {
     );
   }
 
-  return (
-    <div className="w-full max-w-full min-w-0 space-y-8">
+  const editorLayout = (
+    <div className={`w-full max-w-full min-w-0 flex flex-col ${isFullscreen ? "h-full" : "space-y-6"}`}>
       <BlogEditorHeader
         isSaving={isSaving}
         onSave={handleSave}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={() => setIsFullscreen((prev) => !prev)}
+        showMeta={showMeta}
+        onToggleMeta={() => setShowMeta((prev) => !prev)}
       />
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs">
+        <div className="p-3 my-2 rounded-xl bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs shrink-0">
           {errorMessage}
         </div>
       )}
 
-      {/* Full-width Paper Document Canvas - Direct Side-by-Side View */}
-      <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0c121e] rounded-3xl p-8 sm:p-12 lg:p-14 shadow-xs border border-zinc-200/70 dark:border-zinc-800/70 space-y-10">
-        <PaperBlogMeta
-          title={title}
-          setTitle={setTitle}
-          slug={slug}
-          setSlug={setSlug}
-          excerpt={excerpt}
-          setExcerpt={setExcerpt}
-          category={category}
-          setCategory={setCategory}
-          author={author}
-          setAuthor={setAuthor}
-          readTime={readTime}
-          setReadTime={setReadTime}
-          status={status}
-          setStatus={setStatus}
-          illustrationKey={illustrationKey}
-          setIllustrationKey={setIllustrationKey}
-          thumbnailUrl={thumbnailUrl}
-          setThumbnailUrl={setThumbnailUrl}
-          isUploading={isUploading}
-          onFileUpload={handleFileUpload}
-          isEdit={Boolean(editSlug)}
-        />
-
-        {/* Markdown Writing Workspace */}
-        <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/80">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Nội dung Markdown ({content.length} ký tự)
-            </label>
-            <MarkdownToolbar onInsert={handleInsert} />
-          </div>
-
-          {/* Direct Side-by-Side Editor & Live Preview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 w-full max-w-full">
-            <div className="space-y-2 min-w-0">
-              <AutoResizeTextarea
-                ref={textareaRef}
-                minRows={14}
-                placeholder="# Tiêu đề chính&#10;&#10;Bắt đầu soạn thảo bài viết bằng Markdown...&#10;&#10;```ts&#10;const fast = true;&#10;```"
-                value={content}
-                onChange={(e) => {
-                  setContent(e.target.value);
-                  setReadTime(computeReadTime(e.target.value));
-                }}
-                className="font-mono text-sm leading-relaxed border-0 p-0 focus:outline-none"
-              />
-            </div>
-
-            {/* Direct Preview without nested wrapper box */}
-            <div className="min-w-0 lg:border-l lg:border-zinc-100 lg:dark:border-zinc-800/80 lg:pl-10">
-              <MarkdownPreview
-                title={title}
-                category={category}
-                author={author}
-                readTime={readTime}
-                thumbnailUrl={thumbnailUrl}
-                content={content}
-              />
-            </div>
-          </div>
+      {/* Collapsible Metadata Section */}
+      {showMeta && (
+        <div className={`w-full bg-white dark:bg-[#0c121e] rounded-2xl p-6 sm:p-8 shadow-xs border border-zinc-200/80 dark:border-zinc-800 ${isFullscreen ? "shrink-0 max-h-56 overflow-y-auto mb-3" : ""}`}>
+          <PaperBlogMeta
+            title={title}
+            setTitle={setTitle}
+            slug={slug}
+            setSlug={setSlug}
+            excerpt={excerpt}
+            setExcerpt={setExcerpt}
+            category={category}
+            setCategory={setCategory}
+            author={author}
+            setAuthor={setAuthor}
+            readTime={readTime}
+            setReadTime={setReadTime}
+            status={status}
+            setStatus={setStatus}
+            illustrationKey={illustrationKey}
+            setIllustrationKey={setIllustrationKey}
+            thumbnailUrl={thumbnailUrl}
+            setThumbnailUrl={setThumbnailUrl}
+            isUploading={isUploading}
+            onFileUpload={handleFileUpload}
+            isEdit={Boolean(editSlug)}
+          />
         </div>
+      )}
 
-        {/* Comments Manager (Only shown when editing an existing post) */}
-        {Boolean(editSlug) && (
-          <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-            <BlogCommentsManager
-              comments={comments || []}
-              onDeleteComment={(commentId) => {
-                setComments((prev) => (prev || []).filter((c) => c.id !== commentId));
-              }}
-            />
-          </div>
-        )}
-      </div>
+      {/* Main Workspace (Editor + Live Preview Panes) */}
+      <BlogWorkspacePanes
+        viewMode={viewMode}
+        isFullscreen={isFullscreen}
+        content={content}
+        onChangeContent={(newVal) => {
+          setContent(newVal);
+          setReadTime(computeReadTime(newVal));
+        }}
+        textareaRef={textareaRef}
+        onInsert={handleInsert}
+        meta={{
+          title,
+          category,
+          author,
+          readTime,
+          thumbnailUrl,
+        }}
+      />
+
+      {/* Comments Manager (Only shown when editing an existing post and not fullscreen) */}
+      {!isFullscreen && Boolean(editSlug) && (
+        <div className="pt-6 border-t border-zinc-200/80 dark:border-zinc-800">
+          <BlogCommentsManager
+            comments={comments || []}
+            onDeleteComment={(commentId) => {
+              setComments((prev) => (prev || []).filter((c) => c.id !== commentId));
+            }}
+          />
+        </div>
+      )}
     </div>
   );
+
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#fbf9f5] dark:bg-[#080c14] flex flex-col p-4 sm:p-6 overflow-hidden">
+        {editorLayout}
+      </div>
+    );
+  }
+
+  return editorLayout;
 }
