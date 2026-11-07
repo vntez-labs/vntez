@@ -1,37 +1,40 @@
 ---
-title: "Tổng quan SoloType & Thuật toán Gõ Tiếng Việt"
-description: "Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên."
+title: "Giới thiệu SoloType & Thuật toán Đo Tốc độ Gõ"
+description: "Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên code đa ngôn ngữ."
 appId: "solotype"
 appName: "SoloType"
-category: "Thuật toán & Cơ chế"
+category: "Cẩm nang Luyện gõ"
 order: 1
 badge: "TYPING ENGINE"
 ---
 
-import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+## 1. Triết lý Thiết kế SoloType
 
-## Thuật toán Đo Đạc Tốc độ Gõ
+**SoloType** là ứng dụng web rèn luyện tốc độ gõ phím được thiết kế với mục tiêu loại bỏ hoàn toàn phiền nhiễu:
+- **Tập trung cao độ (Focus Mode):** Giao diện tự động làm mờ các thành phần phụ khi người dùng bắt đầu nhấn phím.
+- **Tối ưu tiếng Việt:** Hỗ trợ xử lý thông minh tổ hợp phím bộ gõ **Telex** và **VNI**, không tính lỗi sai đối với các phím gõ dấu trung gian.
+- **Không yêu cầu đăng ký rườm rà:** Bạn có thể mở trình duyệt và bắt đầu bài kiểm tra ngay lập tức.
 
-SoloType sử dụng chuẩn quốc tế để đo đạc hiệu suất gõ phím:
-- **Net WPM (Words Per Minute):** `(Tổng số ký tự đúng / 5) / (Thời gian thi tính bằng phút)`.
-- **CPM (Characters Per Minute):** Số ký tự chuẩn xác gõ được trong 60 giây.
-- **Xử lý Bộ gõ Tiếng Việt:** Thuật toán phân tách ký tự gốc và ký tự dấu (ví dụ: `w` tạo `ư`, `s` tạo dấu sắc) để tránh phạt lỗi sai sai lệch trong quá trình soạn thảo văn bản tiếng Việt Telex hoặc VNI.
+## 2. Thuật toán Đo đạc WPM & CPM
 
-## Chế độ Luyện Gõ dành cho Lập trình viên
+SoloType sử dụng công thức chuẩn quốc tế để đo đạc chính xác năng lực gõ phím:
 
-Hỗ trợ các kho từ vựng chuyên dụng với cấu trúc cú pháp thật:
-- **TypeScript & JavaScript:** Các cú pháp arrow functions, generic types `<T>`, async/await.
-- **Rust & Go:** Các ký tự đặc thù `&mut`, `impl`, `:=`, `chan`.
-- **Python & C++:** Các toán tử con trỏ `*ptr`, `->`, indentations.
+### WPM (Words Per Minute)
+Trong quy chuẩn quốc tế, một "từ" (word) được chuẩn hóa tương đương **5 ký tự** (bao gồm cả dấu cách):
 
-<TabbedCodeBlock
-  client:load
-  title="Khởi tạo Phiên Thi SoloType"
-  tabs={[
-    {
-      label: "TypeScript",
-      lang: "typescript",
-      code: "import { SoloTypeEngine } from '@vntez/solotype-core';\n\nconst session = new SoloTypeEngine({\n  mode: 'vi_telex',\n  durationSeconds: 60,\n  includePunctuation: true,\n});\nsession.start();",
-    },
-  ]}
-/>
+```text
+Net WPM = (Tổng số ký tự gõ đúng / 5) / Thời gian kiểm tra (phút)
+```
+
+### CPM (Characters Per Minute)
+Số lượng ký tự chuẩn xác gõ được trong 60 giây, phản ánh tần số gõ phím thô của lập trình viên.
+
+### Phân tích Độ Ổn định (Consistency)
+SoloType theo dõi độ trễ giữa từng lượt nhấn phím (Keystroke Latency Variance) để đo lường nhịp điệu gõ, giúp bạn duy trì tốc độ ổn định thay vì gõ ngắt quãng.
+
+## 3. Các Chế độ Kiểm tra có sẵn
+
+1. **Thời gian cố định:** 15s, 30s, 60s, và 120s.
+2. **Số lượng từ cố định:** 25 từ, 50 từ, 100 từ.
+3. **Từ vựng Tiếng Việt Nâng cao:** Danh mục 1.000 từ tiếng Việt thông dụng nhất, từ láy và từ ghép.
+4. **Cú pháp Lập trình:** TypeScript, Rust, Python, Go, C++, và SQL.

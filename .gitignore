@@ -13,9 +13,10 @@ node_modules
 # testing
 coverage
 
-# next.js
+# next.js & astro
 .next/
 out/
+.astro/
 
 # production
 build

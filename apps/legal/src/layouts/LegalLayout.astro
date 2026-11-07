@@ -10,22 +10,30 @@ interface TocItem {
 interface Props {
   title: string;
   description: string;
-  version: string;
-  effectiveDate: string;
-  lastUpdated: string;
+  version?: string;
+  effectiveDate?: string;
+  lastUpdated?: string;
   headings?: TocItem[];
+  currentSlug?: string;
 }
 
 const {
   title,
   description,
-  version,
-  effectiveDate,
-  lastUpdated,
+  version = "2.5.0",
+  effectiveDate = "2026-01-01",
+  lastUpdated = "2026-11-07",
   headings = [],
+  currentSlug = "",
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://legal.vntez.net").href;
+
+const LEGAL_DOCS = [
+  { slug: "terms-of-service", title: "Điều Khoản Dịch Vụ", badge: "v2.5.0", icon: "⚖️" },
+  { slug: "privacy-policy", title: "Chính Sách Bảo Mật", badge: "v2.5.0", icon: "🛡️" },
+  { slug: "data-sovereignty-sla", title: "Cam Kết Chủ Quyền & SLA", badge: "v2.1.0", icon: "🇻🇳" },
+];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -33,6 +41,7 @@ const jsonLd = {
   "name": title,
   "description": description,
   "url": canonicalURL,
+  "version": version,
   "datePublished": effectiveDate,
   "dateModified": lastUpdated,
   "publisher": {
@@ -48,10 +57,14 @@ const jsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} — VNTEZ Legal Portal</title>
+    <title>{title} — VNTEZ Legal & SLA</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <!-- Open Graph -->
     <meta property="og:title" content={`${title} — VNTEZ Legal`} />
@@ -60,79 +73,148 @@ const jsonLd = {
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="VNTEZ Legal Compliance" />
 
+    <!-- Anti-FOUC Theme Initialization (0kb runtime) -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
-  <body class="min-h-screen bg-[#0B0F19] text-slate-200 antialiased selection:bg-red-500/20 selection:text-red-400">
+  <body class="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-800 dark:text-slate-200 antialiased selection:bg-red-500/20 selection:text-red-500">
     <!-- Header -->
-    <header class="border-b border-slate-800/80 bg-[#0B0F19]/90 backdrop-blur-md sticky top-0 z-40">
-      <div class="mx-auto flex h-14 max-w-4xl items-center justify-between px-4 sm:px-6">
-        <a href="/" class="flex items-center gap-2.5 font-bold tracking-tight text-white hover:opacity-90">
-          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs">V</span>
-          <span class="text-sm font-semibold">VNTEZ <span class="text-slate-400 font-normal">Legal</span></span>
+    <header class="border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-[#0B0F19]/90 backdrop-blur-md sticky top-0 z-40">
+      <div class="mx-auto flex h-15 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <a href="/" class="flex items-center gap-2.5 font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs shadow-xs">V</span>
+          <span class="text-sm font-bold tracking-tight">VNTEZ <span class="text-slate-500 dark:text-slate-400 font-medium">Legal & SLA</span></span>
         </a>
 
-        <nav class="flex items-center gap-4 text-xs font-medium">
-          <a href="/terms-of-service" class="text-slate-400 hover:text-white transition-colors">Điều khoản</a>
-          <a href="/privacy-policy" class="text-slate-400 hover:text-white transition-colors">Bảo mật</a>
-          <a href="/data-sovereignty-sla" class="text-slate-400 hover:text-white transition-colors">Data Sovereignty SLA</a>
-          <a href="https://vntez.net" class="text-slate-400 hover:text-white transition-colors">Portal ↗</a>
-        </nav>
+        <div class="flex items-center gap-4 text-xs font-medium">
+          <a href="/" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">Trung tâm Pháp lý</a>
+          <a href="https://docs.vntez.net" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">Tài liệu Docs</a>
+          <a href="https://vntez.net" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">Portal ↗</a>
+          
+          <!-- Pure JS/HTML Theme Toggle (0kb React bundle) -->
+          <button
+            type="button"
+            onclick="const isDark = document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', isDark ? 'dark' : 'light');"
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition-colors cursor-pointer"
+            title="Đổi giao diện Sáng / Tối"
+            aria-label="Toggle theme"
+          >
+            <span class="dark:hidden">🌙</span>
+            <span class="hidden dark:inline">☀️</span>
+          </button>
+        </div>
       </div>
     </header>
 
-    <!-- 1-Column Reading-Focused Container -->
-    <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <!-- Title & Version Metadata Badges -->
-      <header class="mb-8 border-b border-slate-800 pb-8">
-        <div class="flex flex-wrap items-center gap-2 mb-3 font-mono text-xs">
-          <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700/80">
-            Phiên bản {version}
-          </span>
-          <span class="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            Hiệu lực: {effectiveDate}
-          </span>
-          <span class="text-slate-400">
-            Cập nhật gần nhất: {lastUpdated}
-          </span>
-        </div>
+    <!-- Main Content Container -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col lg:flex-row gap-10">
+        <!-- Left Column: Document Switcher Sidebar -->
+        {currentSlug && (
+          <aside class="w-full lg:w-64 shrink-0 space-y-6">
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] p-4 shadow-xs">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold block mb-3">
+                Danh mục văn bản
+              </span>
+              <nav class="space-y-1.5 text-xs">
+                {LEGAL_DOCS.map((doc) => {
+                  const isActive = currentSlug.includes(doc.slug);
+                  return (
+                    <a
+                      href={`/${doc.slug}`}
+                      class:list={[
+                        "flex items-center justify-between p-2.5 rounded-xl transition-all font-medium",
+                        isActive
+                          ? "bg-red-500/10 text-red-600 dark:text-red-400 font-semibold border-l-2 border-red-500 shadow-2xs"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60",
+                      ]}
+                    >
+                      <div class="flex items-center gap-2 truncate">
+                        <span>{doc.icon}</span>
+                        <span class="truncate">{doc.title}</span>
+                      </div>
+                      <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 shrink-0">
+                        {doc.badge}
+                      </span>
+                    </a>
+                  );
+                })}
+              </nav>
 
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
-          {title}
-        </h1>
-        <p class="text-base text-slate-400 leading-relaxed">
-          {description}
-        </p>
+              <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/80 space-y-2">
+                <button
+                  type="button"
+                  onclick="window.print()"
+                  class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                >
+                  <span>🖨️</span>
+                  <span>In / Lưu PDF văn bản</span>
+                </button>
+              </div>
+            </div>
 
-        <!-- Sticky Mini TOC Anchor Links (Pure HTML) -->
+            <!-- Trust Badge Box -->
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] p-4 text-xs space-y-2">
+              <span class="font-bold text-slate-900 dark:text-white block">Tuân thủ Pháp lý</span>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Được bảo đảm bởi Ban Quản trị Pháp chế VNTEZ. Tuân thủ Nghị định 13/2023/NĐ-CP và tiêu chuẩn ISO/IEC 27001.
+              </p>
+            </div>
+          </aside>
+        )}
+
+        <!-- Center Reading Column -->
+        <main class:list={["min-w-0 flex-1", currentSlug ? "max-w-3xl" : "max-w-5xl mx-auto"]}>
+          <slot />
+        </main>
+
+        <!-- Right Column: Sticky Table of Contents (for document reading) -->
         {headings.length > 0 && (
-          <nav aria-label="Mục lục văn bản" class="mt-6 p-4 rounded-xl bg-[#111827] border border-slate-800 text-xs">
-            <span class="font-mono uppercase tracking-wider text-slate-400 font-semibold block mb-2">
+          <aside class="hidden xl:block w-60 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pl-4 border-l border-slate-200 dark:border-slate-800 text-xs">
+            <span class="font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold block mb-3">
               Mục lục văn bản
             </span>
-            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+            <ul class="space-y-2.5">
               {headings.map((h) => (
-                <li>
-                  <a href={`#${h.slug}`} class="text-slate-300 hover:text-red-400 transition-colors truncate block">
-                    → {h.text}
+                <li style={{ paddingLeft: `${Math.max(0, h.depth - 2) * 10}px` }}>
+                  <a
+                    href={`#${h.slug}`}
+                    class="block text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors truncate font-medium"
+                  >
+                    {h.text}
                   </a>
                 </li>
               ))}
             </ul>
-          </nav>
+          </aside>
         )}
-      </header>
+      </div>
+    </div>
 
-      <!-- Legal Document Prose Content (0kb JS) -->
-      <article class="prose prose-invert prose-slate max-w-none text-slate-300 prose-headings:text-white prose-headings:font-bold prose-h2:border-b prose-h2:border-slate-800/80 prose-h2:pb-2 prose-a:text-red-400 prose-strong:text-white prose-li:marker:text-red-500">
-        <slot />
-      </article>
-
-      <!-- Footer Compliance Assurance -->
-      <footer class="mt-16 border-t border-slate-800 pt-8 text-center text-xs text-slate-400 space-y-2">
-        <p>© 2026 VNTEZ Ecosystem. Bảo lưu mọi quyền.</p>
-        <p>Tuân thủ Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân tại Việt Nam và quy chuẩn GDPR.</p>
-      </footer>
-    </main>
+    <!-- Human-Centered Footer -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B0F19] py-10 mt-16 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+      <div class="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>© 2026 VNTEZ Ecosystem. Mọi quyền được bảo lưu.</p>
+        <p>Bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP • Hạ tầng Cloudflare Tier-3 nội địa.</p>
+        <p>Liên hệ DPO: <a href="mailto:legal@vntez.net" class="text-red-500 font-semibold hover:underline">legal@vntez.net</a></p>
+      </div>
+    </footer>
   </body>
 </html>

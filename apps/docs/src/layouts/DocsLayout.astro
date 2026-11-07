@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css";
-import { AppSwitcher, ECOSYSTEM_APPS } from "../components/islands/AppSwitcher";
+import { AppSwitcher, ALL_APPS } from "../components/islands/AppSwitcher";
 import { MethodBadge } from "../components/islands/MethodBadge";
+import { ThemeToggle } from "../components/islands/ThemeToggle";
 
 interface TocItem {
   depth: number;
@@ -44,9 +45,8 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://docs.vntez.net").href;
-const currentApp = ECOSYSTEM_APPS.find((a) => a.id === appId) || ECOSYSTEM_APPS[0];
+const currentApp = ALL_APPS.find((a) => a.id === appId) || ALL_APPS[0];
 
-// Group docs by Category for navigation tree
 const appDocs = allDocs.filter((d) => d.appId === appId);
 const groupedCategories = appDocs.reduce<Record<string, NavItem[]>>((acc, item) => {
   if (!acc[item.category]) acc[item.category] = [];
@@ -64,16 +64,12 @@ const jsonLd = {
     "@type": "Organization",
     "name": "VNTEZ Ecosystem",
     "url": "https://vntez.net",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://vntez.net/icon.svg",
-    },
   },
 };
 ---
 
 <!doctype html>
-<html lang="vi" class="dark">
+<html lang="vi" class="dark scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -82,6 +78,10 @@ const jsonLd = {
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <!-- Open Graph -->
     <meta property="og:title" content={`${title} — VNTEZ Docs`} />
     <meta property="og:description" content={description} />
@@ -89,27 +89,48 @@ const jsonLd = {
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="VNTEZ Documentation" />
 
+    <!-- Anti-FOUC Theme Initialization -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
-  <body class="min-h-screen bg-[#0B0F19] text-slate-100 antialiased selection:bg-red-500/20 selection:text-red-400">
+  <body class="min-h-screen bg-white dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 antialiased selection:bg-red-500/20 selection:text-red-500">
     <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#0B0F19]/90 backdrop-blur-md">
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-[#0B0F19]/90 backdrop-blur-md">
       <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div class="flex items-center gap-6">
-          <a href="/" class="flex items-center gap-2.5 font-bold tracking-tight text-white hover:opacity-90">
-            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs">V</span>
-            <span class="text-sm font-semibold">VNTEZ <span class="text-slate-400 font-normal">Docs</span></span>
+        <div class="flex items-center gap-4">
+          <a href="/" class="flex items-center gap-2.5 font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs shadow-xs">V</span>
+            <span class="text-sm font-bold tracking-tight">VNTEZ <span class="text-slate-500 dark:text-slate-400 font-medium">Docs</span></span>
           </a>
-          <div class="hidden lg:block">
-            <AppSwitcher client:load currentAppId={appId} />
-          </div>
+
+          <!-- Searchable App Switcher Dropdown (Scales to 50+ Apps without taking header space!) -->
+          <AppSwitcher client:load currentAppId={appId} />
         </div>
 
-        <div class="flex items-center gap-4 text-xs">
-          <a href="https://vntez.net" class="text-slate-400 hover:text-white transition-colors">Portal</a>
-          <a href="https://legal.vntez.net" class="text-slate-400 hover:text-white transition-colors">Legal SLA</a>
-          <a href="https://github.com/hnamhocit" target="_blank" rel="noreferrer" class="text-slate-400 hover:text-white transition-colors">GitHub ↗</a>
+        <div class="flex items-center gap-4 text-xs font-medium">
+          <a href="https://vntez.net" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">Portal</a>
+          <a href="https://legal.vntez.net" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">Legal SLA</a>
+          <a href="https://github.com/hnamhocit" target="_blank" rel="noreferrer" class="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block">GitHub ↗</a>
+          
+          <!-- Light / Dark Theme Toggle Button -->
+          <ThemeToggle client:load />
         </div>
       </div>
     </header>
@@ -118,16 +139,17 @@ const jsonLd = {
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex gap-8 py-8">
         <!-- 1. Left Column: Category Tree Navigation -->
-        <aside class="sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 overflow-y-auto pr-4 lg:block">
-          <div class="mb-4 pb-3 border-b border-slate-800">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Hệ sinh thái</span>
-            <h3 class="text-sm font-bold text-white mt-0.5">{currentApp.name}</h3>
+        <aside class="sticky top-20 hidden h-[calc(100vh-6rem)] w-64 shrink-0 overflow-y-auto pr-4 lg:block">
+          <div class="mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">Hệ sinh thái đang xem</span>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white mt-1">{currentApp.name}</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{currentApp.description}</p>
           </div>
 
           <nav class="space-y-6 text-xs">
             {Object.entries(groupedCategories).map(([catName, items]) => (
               <div>
-                <h4 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                <h4 class="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2.5">
                   {catName}
                 </h4>
                 <ul class="space-y-1">
@@ -138,15 +160,15 @@ const jsonLd = {
                         <a
                           href={item.href}
                           class:list={[
-                            "flex items-center justify-between rounded-lg px-2.5 py-1.5 transition-colors",
+                            "flex items-center justify-between rounded-xl px-3 py-2 transition-all text-xs font-medium",
                             isCurrent
-                              ? "bg-red-500/10 font-medium text-red-400 border-l-2 border-red-500"
-                              : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200",
+                              ? "bg-red-500/10 font-semibold text-red-600 dark:text-red-400 border-l-2 border-red-500"
+                              : "text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60",
                           ]}
                         >
                           <span class="truncate">{item.title}</span>
                           {item.method && (
-                            <span class="text-[9px] font-mono uppercase px-1 py-0.2 rounded bg-slate-800 text-slate-400">
+                            <span class="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold shrink-0 ml-1">
                               {item.method}
                             </span>
                           )}
@@ -162,43 +184,51 @@ const jsonLd = {
 
         <!-- 2. Middle Column: Content Body -->
         <main class="min-w-0 flex-1 max-w-3xl">
-          <!-- Breadcrumb & Method Header -->
-          <div class="mb-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <span>{currentApp.name}</span>
+          <!-- Breadcrumb -->
+          <div class="mb-4 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <span class="font-semibold text-slate-700 dark:text-slate-300">{currentApp.name}</span>
             <span>/</span>
-            <span class="text-slate-300">{category}</span>
+            <span>{category}</span>
           </div>
 
-          <div class="mb-6 space-y-2">
+          <div class="mb-8 space-y-3">
             <div class="flex items-center gap-3">
               {method && <MethodBadge method={method} />}
-              {endpoint && <code class="text-xs font-mono text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">{endpoint}</code>}
+              {endpoint && (
+                <code class="text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800">
+                  {endpoint}
+                </code>
+              )}
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">{title}</h1>
-            <p class="text-sm text-slate-400 leading-relaxed">{description}</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+              {description}
+            </p>
           </div>
 
-          <!-- Article Content -->
-          <article class="prose prose-invert prose-slate max-w-none text-slate-300 prose-headings:text-white prose-a:text-red-400 prose-code:text-red-300 prose-pre:bg-[#0c121e] prose-pre:border prose-pre:border-slate-800">
+          <!-- Article Content with Human-Designed Prose -->
+          <article class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 prose-headings:text-slate-950 dark:prose-headings:text-white prose-headings:font-bold prose-h2:text-xl prose-h2:border-b prose-h2:border-slate-200 dark:prose-h2:border-slate-800 prose-h2:pb-2.5 prose-h2:mt-10 prose-h3:text-base prose-a:text-red-600 dark:prose-a:text-red-400 prose-a:font-semibold prose-code:text-red-600 dark:prose-code:text-red-400 prose-code:font-mono prose-code:bg-slate-100 dark:prose-code:bg-slate-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-[#090d16] prose-pre:border prose-pre:border-slate-800 leading-relaxed">
             <slot />
           </article>
         </main>
 
         <!-- 3. Right Column: On-this-page Table of Contents (TOC) -->
-        <aside class="sticky top-20 hidden h-[calc(100vh-5rem)] w-56 shrink-0 overflow-y-auto pl-4 xl:block border-l border-slate-800/80">
+        <aside class="sticky top-20 hidden h-[calc(100vh-6rem)] w-56 shrink-0 overflow-y-auto pl-4 xl:block border-l border-slate-200 dark:border-slate-800">
           <div class="space-y-3">
-            <h4 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <h4 class="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               Trên trang này
             </h4>
             {headings.length === 0 ? (
-              <p class="text-xs text-slate-400">Tổng quan tài liệu</p>
+              <p class="text-xs text-slate-400">Tổng quan nội dung</p>
             ) : (
               <ul class="space-y-2 text-xs">
                 {headings.map((h) => (
-                  <li style={{ paddingLeft: `${(h.depth - 2) * 12}px` }}>
+                  <li style={{ paddingLeft: `${Math.max(0, h.depth - 2) * 10}px` }}>
                     <a
                       href={`#${h.slug}`}
-                      class="block text-slate-400 hover:text-white transition-colors truncate"
+                      class="block text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors truncate font-medium"
                     >
                       {h.text}
                     </a>

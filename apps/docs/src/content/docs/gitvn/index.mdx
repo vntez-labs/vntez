@@ -8,28 +8,27 @@ order: 1
 badge: "ZERO-FRICTION GIT"
 ---
 
-import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+## 1. Triết lý Zero-Friction
 
-## Triết lý Zero-Friction
+Các nền tảng quản lý mã nguồn đám mây lớn hiện nay đang trở nên quá cồng kềnh với hàng tá bảng điều khiển phức tạp, biểu đồ rối rắm và độ trễ mạng khó chịu.
 
-Các nền tảng lưu trữ mã nguồn truyền thống thường cồng kềnh, tiêu tốn tài nguyên và có quá nhiều tính năng phân tâm. **GitVN** được xây dựng với một mục tiêu duy nhất:
+**GitVN** được xây dựng với một mục tiêu duy nhất:
 
-> **Loại bỏ tối đa ma sát (Zero-Friction):** Giữ lại những tính năng mà lập trình viên thực sự sử dụng hàng ngày, kết hợp tinh thần quản trị công việc của **Jira** và tài liệu dự án của **Confluence** ngay trong kho mã nguồn local.
+> **Loại bỏ tối đa ma sát (Zero-Friction):** Chỉ giữ lại những tính năng cốt lõi hay dùng nhất của Git, kết hợp tinh thần quản lý tác vụ tinh gọn của **Jira** và tài liệu dự án của **Confluence** ngay tại môi trường local của lập trình viên.
 
-## Các Đặc trưng Nổi bật
+## 2. Vì sao GitVN Khác biệt?
 
-- **Tốc độ phản hồi cực nhanh:** Clone và push qua SSH nội bộ chỉ trong vài miligiây.
-- **Tác vụ & Kanban tối giản (Jira-inspired):** Quản lý issues, story points, checklist và commit linking trực tiếp mà không cần đăng nhập vào hệ thống bên thứ ba.
-- **Tài liệu Markdown tích hợp (Confluence-inspired):** Toàn bộ wiki và kiến trúc dự án được lưu trữ bằng các tệp Markdown phiên bản hóa cùng mã nguồn.
+- **Tốc độ Gigabit Nội địa & Local:** Không còn cảnh chờ đợi xoay vòng khi tạo branch, commit hoặc xem lịch sử. Mọi tác vụ phản hồi ngay lập tức dưới 5ms.
+- **Không Cần Cài Đặt Hệ Thống Bên Thứ Ba:** Quản lý công việc và tài liệu được gắn liền với repository mã nguồn, không phải tạo thêm tài khoản hay trả phí thuê bao đắt đỏ.
+- **Dữ liệu Hoàn Toàn Thuộc Quyền Kiểm Soát Của Bạn:** Mã nguồn và tài liệu nằm trên máy chủ nội địa hoặc ổ đĩa cục bộ, không lo bị phụ thuộc vào các chính sách thay đổi đột ngột từ các dịch vụ đám mây nước ngoài.
 
-<TabbedCodeBlock
-  client:load
-  title="Clone Repo GitVN"
-  tabs={[
-    {
-      label: "cURL / Git CLI",
-      lang: "bash",
-      code: "git clone git@gitvn.local:hnamhocit/vntez-core.git\ncd vntez-core",
-    },
-  ]}
-/>
+## 3. Khởi tạo Repository Đầu tiên
+
+```bash
+# Khởi tạo repo GitVN cục bộ
+gitvn init my-awesome-project
+cd my-awesome-project
+
+# Mở giao diện quản trị Zero-Friction
+gitvn ui
+```

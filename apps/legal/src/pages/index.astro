@@ -1,46 +1,196 @@
 ---
-import { getCollection } from "astro:content";
 import LegalLayout from "../layouts/LegalLayout.astro";
 
-const docs = await getCollection("legal");
-const sortedDocs = docs.sort((a, b) => a.data.order - b.data.order);
+const TRUST_PILLARS = [
+  {
+    icon: "🇻🇳",
+    title: "100% Chủ Quyền Dữ Liệu",
+    description:
+      "Máy chủ biên và cụm lưu trữ R2 đặt trực tiếp tại các trung tâm dữ liệu Việt Nam. Tuân thủ tuyệt đối Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.",
+  },
+  {
+    icon: "🛡️",
+    title: "Tôn Trọng Sự Riêng Tư",
+    description:
+      "Không bán dữ liệu, không gắn trackers quảng cáo bên thứ ba, không khai thác mã nguồn và tài liệu của bạn để huấn luyện mô hình AI.",
+  },
+  {
+    icon: "⚡",
+    title: "Minh Bạch & Quyền Được Quên",
+    description:
+      "Chính sách Zero-Egress miễn phí tải về. Bạn sở hữu quyền xuất toàn bộ dữ liệu hoặc yêu cầu xóa vĩnh viễn (Right to be Forgotten) bất kỳ lúc nào.",
+  },
+];
+
+const LEGAL_DOCUMENTS = [
+  {
+    slug: "terms-of-service",
+    title: "Điều Khoản Dịch Vụ",
+    subtitle: "Terms of Service",
+    version: "2.5.0",
+    effectiveDate: "01/01/2026",
+    icon: "⚖️",
+    badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+    description:
+      "Quy định về việc đăng ký tài khoản, giao thức xác thực SSO VNTEZ IAM, hạn mức sử dụng API và quyền sở hữu mã nguồn của lập trình viên.",
+    highlights: [
+      "Định danh duy nhất qua giao thức OAuth 2.0 PKCE",
+      "Bảo hộ bản quyền mã nguồn và tài liệu cá nhân",
+      "Chính sách bảo vệ tài nguyên chống tấn công DDoS",
+    ],
+  },
+  {
+    slug: "privacy-policy",
+    title: "Chính Sách Bảo Mật",
+    subtitle: "Privacy Policy",
+    version: "2.5.0",
+    effectiveDate: "01/01/2026",
+    icon: "🛡️",
+    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    description:
+      "Cam kết bảo vệ dữ liệu cá nhân theo tiêu chuẩn cao nhất. Chỉ thu thập dữ liệu tối thiểu cần thiết để vận hành và mã hóa đa lớp.",
+    highlights: [
+      "Nguyên tắc thu thập dữ liệu tối thiểu (Data Minimization)",
+      "Mã hóa toàn bộ dữ liệu khi lưu trữ và truyền tải (TLS 1.3)",
+      "Quyền truy cập, chỉnh sửa và xóa tài khoản hoàn toàn",
+    ],
+  },
+  {
+    slug: "data-sovereignty-sla",
+    title: "Cam Kết Chủ Quyền & SLA",
+    subtitle: "Service Level Agreement",
+    version: "2.1.0",
+    effectiveDate: "01/01/2026",
+    icon: "🇻🇳",
+    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    description:
+      "Thỏa thuận mức chất lượng dịch vụ: Cam kết Uptime 99.99%, độ trễ mạng nội địa gigabit 2ms - 15ms và chính sách đền bù Service Credit.",
+    highlights: [
+      "Cam kết thời gian hoạt động ổn định Uptime 99.99%",
+      "Hạ tầng nội địa hóa không phụ thuộc cáp quang biển",
+      "Cơ chế bồi hoàn tự động bằng Service Credit khi vi phạm SLA",
+    ],
+  },
+];
 ---
 
 <LegalLayout
-  title="Cổng Pháp Lý & Tuân Thủ Tiêu Chuẩn VNTEZ"
-  description="Trung tâm tổng hợp các văn bản thỏa thuận mức dịch vụ (SLA), điều khoản dịch vụ và chính sách bảo mật dữ liệu của hệ sinh thái VNTEZ."
+  title="Trung Tâm Pháp Lý & Cam Kết Dịch Vụ VNTEZ"
+  description="Tổng hợp các văn bản pháp lý, chính sách bảo mật dữ liệu và thỏa thuận mức dịch vụ (SLA) phục vụ cộng đồng lập trình viên Việt Nam."
   version="2.5.0"
   effectiveDate="2026-01-01"
   lastUpdated="2026-11-07"
 >
-  <div class="space-y-6 not-prose my-8">
-    {sortedDocs.map((doc) => {
-      const slug = doc.id.replace(/\.(md|mdx)$/, "");
-      return (
-        <a
-          href={`/${slug}`}
-          class="block p-5 rounded-2xl bg-[#111827] border border-slate-800 hover:border-red-500/50 transition-all group"
-        >
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <h3 class="text-lg font-bold text-white group-hover:text-red-400 transition-colors">
-              {doc.data.title}
-            </h3>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-              v{doc.data.version}
-            </span>
-          </div>
-          <p class="text-xs text-slate-400 leading-relaxed mb-3">
-            {doc.data.description}
+  <!-- Hero Section -->
+  <section class="text-center py-8 sm:py-12 border-b border-slate-200 dark:border-slate-800">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-900/60 mb-4">
+      <span class="w-2 h-2 rounded-full bg-red-500"></span>
+      MINH BẠCH • AN TOÀN • CHỦ QUYỀN
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto leading-tight">
+      Trung Tâm Pháp Lý & Cam Kết Dịch Vụ VNTEZ
+    </h1>
+    <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mt-4 leading-relaxed font-normal">
+      Mọi điều khoản được xây dựng rõ ràng, không thuật ngữ đánh đố, bảo vệ quyền lợi tối đa cho lập trình viên và doanh nghiệp.
+    </p>
+  </section>
+
+  <!-- 3 Trust Pillars -->
+  <section class="py-12 border-b border-slate-200 dark:border-slate-800">
+    <div class="text-center mb-8">
+      <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        Triết Lý Vận Hành
+      </h2>
+      <p class="text-xl font-bold text-slate-900 dark:text-white mt-1">
+        3 Trụ Cột Cam Kết Không Thể Thỏa Hiệp
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {TRUST_PILLARS.map((pillar) => (
+        <div class="p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+          <div class="text-3xl mb-3">{pillar.icon}</div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">
+            {pillar.title}
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            {pillar.description}
           </p>
-          <div class="flex items-center gap-4 text-[11px] font-mono text-slate-400">
-            <span>Hiệu lực: {doc.data.effectiveDate}</span>
-            <span>•</span>
-            <span class="text-red-400 group-hover:translate-x-0.5 transition-transform">
-              Đọc văn bản chi tiết →
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Legal Documents Cards -->
+  <section class="py-12">
+    <div class="text-center mb-8">
+      <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        Văn Bản Quy Chuẩn
+      </h2>
+      <p class="text-xl font-bold text-slate-900 dark:text-white mt-1">
+        Các Thỏa Thuận & Chính Sách Hiện Hành
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {LEGAL_DOCUMENTS.map((doc) => (
+        <div class="flex flex-col justify-between p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-xs hover:border-red-500/50 dark:hover:border-red-500/50 transition-all group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <span class="text-2xl">{doc.icon}</span>
+              <span class:list={["text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full border", doc.badgeColor]}>
+                v{doc.version}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+              {doc.title}
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400 block mb-3">
+              {doc.subtitle} • Hiệu lực: {doc.effectiveDate}
             </span>
+
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+              {doc.description}
+            </p>
+
+            <ul class="space-y-2 mb-6 border-t border-slate-100 dark:border-slate-800/80 pt-4">
+              {doc.highlights.map((item) => (
+                <li class="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+                  <span class="text-red-500 shrink-0 font-bold">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </a>
-      );
-    })}
-  </div>
+
+          <a
+            href={`/${doc.slug}`}
+            class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-semibold text-xs text-white bg-slate-900 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 transition-colors shadow-xs"
+          >
+            <span>Đọc văn bản chi tiết</span>
+            <span class="group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Human Contact Support Banner -->
+  <section class="mt-4 p-8 rounded-2xl bg-slate-100 dark:bg-[#161f30] border border-slate-200 dark:border-slate-800 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="space-y-1">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white">
+        Cần Hỗ Trợ Pháp Lý Doanh Nghiệp Hoặc Ký Thỏa Thuận Riêng (DPA)?
+      </h3>
+      <p class="text-xs text-slate-600 dark:text-slate-300">
+        Bộ phận Pháp chế và Cán bộ Bảo vệ Dữ liệu (DPO) của VNTEZ luôn sẵn sàng đồng hành cùng bạn.
+      </p>
+    </div>
+    <a
+      href="mailto:legal@vntez.net"
+      class="shrink-0 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-xs"
+    >
+      Liên hệ DPO: legal@vntez.net
+    </a>
+  </section>
 </LegalLayout>

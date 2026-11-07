@@ -1,0 +1,29 @@
+---
+title: "Tài liệu Dự án & Cẩm nang (Tinh thần Confluence)"
+description: "Hệ thống tài liệu và wiki dự án tổ chức theo tinh thần Confluence, định dạng Markdown thuần túy, lưu trữ trực tiếp trong repo."
+appId: "gitvn"
+appName: "GitVN"
+category: "Quản trị Dự án & Workflow"
+order: 3
+badge: "CONFLUENCE-LIKE WIKI"
+---
+
+## 1. Tài liệu Hóa Dự án Không Cần Đám mây Ngoài
+
+Nhiều đội ngũ lập trình thường để tài liệu phân tán trên nhiều công cụ khác nhau khiến kiến trúc bị thất lạc hoặc lỗi thời so với mã nguồn thực tế.
+
+GitVN áp dụng tinh thần của Confluence nhưng lưu trữ hoàn toàn dưới dạng **Markdown/MDX** trong thư mục `.gitvn/wiki/`:
+- **Tài liệu sống cùng code:** Tài liệu được kiểm soát phiên bản (Version Control) bằng chính Git commit. Khi refactor code, bạn cập nhật tài liệu trong cùng một pull request.
+- **Cấu trúc Cây Thư mục Tự động:** Các tệp `.md` trong thư mục wiki tự động được kết xuất thành cây điều hướng phân cấp trực quan.
+- **Hỗ trợ sơ đồ Mermaid:** Vẽ sơ đồ tuần tự (Sequence Diagram), sơ đồ luồng dữ liệu (Flowchart) trực tiếp trong tệp Markdown.
+
+## 2. Tạo Trang Tài Liệu Mới
+
+Bạn có thể tạo tệp Markdown trực tiếp bằng trình soạn thảo mã nguồn hoặc thông qua GitVN CLI:
+
+```bash
+# Tạo trang wiki kiến trúc mới
+gitvn wiki new "architecture/overview.md" --title "Kiến trúc Tổng thể"
+```
+
+Trang tài liệu sẽ hiển thị ngay lập tức trên giao diện web của GitVN với font chữ đẹp mắt, chế độ xem trước thời gian thực và chức năng tìm kiếm toàn văn.

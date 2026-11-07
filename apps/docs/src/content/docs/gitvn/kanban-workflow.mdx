@@ -1,0 +1,30 @@
+---
+title: "Quản lý Tác vụ Kanban (Tinh thần Jira tối giản)"
+description: "Theo dõi tiến độ công việc, tạo issue, ước lượng story point và liên kết git commit mà không cần công cụ bên ngoài."
+appId: "gitvn"
+appName: "GitVN"
+category: "Quản trị Dự án & Workflow"
+order: 2
+badge: "JIRA-LIKE KANBAN"
+---
+
+## 1. Tinh thần Jira nhưng Không Phức tạp
+
+GitVN kế thừa những giá trị tốt nhất của Jira (tổ chức công việc có cấu trúc, phân cấp issue, theo dõi tiến độ) nhưng loại bỏ hoàn toàn sự rườm rà:
+- **Tạo task trong 3 giây:** Chỉ cần nhập tiêu đề và chọn trạng thái, không bắt buộc điền hàng tá form mẫu vô nghĩa.
+- **Bảng Kanban trực quan:** 4 cột chuẩn: `Cần làm (Todo)`, `Đang thực hiện (In Progress)`, `Kiểm thử (Review)`, `Hoàn tất (Done)`.
+- **Kéo thả mượt mà:** Di chuyển thẻ tác vụ tức thời, dữ liệu tự động lưu trữ vào tệp cấu hình `.gitvn/tasks.json` trong repo.
+
+## 2. Liên kết Commit với Tác vụ
+
+Khi commit mã nguồn, bạn chỉ cần kèm mã issue trong commit message để GitVN tự động liên kết:
+
+```bash
+# Ví dụ liên kết commit với issue #VNTEZ-12
+git commit -m "fix(auth): resolve PKCE code verifier cookie expiry #VNTEZ-12"
+```
+
+Hệ thống sẽ tự động:
+1. Ghi nhận commit vào lịch sử của thẻ tác vụ `VNTEZ-12`.
+2. Hiển thị diff thay đổi ngay trên giao diện thẻ công việc.
+3. Tùy chọn tự động chuyển thẻ sang cột `Kiểm thử (Review)` khi tạo Pull Request.

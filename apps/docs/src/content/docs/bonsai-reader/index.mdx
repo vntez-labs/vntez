@@ -1,32 +1,23 @@
 ---
-title: "Triết lý Bonsai Reader & Tiêu chuẩn Typography"
-description: "Trình đọc sách điện tử ePub, PDF và tài liệu Markdown/MDX với thiết kế tối giản, loại bỏ hoàn toàn phiền nhiễu."
+title: "Triết lý Đọc Sách Tối giản Bonsai Reader"
+description: "Trình đọc sách điện tử ePub, PDF và tài liệu Markdown/MDX với thiết kế tối giản, loại bỏ hoàn toàn phiền nhiễu thị giác."
 appId: "bonsai-reader"
 appName: "Bonsai Reader"
-category: "Triết lý & Thiết kế"
+category: "Cẩm nang Đọc sách"
 order: 1
 badge: "MINIMALIST READER"
 ---
 
-import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+## 1. Tôn Trọng Con Chữ & Trải Nghiệm Đọc Sâu
 
-## Triết lý Thiết kế Tối giản (Distraction-Free)
+**Bonsai Reader** xuất phát từ mong muốn tạo ra một không gian đọc sách tĩnh lặng trên máy tính và thiết bị di động:
+- **Không phiền nhiễu (Distraction-Free):** Không quảng cáo, không pop-up gợi ý, không thanh công cụ dày đặc che khuất trang sách.
+- **Tập trung vào trang đọc:** Khi cuộn hoặc lật trang, mọi thành phần điều khiển tự động ẩn đi, chỉ để lại con chữ và lề trang thoáng đãng.
+- **Bảo mật tuyệt đối:** Sách và tài liệu của bạn được mở và xử lý trực tiếp trên trình duyệt bằng WebAssembly và Web Workers, không gửi nội dung sách lên máy chủ ngoài ý muốn.
 
-**Bonsai Reader** hướng tới trải nghiệm đắm chìm vào con chữ. Mọi thanh công cụ, thông báo pop-up, hay yếu tố giao diện thừa thãi đều được ẩn đi khi người dùng bắt đầu đọc.
+## 2. Tính Năng Nổi Bật
 
-### Các Quy chuẩn Typography Chuẩn mực cho Tiếng Việt:
-- **Font chữ chọn lọc:** Tích hợp bộ font serif và sans-serif được tinh chỉnh dấu tiếng Việt hoàn hảo (Literata, Be Vietnam Pro, EB Garamond).
-- **Tỉ lệ Line-height & Measure:** Chiều rộng dòng văn bản cố định tối đa 65-75 ký tự, khoảng cách dòng `1.65 - 1.8` đảm bảo mắt không bị mỏi khi đọc thời gian dài.
-- **Hỗ trợ định dạng kép:** Mở trực tiếp các tệp ePub tiêu chuẩn, tệp PDF kỹ thuật, và các tài liệu ghi chú Markdown cá nhân.
-
-<TabbedCodeBlock
-  client:load
-  title="Khởi tạo Bonsai Reader Container"
-  tabs={[
-    {
-      label: "TypeScript",
-      lang: "typescript",
-      code: "import { BonsaiViewer } from '@vntez/bonsai-reader';\n\nconst viewer = new BonsaiViewer({\n  container: '#reader-root',\n  theme: 'charcoal',\n  fontSize: 18,\n  fontFamily: 'Literata',\n});\nawait viewer.openBook('https://r2.vntez.cloud/books/clean-code.epub');",
-    },
-  ]}
-/>
+- **Hỗ trợ Đa Định dạng:** Mở mượt mà các tệp `.epub`, `.pdf`, và các ghi chú định dạng `.md` / `.mdx`.
+- **Mục lục Thông minh (Interactive TOC):** Tự động phân tích cấu trúc chương mục và cho phép chuyển nhanh giữa các phần.
+- **Đánh dấu & Trích dẫn:** Chọn đoạn văn bản bất kỳ để đánh dấu (Highlight) với 4 màu sắc êm dịu hoặc thêm chú thích cá nhân.
+- **Chế độ Ban đêm (Warm Dark Mode):** Sử dụng tông màu than chì dịu mắt (#0B0F19 và #141c2e), không dùng màu đen tuyền tuyệt đối gây lóa mắt khi đọc trong bóng tối.

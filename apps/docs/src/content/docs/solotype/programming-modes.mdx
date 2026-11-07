@@ -1,0 +1,47 @@
+---
+title: "Chế độ Luyện Gõ dành cho Lập trình viên"
+description: "Rèn luyện phản xạ gõ các ký tự đặc biệt, toán tử con trỏ và cú pháp thực tế trong TypeScript, Rust, Python, Go."
+appId: "solotype"
+appName: "SoloType"
+category: "Cẩm nang Luyện gõ"
+order: 3
+badge: "CODE TYPING"
+---
+
+## 1. Thách thức Gõ Code so với Gõ Văn bản
+
+Lập trình viên hiếm khi chỉ gõ các từ ngữ thông thường. Tốc độ viết mã bị ảnh hưởng nặng nề bởi các ký tự đặc biệt:
+- Dấu ngoặc: `{}`, `[]`, `()`, `<>`
+- Toán tử logic & gán: `=>`, `===`, `&&`, `||`, `!=`, `:=`
+- Ký tự con trỏ & tham chiếu: `*ptr`, `&mut`, `->`
+
+SoloType cung cấp các bài tập được trích xuất trực tiếp từ các dự án mã nguồn mở thực tế để bạn rèn luyện phản xạ với các tổ hợp ký tự này.
+
+## 2. Các Bộ Từ Vựng Code Hỗ trợ
+
+### TypeScript / JavaScript
+Tập trung vào arrow functions, async/await, Promise chaining, destructuring objects và cú pháp generic types:
+```typescript
+interface ApiResponse<T> {
+  data: T;
+  status: 200 | 400 | 500;
+  headers?: Record<string, string>;
+}
+```
+
+### Rust
+Luyện phản xạ với các cú pháp đặc thù của hệ thống borrow checker:
+```rust
+fn process_stream<'a>(buffer: &'a mut Vec<u8>) -> Result<&'a str, CustomError> {
+    buffer.reserve(1024);
+    Ok("stream_ready")
+}
+```
+
+### Python
+Rèn luyện gõ dấu hai chấm `:`, cú pháp list comprehension, decorators `@classmethod` và f-strings:
+```python
+def compute_metrics(data: list[dict]) -> tuple[float, int]:
+    filtered = [x["score"] for x in data if x.get("is_valid")]
+    return sum(filtered) / len(filtered), len(filtered)
+```

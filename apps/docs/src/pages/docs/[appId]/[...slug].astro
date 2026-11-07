@@ -9,7 +9,8 @@ export async function getStaticPaths() {
     const cleanId = doc.id.replace(/\.(md|mdx)$/, "");
     const parts = cleanId.split("/");
     const appId = parts[0] || doc.data.appId;
-    const slug = parts.slice(1).join("/") || undefined;
+    const rawSlug = parts.slice(1).join("/");
+    const slug = rawSlug === "index" ? undefined : (rawSlug || undefined);
 
     return {
       params: { appId, slug },
@@ -27,7 +28,8 @@ const navItems = allDocs
     const cleanId = d.id.replace(/\.(md|mdx)$/, "");
     const parts = cleanId.split("/");
     const appId = parts[0] || d.data.appId;
-    const slug = parts.slice(1).join("/");
+    const rawSlug = parts.slice(1).join("/");
+    const href = (!rawSlug || rawSlug === "index") ? `/docs/${appId}` : `/docs/${appId}/${rawSlug}`;
     return {
       id: cleanId,
       title: d.data.title,
@@ -35,7 +37,7 @@ const navItems = allDocs
       category: d.data.category,
       method: d.data.method,
       endpoint: d.data.endpoint,
-      href: slug ? `/docs/${appId}/${slug}` : `/docs/${appId}`,
+      href,
     };
   });
 ---

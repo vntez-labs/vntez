@@ -9,7 +9,8 @@ const navItems = sortedDocs.map((d) => {
   const cleanId = d.id.replace(/\.(md|mdx)$/, "");
   const parts = cleanId.split("/");
   const appId = parts[0] || d.data.appId;
-  const slug = parts.slice(1).join("/");
+  const rawSlug = parts.slice(1).join("/");
+  const href = (!rawSlug || rawSlug === "index") ? `/docs/${appId}` : `/docs/${appId}/${rawSlug}`;
   return {
     id: cleanId,
     title: d.data.title,
@@ -17,60 +18,95 @@ const navItems = sortedDocs.map((d) => {
     category: d.data.category,
     method: d.data.method,
     endpoint: d.data.endpoint,
-    href: slug ? `/docs/${appId}/${slug}` : `/docs/${appId}`,
+    href,
   };
 });
+
+const APPS_LIST = [
+  {
+    id: "workers-hub",
+    title: "Workers Hub",
+    badge: "Cloudflare Edge",
+    badgeColor: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+    icon: "⚡",
+    description: "Bảng điều khiển trung tâm quản lý toàn diện các cụm Cloudflare Workers, R2 Buckets, D1 Databases và Queues với telemetry vi mô thời gian thực.",
+    href: "/docs/workers-hub",
+  },
+  {
+    id: "vntez-iam",
+    title: "VNTEZ IAM",
+    badge: "Security & RBAC",
+    badgeColor: "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20",
+    icon: "🛡️",
+    description: "Giải pháp Single Sign-On (SSO) và IdP hiệu năng cao chuẩn Enterprise xây dựng trên giao thức OAuth 2.0 PKCE và RBAC/ABAC đa cấp độ.",
+    href: "/docs/vntez-iam",
+  },
+  {
+    id: "solotype",
+    title: "SoloType",
+    badge: "Typing Engine & Productivity",
+    badgeColor: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20",
+    icon: "⌨️",
+    description: "Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên code đa ngôn ngữ (TS, Rust, Go, Python).",
+    href: "/docs/solotype",
+  },
+  {
+    id: "bonsai-reader",
+    title: "Bonsai Reader",
+    badge: "Reader & Vietnamese Typography",
+    badgeColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    icon: "📖",
+    description: "Trình đọc sách điện tử ePub, PDF và tài liệu Markdown/MDX với thiết kế tối giản, loại bỏ hoàn toàn phiền nhiễu thị giác và chuẩn mực typographic.",
+    href: "/docs/bonsai-reader",
+  },
+  {
+    id: "gitvn",
+    title: "GitVN",
+    badge: "Zero-Friction Git & Local Agile",
+    badgeColor: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+    icon: "🌿",
+    description: "Nền tảng Git Repository tối giản chạy local, loại bỏ mọi rào cản và độ trễ phức tạp. Tích hợp trực tiếp bảng Kanban và tài liệu Wiki Confluence Markdown ngay trong kho mã nguồn.",
+    href: "/docs/gitvn",
+  },
+];
 ---
 
 <DocsLayout
   title="Cổng Tài Liệu Kỹ Thuật VNTEZ"
-  description="Tài liệu API, SDK và kiến trúc cho 5 phân hệ cốt lõi: Workers Hub, VNTEZ IAM, SoloType, Bonsai Reader và GitVN."
+  description="Tài liệu API, cẩm nang sử dụng và hướng dẫn kiến trúc cho 5 phân hệ cốt lõi: Workers Hub, VNTEZ IAM, SoloType, Bonsai Reader và GitVN."
   appId="workers-hub"
   category="Tổng quan Hệ thống"
   allDocs={navItems}
   currentSlug="index"
 >
-  <div class="space-y-8 not-prose my-6">
+  <div class="space-y-6 not-prose my-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <a href="/docs/workers-hub" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-amber-500/50 transition-all block">
-        <span class="text-xs font-mono text-amber-400 font-semibold uppercase">Cloudflare Edge</span>
-        <h3 class="text-lg font-bold text-white mt-1">Workers Hub</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Quản lý toàn diện các cụm Cloudflare Workers, R2 Buckets, D1 Databases và Queues với telemetry vi mô.
-        </p>
-      </a>
-
-      <a href="/docs/vntez-iam" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-red-500/50 transition-all block">
-        <span class="text-xs font-mono text-red-400 font-semibold uppercase">Security & RBAC</span>
-        <h3 class="text-lg font-bold text-white mt-1">VNTEZ IAM</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Single Sign-On (SSO) và IdP hiệu năng cao chuẩn Enterprise theo chuẩn RFC 7636 OAuth 2.0 PKCE.
-        </p>
-      </a>
-
-      <a href="/docs/solotype" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-sky-500/50 transition-all block">
-        <span class="text-xs font-mono text-sky-400 font-semibold uppercase">Typing & Dev Productivity</span>
-        <h3 class="text-lg font-bold text-white mt-1">SoloType</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên code đa ngôn ngữ.
-        </p>
-      </a>
-
-      <a href="/docs/bonsai-reader" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-emerald-500/50 transition-all block">
-        <span class="text-xs font-mono text-emerald-400 font-semibold uppercase">Reader & Sync</span>
-        <h3 class="text-lg font-bold text-white mt-1">Bonsai Reader</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Trình đọc sách điện tử ePub/PDF và MDX tối giản, hỗ trợ typography chuẩn mực và đồng bộ tiến độ đọc.
-        </p>
-      </a>
-
-      <a href="/docs/gitvn" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-indigo-500/50 transition-all block sm:col-span-2">
-        <span class="text-xs font-mono text-indigo-400 font-semibold uppercase">Zero-Friction Dev</span>
-        <h3 class="text-lg font-bold text-white mt-1">GitVN</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Nền tảng Git Repository tối giản chạy local, loại bỏ mọi rào cản và độ trễ phức tạp, tích hợp tinh thần Jira & Confluence ngay trong kho mã nguồn.
-        </p>
-      </a>
+      {APPS_LIST.map((app, idx) => (
+        <a
+          href={app.href}
+          class:list={[
+            "p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-all block group",
+            idx === APPS_LIST.length - 1 ? "sm:col-span-2" : "",
+          ]}
+        >
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="text-2xl">{app.icon}</span>
+            <span class:list={["text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border font-bold", app.badgeColor]}>
+              {app.badge}
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+            {app.title}
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+            {app.description}
+          </p>
+          <div class="mt-4 flex items-center gap-1.5 text-xs font-semibold text-red-600 dark:text-red-400">
+            <span>Khám phá tài liệu & hướng dẫn</span>
+            <span class="group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </a>
+      ))}
     </div>
   </div>
 </DocsLayout>
