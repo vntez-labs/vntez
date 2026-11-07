@@ -4,41 +4,63 @@ import {
   vntezIdUserinfoSection,
   vntezIdDiscoverySection,
   vntezIdAiPromptSection,
-} from "./sections/vntez-iam"
+} from "./sections/vntez-iam";
 import {
-  storagePutSection,
-  storageGetSection,
-  storageDeleteSection,
-} from "./sections/storage"
-import { posSection } from "./sections/pos"
-import { wmsSection } from "./sections/wms"
-import { telemetrySection } from "./sections/telemetry"
-import { sdkSection } from "./sections/sdk"
-import type { DocSection, AppFilter } from "./types"
+  workersListSection,
+  workersTelemetrySection,
+  workersDispatchSection,
+  workersPurgeCacheSection,
+} from "./sections/workers-hub";
+import {
+  solotypeScoreSection,
+  solotypeLeaderboardSection,
+} from "./sections/solotype";
+import {
+  bonsaiLibrarySection,
+  bonsaiProgressSection,
+} from "./sections/bonsai-reader";
+import {
+  gitvnReposSection,
+  gitvnIssuesSection,
+  gitvnWikiSection,
+} from "./sections/gitvn";
+import type { DocSection, AppFilter } from "./types";
 
-export * from "./types"
-export * from "./ai-prompt-data"
+export * from "./types";
+export * from "./ai-prompt-data";
 
 export const DOC_SECTIONS: DocSection[] = [
+  // 1. Workers Hub
+  workersListSection,
+  workersTelemetrySection,
+  workersDispatchSection,
+  workersPurgeCacheSection,
+
+  // 2. VNTEZ IAM
   vntezIdOverviewSection,
   vntezIdTokenSection,
   vntezIdUserinfoSection,
   vntezIdDiscoverySection,
   vntezIdAiPromptSection,
-  storagePutSection,
-  storageGetSection,
-  storageDeleteSection,
-  posSection,
-  wmsSection,
-  telemetrySection,
-  sdkSection,
-]
+
+  // 3. SoloType
+  solotypeScoreSection,
+  solotypeLeaderboardSection,
+
+  // 4. Bonsai Reader
+  bonsaiLibrarySection,
+  bonsaiProgressSection,
+
+  // 5. GitVN
+  gitvnReposSection,
+  gitvnIssuesSection,
+  gitvnWikiSection,
+];
 
 export const APP_FILTERS: AppFilter[] = [
-  { id: "vntez-iam", label: "vntez-iam (IAM & RBAC)", version: "v2.5.0", color: "#fb291a" },
-  { id: "storage", label: "vntez Storage (S3 API)", version: "v1.8.2", color: "#0284c7" },
-  { id: "bman-pos", label: "BMAN POS (Offline-First)", version: "v3.1.0", color: "#059669" },
-  { id: "supply-chain", label: "vntez WMS (Logistics)", version: "v2.0.1", color: "#d97706" },
-  { id: "telemetry", label: "vntez Telemetry", version: "v1.4.5", color: "#8b5cf6" },
-  { id: "ecosystem", label: "vntez SDK & Tools", version: "v4.0.0", color: "#ec4899" },
-]
+  { id: "workers-hub", label: "Workers Hub (Edge Cloud)", version: "v2.1.0", color: "#f59e0b" },
+  { id: "vntez-iam", label: "VNTEZ IAM (SSO & RBAC)", version: "v2.5.0", color: "#fb291a" },
+  { id: "solotype", label: "SoloType (Typing Engine)", version: "v1.2.0", color: "#0284c7" },
+  { id: "bonsai-reader", label: "Bonsai Reader (ePub/MDX)", version: "v1.0.4", color: "#10b981" },
+  { id: "gitvn", label: "GitVN (Zero-Friction Git)", version: "v1.0.0", color: "#6366f1" },
+];

@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import LegalLayout from "../layouts/LegalLayout.astro";
+
+const docs = await getCollection("legal");
+const sortedDocs = docs.sort((a, b) => a.data.order - b.data.order);
+---
+
+<LegalLayout
+  title="Cổng Pháp Lý & Tuân Thủ Tiêu Chuẩn VNTEZ"
+  description="Trung tâm tổng hợp các văn bản thỏa thuận mức dịch vụ (SLA), điều khoản dịch vụ và chính sách bảo mật dữ liệu của hệ sinh thái VNTEZ."
+  version="2.5.0"
+  effectiveDate="2026-01-01"
+  lastUpdated="2026-11-07"
+>
+  <div class="space-y-6 not-prose my-8">
+    {sortedDocs.map((doc) => {
+      const slug = doc.id.replace(/\.(md|mdx)$/, "");
+      return (
+        <a
+          href={`/${slug}`}
+          class="block p-5 rounded-2xl bg-[#111827] border border-slate-800 hover:border-red-500/50 transition-all group"
+        >
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-red-400 transition-colors">
+              {doc.data.title}
+            </h3>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+              v{doc.data.version}
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            {doc.data.description}
+          </p>
+          <div class="flex items-center gap-4 text-[11px] font-mono text-slate-400">
+            <span>Hiệu lực: {doc.data.effectiveDate}</span>
+            <span>•</span>
+            <span class="text-red-400 group-hover:translate-x-0.5 transition-transform">
+              Đọc văn bản chi tiết →
+            </span>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+</LegalLayout>

@@ -1,0 +1,48 @@
+---
+title: "Bảng Xếp Hạng Trực Tuyến"
+description: "Truy xuất danh sách người dùng dẫn đầu theo ngày, tuần, tháng hoặc toàn thời gian."
+appId: "solotype"
+appName: "SoloType"
+category: "API Chấm Điểm & Phân Tích"
+order: 3
+method: "GET"
+endpoint: "/api/solotype/leaderboard"
+badge: "LIVE LEADERBOARD"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Lấy dữ liệu bảng thành tích cập nhật theo thời gian thực (Real-time Leaderboard) với khả năng lọc theo từng ngôn ngữ code hoặc bộ gõ tiếng Việt.
+
+<TabbedCodeBlock
+  client:load
+  title="Lấy Leaderboard"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl \"https://solotype.vntez.cloud/api/solotype/leaderboard?language_mode=vi_telex&period=weekly\"",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://solotype.vntez.cloud/api/solotype/leaderboard?language_mode=vi_telex&period=weekly');\nconst data = await res.json();",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "success": true,
+  "period": "weekly",
+  "language": "vi_telex",
+  "top_users": [
+    { "rank": 1, "user_name": "hnamhocit", "wpm": 138.2, "accuracy": 99.1 },
+    { "rank": 2, "user_name": "speed_demon", "wpm": 131.0, "accuracy": 97.8 }
+  ]
+}
+```

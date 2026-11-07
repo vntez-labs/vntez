@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Save, Check, Plus, CheckCheck, XCircle } from "lucide-react";
+import {
+  IconShieldCheck,
+  IconDeviceFloppy,
+  IconCheck,
+  IconPlus,
+  IconChecks,
+  IconCircleX,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/ui/lib/utils";
@@ -34,7 +41,7 @@ export function MatrixTable() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-card p-4 rounded-2xl shadow-xs">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
-            <ShieldCheck className="h-5 w-5" />
+            <IconShieldCheck className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -69,7 +76,7 @@ export function MatrixTable() {
             onClick={() => grantAllRolePermissions(selectedRoleId)}
             className="h-8 gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            <CheckCheck className="h-3.5 w-3.5" />
+            <IconChecks className="h-3.5 w-3.5" />
             <span>Chọn tất cả</span>
           </Button>
 
@@ -79,7 +86,7 @@ export function MatrixTable() {
             onClick={() => revokeAllRolePermissions(selectedRoleId)}
             className="h-8 gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            <XCircle className="h-3.5 w-3.5" />
+            <IconCircleX className="h-3.5 w-3.5" />
             <span>Xóa hết</span>
           </Button>
 
@@ -89,7 +96,7 @@ export function MatrixTable() {
             disabled={isSaving}
             className="gap-1.5 rounded-xl shadow-xs cursor-pointer h-8"
           >
-            <Save className="h-3.5 w-3.5" />
+            <IconDeviceFloppy className="h-3.5 w-3.5" />
             {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
         </div>
@@ -141,9 +148,9 @@ export function MatrixTable() {
                         aria-label={`Toggle ${permKey}`}
                       >
                         {isChecked ? (
-                          <Check className="h-4 w-4 stroke-[2.5] text-white" />
+                          <IconCheck className="h-4 w-4 stroke-[2.5] text-white" />
                         ) : (
-                          <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <IconPlus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         )}
                       </button>
                     </td>

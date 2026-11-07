@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Shield, Plus, Check, ChevronDown, Search } from "lucide-react";
+import {
+  IconShield,
+  IconPlus,
+  IconCheck,
+  IconChevronDown,
+  IconSearch,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { usePermissionsStore } from "../permissions-store";
@@ -64,7 +70,7 @@ export function RoleSelector() {
             }}
             className="flex items-center gap-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/70 hover:bg-zinc-100 dark:bg-zinc-900/60 dark:hover:bg-zinc-800 px-3.5 py-2 text-xs font-medium text-foreground transition-all cursor-pointer shadow-2xs"
           >
-            <Shield className="h-4 w-4 text-primary shrink-0" />
+            <IconShield className="h-4 w-4 text-primary shrink-0" />
             <span className="font-semibold capitalize text-foreground">
               {currentRole?.name || "Chọn vai trò"}
             </span>
@@ -74,7 +80,7 @@ export function RoleSelector() {
             >
               {currentCount} quyền
             </Badge>
-            <ChevronDown
+            <IconChevronDown
               className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${
                 isOpen ? "rotate-180" : ""
               }`}
@@ -86,7 +92,7 @@ export function RoleSelector() {
             <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col">
               {/* Search Bar */}
               <div className="relative mb-2">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <IconSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input
                   type="text"
                   autoFocus
@@ -123,7 +129,7 @@ export function RoleSelector() {
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <Shield className={`h-3.5 w-3.5 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                          <IconShield className={`h-3.5 w-3.5 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                           <div className="truncate">
                             <span className="capitalize">{r.name}</span>
                             {r.description && (
@@ -138,7 +144,7 @@ export function RoleSelector() {
                           <span className="text-[10px] font-mono text-muted-foreground">
                             {permCount} q
                           </span>
-                          {isSelected && <Check className="h-3.5 w-3.5 text-primary" />}
+                          {isSelected && <IconCheck className="h-3.5 w-3.5 text-primary" />}
                         </div>
                       </button>
                     );
@@ -156,7 +162,7 @@ export function RoleSelector() {
           onClick={openCreateRoleModal}
           className="gap-1.5 text-xs rounded-xl bg-white dark:bg-card shadow-2xs border border-zinc-200/80 dark:border-zinc-800 cursor-pointer h-9 px-3"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <IconPlus className="h-3.5 w-3.5" />
           <span>Tạo Role</span>
         </Button>
       </div>

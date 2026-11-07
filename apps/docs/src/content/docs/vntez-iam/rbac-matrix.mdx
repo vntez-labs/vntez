@@ -1,0 +1,52 @@
+---
+title: "Ma trận Phân quyền & RBAC Evaluator"
+description: "Kiểm tra thẩm quyền truy cập thời gian thực trên Cloudflare Worker theo ma trận Resources & Actions."
+appId: "vntez-iam"
+appName: "VNTEZ IAM"
+category: "Phân quyền RBAC"
+order: 4
+method: "POST"
+endpoint: "/api/iam/evaluate"
+badge: "RBAC EVALUATOR"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Cấu trúc Ma trận Quyền (Resource-Action Model)
+
+Hệ thống phân quyền VNTEZ IAM mô hình hóa thẩm quyền dựa trên cặp **`resource:action`**:
+- **Resources:** `users`, `files`, `messages`, `clients`, `roles`.
+- **Actions:** `create`, `read:self`, `read:all`, `update:self`, `update:all`, `delete:self`, `delete:all`.
+- **Wildcard Super-admin:** `*:*` hoặc `users:*`.
+
+## Mẫu gọi API Kiểm tra Quyền
+
+<TabbedCodeBlock
+  client:load
+  title="Evaluate RBAC Permission"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST https://iam.hnamhocit.workers.dev/api/iam/evaluate \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"userId\":\"usr_sample\",\"resource\":\"users\",\"action\":\"read:all\"}'",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://iam.hnamhocit.workers.dev/api/iam/evaluate', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    userId: 'usr_sample',\n    resource: 'users',\n    action: 'read:all',\n  }),\n});\nconst result = await res.json();\nconsole.log(result.allowed);",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "ok": true,
+  "allowed": true,
+  "userId": "usr_sample",
+  "resource": "users",
+  "action": "read:all",
+  "reason": "Được phép truy cập"
+}
+```

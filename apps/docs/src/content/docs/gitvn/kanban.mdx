@@ -1,0 +1,56 @@
+---
+title: "Quản lý Tác vụ & Kanban (Tinh thần Jira tối giản)"
+description: "Tạo và theo dõi issue, gán nhãn, sprint và liên kết git commit mà không cần công cụ cồng kềnh."
+appId: "gitvn"
+appName: "GitVN"
+category: "Tác vụ & Quản trị Dự án"
+order: 2
+method: "POST"
+endpoint: "/api/gitvn/issues"
+badge: "JIRA-LIKE TASKS"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Tạo issue mới và đưa vào bảng Kanban của repository. Hỗ trợ liên kết commit thông qua cú pháp `#issue_key` trong commit message.
+
+## Dữ liệu Yêu cầu (Request Body)
+
+```json
+{
+  "repo": "vntez-core",
+  "title": "Fix PKCE token verification",
+  "status": "todo"
+}
+```
+
+<TabbedCodeBlock
+  client:load
+  title="Create Issue"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST https://gitvn.vntez.cloud/api/gitvn/issues \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"repo\":\"vntez-core\",\"title\":\"Fix PKCE token verification\",\"status\":\"todo\"}'",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://gitvn.vntez.cloud/api/gitvn/issues', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ repo: 'vntez-core', title: 'Fix PKCE token verification', status: 'todo' }),\n});",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (201 Created)
+
+```json
+{
+  "success": true,
+  "issue_key": "VNTEZ-42",
+  "title": "Fix PKCE token verification",
+  "status": "todo",
+  "created_at": "2026-11-07T08:20:00Z"
+}
+```

@@ -1,0 +1,57 @@
+---
+title: "Tổng quan VNTEZ IAM & Chuẩn OAuth 2.0 PKCE"
+description: "Giải pháp định danh doanh nghiệp Single Sign-On (SSO) và IdP hiệu năng cao trên Cloudflare Workers."
+appId: "vntez-iam"
+appName: "VNTEZ IAM"
+category: "Khái niệm Cốt lõi"
+order: 1
+badge: "RFC 7636 PKCE"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Chuẩn OAuth 2.0 PKCE (RFC 7636)
+
+VNTEZ IAM áp dụng quy trình xác thực **Proof Key for Code Exchange (PKCE)** với phương thức băm mật mã `S256`. Luồng này loại bỏ hoàn toàn nguy cơ rò rỉ mã ủy quyền (Authorization Code Interception) trên ứng dụng Web (SPA) và ứng dụng di động.
+
+```
++-------------------+                               +-------------------+
+|  Trình duyệt Web  |                               |    VNTEZ IAM      |
++---------+---------+                               +---------+---------+
+          |                                                   |
+          |  1. Tạo code_verifier (ngẫu nhiên 64 bytes)       |
+          |  2. Tính code_challenge = SHA256(code_verifier)   |
+          |                                                   |
+          |  3. GET /oauth/authorize?challenge=...&method=S256|
+          +-------------------------------------------------->|
+          |                                                   |
+          |  4. Người dùng đăng nhập & cấp quyền              |
+          |<--------------------------------------------------+
+          |  5. Chuyển hướng về redirect_uri với 'code'       |
+          |                                                   |
+          |  6. POST /oauth/token { code, code_verifier }     |
+          +-------------------------------------------------->|
+          |                                                   |
+          |  7. IAM kiểm tra SHA256(code_verifier) == chall   |
+          |<--------------------------------------------------+
+          |  8. Cấp phát access_token & refresh_token         |
+```
+
+## Khởi tạo URL Ủy quyền
+
+<TabbedCodeBlock
+  client:load
+  title="Tạo Link Đăng nhập PKCE"
+  tabs={[
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { generatePKCE, buildAuthorizeUrl } from '@workspace/auth';\n\nconst pkce = await generatePKCE();\n// Lưu pkce.codeVerifier vào HTTP-only cookie\n\nconst authUrl = buildAuthorizeUrl({\n  clientId: 'your-app-id',\n  redirectUri: 'https://yourapp.com/auth/callback',\n  state: pkce.state,\n  codeChallenge: pkce.codeChallenge,\n});\nwindow.location.href = authUrl;",
+    },
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl \"https://iam.vntez.cloud/oauth/authorize?client_id=vntez-app&redirect_uri=https%3A%2F%2Fyourapp.com%2Fcallback&response_type=code&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256\"",
+    },
+  ]}
+/>

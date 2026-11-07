@@ -1,0 +1,62 @@
+---
+title: "Nộp Kết Quả & Phân Tích Lỗi Gõ"
+description: "Gửi kết quả bài kiểm tra và nhận phân tích chi tiết bản đồ nhiệt lỗi sai theo từng ngón tay."
+appId: "solotype"
+appName: "SoloType"
+category: "API Chấm Điểm & Phân Tích"
+order: 2
+method: "POST"
+endpoint: "/api/solotype/scores"
+badge: "SCORING API"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Ghi nhận điểm thi vào hồ sơ cá nhân và cập nhật chỉ số phần trăm cao thủ (percentile) trên toàn hệ thống.
+
+## Dữ liệu Yêu cầu (Request Body)
+
+```json
+{
+  "wpm": 112.5,
+  "accuracy": 98.4,
+  "language_mode": "vi_telex",
+  "duration_seconds": 60
+}
+```
+
+<TabbedCodeBlock
+  client:load
+  title="Submit Typing Score"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST https://solotype.vntez.cloud/api/solotype/scores \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\"wpm\":112.5,\"accuracy\":98.4,\"language_mode\":\"vi_telex\",\"duration_seconds\":60}'",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://solotype.vntez.cloud/api/solotype/scores', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    Authorization: `Bearer ${token}`,\n  },\n  body: JSON.stringify({ wpm: 112.5, accuracy: 98.4, language_mode: 'vi_telex', duration_seconds: 60 }),\n});",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (201 Created)
+
+```json
+{
+  "success": true,
+  "score_id": "scr_8912301",
+  "rank": 14,
+  "percentile": "Top 2.5%",
+  "analytics": {
+    "cpm": 562,
+    "error_count": 3,
+    "most_missed_keys": ["ô", "ê", "ơ"],
+    "consistency_score": "96.2%"
+  }
+}
+```

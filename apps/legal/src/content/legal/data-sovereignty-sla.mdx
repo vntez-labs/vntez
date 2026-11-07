@@ -1,0 +1,32 @@
+---
+title: "Cam Kết Chủ Quyền Dữ Liệu & SLA Hạ Tầng"
+description: "Data Sovereignty SLA — Đặt máy chủ tại các Trung tâm Dữ liệu Tier-3 nội địa, miễn phí Zero-Egress và cam kết Uptime 99.95%."
+version: "2.1.0"
+effectiveDate: "2026-01-01"
+lastUpdated: "2026-11-07"
+order: 3
+---
+
+## 1. Tuyên ngôn Chủ quyền Dữ liệu (Data Sovereignty)
+
+VNTEZ cam kết tuân thủ đầy đủ quy định về lưu trữ dữ liệu tại Việt Nam:
+
+- **Hạ tầng Trung tâm Dữ liệu Nội địa:** Hệ thống cơ sở dữ liệu và cụm lưu trữ đối tượng (Object Storage) được đặt tại các Data Center đạt chuẩn Tier 3 tại Hà Nội và TP.HCM (Viettel IDC, FPT Telecom, VNPT).
+- **Không phụ thuộc cáp quang biển:** Lưu lượng truy cập nội địa đi theo tuyến peering trực tiếp giữa các nhà mạng lớn trong nước, đảm bảo dịch vụ vận hành thông suốt ngay cả khi có sự cố đứt cáp quang biển quốc tế AAG, APG hoặc IA.
+- **Tốc độ Gigabit Nội địa:** Độ trễ mạng (Ping) đạt mức cực thấp từ 2ms đến 15ms cho người dùng trong lãnh thổ Việt Nam.
+
+## 2. Chính sách Miễn phí Băng thông Tải về (Zero-Egress Fee)
+
+Khác với mô hình tính phí dữ liệu tải ra (egress) đắt đỏ của các nhà cung cấp đám mây quốc tế truyền thống:
+
+- **Zero-Egress Fee:** Toàn bộ băng thông tải tệp tin và dữ liệu API từ hệ thống VNTEZ Storage và Cloudflare Workers được miễn phí hoàn toàn.
+- **Không Chi phí Ẩn:** Khách hàng chỉ thanh toán cho dung lượng lưu trữ thực tế, không lo lắng về hóa đơn đột biến khi lưu lượng truy cập tăng vọt.
+
+## 3. Thỏa thuận Mức Dịch vụ (SLA) & Cam kết Uptime 99.95%
+
+- **Cam kết Độ sẵn sàng:** VNTEZ cam kết độ khả dụng hàng tháng đạt tối thiểu **99.95%** cho các dịch vụ cốt lõi (VNTEZ IAM, Workers Hub, R2 Storage Edge).
+- **Cơ chế Bồi hoàn Dịch vụ (Service Credit):**
+  - Uptime < 99.95%: Bồi hoàn 10% phí dịch vụ tháng.
+  - Uptime < 99.00%: Bồi hoàn 25% phí dịch vụ tháng.
+  - Uptime < 95.00%: Bồi hoàn 50% phí dịch vụ tháng.
+- **Thời gian Khắc phục Sự cố:** Đội ngũ Kỹ sư Vận hành Hạ tầng trực 24/7/365 với thời gian phản hồi sự cố khẩn cấp (P1) trong vòng dưới 15 phút qua kênh Telegram Bot tự động.

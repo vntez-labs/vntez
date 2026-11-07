@@ -1,0 +1,72 @@
+---
+title: "Tổng quan Workers Hub & Hạ tầng Edge"
+description: "Bảng điều khiển trung tâm quản lý và theo dõi toàn diện các cụm Cloudflare Workers, R2 Buckets, D1 Databases và Queues."
+appId: "workers-hub"
+appName: "Workers Hub"
+category: "Kiến trúc & Khái niệm"
+order: 1
+badge: "EDGE INFRASTRUCTURE"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Kiến trúc Tổng thể Edge Cloud
+
+**Workers Hub** đóng vai trò là trung tâm điều phối và kiểm soát toàn bộ hạ tầng Serverless phân tán của VNTEZ. Hệ thống kết hợp mạng lưới **Cloudflare Workers** với các điểm hiện diện (PoP) tại Việt Nam và Đông Nam Á.
+
+```
+                  +-----------------------------------+
+                  |          VNTEZ CONSOLE            |
+                  +-----------------+-----------------+
+                                    |
+                    API REST / TLS 1.3 / mTLS
+                                    v
++-----------------------------------+-----------------------------------+
+|               CLOUDFLARE EDGE WORKERS MESH GATEWAY                   |
+|                                                                       |
+|  +--------------------+   +-------------------+   +----------------+  |
+|  |    vntez-iam       |   |    telebot        |   |  upload/r2     |  |
+|  |  (SSO & PKCE)      |   | (Alert Broadcast) |   | (Zero-Egress)  |  |
+|  +---------+----------+   +---------+---------+   +--------+-------+  |
++------------|------------------------|----------------------|----------+
+             |                        |                      |
+             v                        v                      v
+     Supabase Postgres         Telegram Bot API        Cloudflare R2
+   (Session & Metadata)       (24/7 Ops Alert)       (Presigned URLs)
+```
+
+## Các Dịch vụ Cốt lõi được Quản lý
+
+1. **Cụm Workers Serverless:** Tự động điều hướng và cân bằng tải giữa các node mạng nội địa.
+2. **Telemetry vi mô:** Thu thập dữ liệu độ trễ miligiây, CPU Wall Time, và tỉ lệ lỗi HTTP 5xx.
+3. **Queue Dispatcher:** Xử lý tác vụ nền bất đồng bộ và cảnh báo sự cố tức thời sang Telegram Bot.
+4. **Instant Cache Purge:** Vô hiệu hóa CDN cache toàn cầu chỉ trong 120ms.
+
+## Cài đặt SDK Quản lý Workers
+
+<TabbedCodeBlock
+  client:load
+  title="Cài đặt SDK"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -H \"Authorization: Bearer $VNTEZ_API_KEY\" \\\n  https://workers.vntez.cloud/api/workers/list",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { VntezWorkersHub } from '@vntez/workers-sdk';\n\nconst hub = new VntezWorkersHub({\n  apiKey: process.env.VNTEZ_API_KEY,\n});\n\nconst workers = await hub.listWorkers();\nconsole.log(workers);",
+    },
+    {
+      label: "Go",
+      lang: "go",
+      code: "package main\n\nimport (\n  \"fmt\"\n  \"github.com/vntez/workers-sdk-go\"\n)\n\nfunc main() {\n  client := workers.NewClient(\"your_api_key\")\n  list, _ := client.ListWorkers()\n  fmt.Println(list)\n}",
+    },
+    {
+      label: "Python",
+      lang: "python",
+      code: "from vntez_workers import WorkersHubClient\n\nhub = WorkersHubClient(api_key='your_api_key')\nworkers = hub.list_workers()\nprint(workers)",
+    },
+  ]}
+/>

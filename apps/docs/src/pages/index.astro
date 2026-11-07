@@ -1,0 +1,76 @@
+---
+import { getCollection } from "astro:content";
+import DocsLayout from "../layouts/DocsLayout.astro";
+
+const allDocs = await getCollection("docs");
+const sortedDocs = allDocs.sort((a, b) => a.data.order - b.data.order);
+
+const navItems = sortedDocs.map((d) => {
+  const cleanId = d.id.replace(/\.(md|mdx)$/, "");
+  const parts = cleanId.split("/");
+  const appId = parts[0] || d.data.appId;
+  const slug = parts.slice(1).join("/");
+  return {
+    id: cleanId,
+    title: d.data.title,
+    appId,
+    category: d.data.category,
+    method: d.data.method,
+    endpoint: d.data.endpoint,
+    href: slug ? `/docs/${appId}/${slug}` : `/docs/${appId}`,
+  };
+});
+---
+
+<DocsLayout
+  title="Cổng Tài Liệu Kỹ Thuật VNTEZ"
+  description="Tài liệu API, SDK và kiến trúc cho 5 phân hệ cốt lõi: Workers Hub, VNTEZ IAM, SoloType, Bonsai Reader và GitVN."
+  appId="workers-hub"
+  category="Tổng quan Hệ thống"
+  allDocs={navItems}
+  currentSlug="index"
+>
+  <div class="space-y-8 not-prose my-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <a href="/docs/workers-hub" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-amber-500/50 transition-all block">
+        <span class="text-xs font-mono text-amber-400 font-semibold uppercase">Cloudflare Edge</span>
+        <h3 class="text-lg font-bold text-white mt-1">Workers Hub</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Quản lý toàn diện các cụm Cloudflare Workers, R2 Buckets, D1 Databases và Queues với telemetry vi mô.
+        </p>
+      </a>
+
+      <a href="/docs/vntez-iam" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-red-500/50 transition-all block">
+        <span class="text-xs font-mono text-red-400 font-semibold uppercase">Security & RBAC</span>
+        <h3 class="text-lg font-bold text-white mt-1">VNTEZ IAM</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Single Sign-On (SSO) và IdP hiệu năng cao chuẩn Enterprise theo chuẩn RFC 7636 OAuth 2.0 PKCE.
+        </p>
+      </a>
+
+      <a href="/docs/solotype" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-sky-500/50 transition-all block">
+        <span class="text-xs font-mono text-sky-400 font-semibold uppercase">Typing & Dev Productivity</span>
+        <h3 class="text-lg font-bold text-white mt-1">SoloType</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên code đa ngôn ngữ.
+        </p>
+      </a>
+
+      <a href="/docs/bonsai-reader" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-emerald-500/50 transition-all block">
+        <span class="text-xs font-mono text-emerald-400 font-semibold uppercase">Reader & Sync</span>
+        <h3 class="text-lg font-bold text-white mt-1">Bonsai Reader</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Trình đọc sách điện tử ePub/PDF và MDX tối giản, hỗ trợ typography chuẩn mực và đồng bộ tiến độ đọc.
+        </p>
+      </a>
+
+      <a href="/docs/gitvn" class="p-5 rounded-2xl bg-[#0c121e] border border-slate-800 hover:border-indigo-500/50 transition-all block sm:col-span-2">
+        <span class="text-xs font-mono text-indigo-400 font-semibold uppercase">Zero-Friction Dev</span>
+        <h3 class="text-lg font-bold text-white mt-1">GitVN</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Nền tảng Git Repository tối giản chạy local, loại bỏ mọi rào cản và độ trễ phức tạp, tích hợp tinh thần Jira & Confluence ngay trong kho mã nguồn.
+        </p>
+      </a>
+    </div>
+  </div>
+</DocsLayout>

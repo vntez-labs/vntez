@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, ShieldPlus } from "lucide-react";
+import { IconX, IconShieldPlus } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { usePermissionsStore } from "../permissions-store";
 
@@ -23,15 +23,15 @@ export function CreateRoleModal() {
       <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#0c121e] border border-[#ebe7df] dark:border-border p-6 shadow-xl space-y-4">
         <div className="flex items-center justify-between border-b border-[#ebe7df] dark:border-border pb-3">
           <div className="flex items-center gap-2">
-            <ShieldPlus className="h-5 w-5 text-primary" />
+            <IconShieldPlus className="h-5 w-5 text-primary" />
             <h3 className="text-sm font-bold text-foreground">Tạo Vai Trò Mới (New Role)</h3>
           </div>
           <button
             type="button"
             onClick={closeCreateRoleModal}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            <X className="h-4 w-4" />
+            <IconX className="h-4 w-4" />
           </button>
         </div>
 
@@ -64,10 +64,10 @@ export function CreateRoleModal() {
         </div>
 
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebe7df] dark:border-border">
-          <Button variant="outline" size="sm" onClick={closeCreateRoleModal} className="rounded-xl">
+          <Button variant="outline" size="sm" onClick={closeCreateRoleModal} className="rounded-xl cursor-pointer">
             Hủy
           </Button>
-          <Button size="sm" onClick={handleCreateRole} className="rounded-xl">
+          <Button size="sm" onClick={handleCreateRole} className="rounded-xl cursor-pointer">
             Tạo & Cấu hình quyền
           </Button>
         </div>

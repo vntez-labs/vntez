@@ -1,0 +1,214 @@
+---
+import "../styles/global.css";
+import { AppSwitcher, ECOSYSTEM_APPS } from "../components/islands/AppSwitcher";
+import { MethodBadge } from "../components/islands/MethodBadge";
+
+interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface NavItem {
+  id: string;
+  title: string;
+  appId: string;
+  category: string;
+  method?: string;
+  endpoint?: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  appId: string;
+  category?: string;
+  method?: string;
+  endpoint?: string;
+  headings?: TocItem[];
+  allDocs?: NavItem[];
+  currentSlug?: string;
+}
+
+const {
+  title,
+  description,
+  appId,
+  category = "Tài liệu",
+  method,
+  endpoint,
+  headings = [],
+  allDocs = [],
+  currentSlug = "",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://docs.vntez.net").href;
+const currentApp = ECOSYSTEM_APPS.find((a) => a.id === appId) || ECOSYSTEM_APPS[0];
+
+// Group docs by Category for navigation tree
+const appDocs = allDocs.filter((d) => d.appId === appId);
+const groupedCategories = appDocs.reduce<Record<string, NavItem[]>>((acc, item) => {
+  if (!acc[item.category]) acc[item.category] = [];
+  acc[item.category].push(item);
+  return acc;
+}, {});
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": title,
+  "description": description,
+  "url": canonicalURL,
+  "publisher": {
+    "@type": "Organization",
+    "name": "VNTEZ Ecosystem",
+    "url": "https://vntez.net",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://vntez.net/icon.svg",
+    },
+  },
+};
+---
+
+<!doctype html>
+<html lang="vi" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — VNTEZ Documentation</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={`${title} — VNTEZ Docs`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="VNTEZ Documentation" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="min-h-screen bg-[#0B0F19] text-slate-100 antialiased selection:bg-red-500/20 selection:text-red-400">
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#0B0F19]/90 backdrop-blur-md">
+      <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div class="flex items-center gap-6">
+          <a href="/" class="flex items-center gap-2.5 font-bold tracking-tight text-white hover:opacity-90">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-xs">V</span>
+            <span class="text-sm font-semibold">VNTEZ <span class="text-slate-400 font-normal">Docs</span></span>
+          </a>
+          <div class="hidden lg:block">
+            <AppSwitcher client:load currentAppId={appId} />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs">
+          <a href="https://vntez.net" class="text-slate-400 hover:text-white transition-colors">Portal</a>
+          <a href="https://legal.vntez.net" class="text-slate-400 hover:text-white transition-colors">Legal SLA</a>
+          <a href="https://github.com/hnamhocit" target="_blank" rel="noreferrer" class="text-slate-400 hover:text-white transition-colors">GitHub ↗</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container: 3 Columns -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-8 py-8">
+        <!-- 1. Left Column: Category Tree Navigation -->
+        <aside class="sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 overflow-y-auto pr-4 lg:block">
+          <div class="mb-4 pb-3 border-b border-slate-800">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Hệ sinh thái</span>
+            <h3 class="text-sm font-bold text-white mt-0.5">{currentApp.name}</h3>
+          </div>
+
+          <nav class="space-y-6 text-xs">
+            {Object.entries(groupedCategories).map(([catName, items]) => (
+              <div>
+                <h4 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                  {catName}
+                </h4>
+                <ul class="space-y-1">
+                  {items.map((item) => {
+                    const isCurrent = currentSlug.includes(item.id);
+                    return (
+                      <li>
+                        <a
+                          href={item.href}
+                          class:list={[
+                            "flex items-center justify-between rounded-lg px-2.5 py-1.5 transition-colors",
+                            isCurrent
+                              ? "bg-red-500/10 font-medium text-red-400 border-l-2 border-red-500"
+                              : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200",
+                          ]}
+                        >
+                          <span class="truncate">{item.title}</span>
+                          {item.method && (
+                            <span class="text-[9px] font-mono uppercase px-1 py-0.2 rounded bg-slate-800 text-slate-400">
+                              {item.method}
+                            </span>
+                          )}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </aside>
+
+        <!-- 2. Middle Column: Content Body -->
+        <main class="min-w-0 flex-1 max-w-3xl">
+          <!-- Breadcrumb & Method Header -->
+          <div class="mb-4 flex items-center gap-2 text-xs text-slate-400 font-mono">
+            <span>{currentApp.name}</span>
+            <span>/</span>
+            <span class="text-slate-300">{category}</span>
+          </div>
+
+          <div class="mb-6 space-y-2">
+            <div class="flex items-center gap-3">
+              {method && <MethodBadge method={method} />}
+              {endpoint && <code class="text-xs font-mono text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">{endpoint}</code>}
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">{title}</h1>
+            <p class="text-sm text-slate-400 leading-relaxed">{description}</p>
+          </div>
+
+          <!-- Article Content -->
+          <article class="prose prose-invert prose-slate max-w-none text-slate-300 prose-headings:text-white prose-a:text-red-400 prose-code:text-red-300 prose-pre:bg-[#0c121e] prose-pre:border prose-pre:border-slate-800">
+            <slot />
+          </article>
+        </main>
+
+        <!-- 3. Right Column: On-this-page Table of Contents (TOC) -->
+        <aside class="sticky top-20 hidden h-[calc(100vh-5rem)] w-56 shrink-0 overflow-y-auto pl-4 xl:block border-l border-slate-800/80">
+          <div class="space-y-3">
+            <h4 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              Trên trang này
+            </h4>
+            {headings.length === 0 ? (
+              <p class="text-xs text-slate-400">Tổng quan tài liệu</p>
+            ) : (
+              <ul class="space-y-2 text-xs">
+                {headings.map((h) => (
+                  <li style={{ paddingLeft: `${(h.depth - 2) * 12}px` }}>
+                    <a
+                      href={`#${h.slug}`}
+                      class="block text-slate-400 hover:text-white transition-colors truncate"
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

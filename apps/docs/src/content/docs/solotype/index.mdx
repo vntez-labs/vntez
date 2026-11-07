@@ -1,0 +1,37 @@
+---
+title: "Tổng quan SoloType & Thuật toán Gõ Tiếng Việt"
+description: "Nền tảng kiểm tra và rèn luyện tốc độ gõ phím 10 ngón tối ưu cho bộ gõ tiếng Việt Telex/VNI và lập trình viên."
+appId: "solotype"
+appName: "SoloType"
+category: "Thuật toán & Cơ chế"
+order: 1
+badge: "TYPING ENGINE"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Thuật toán Đo Đạc Tốc độ Gõ
+
+SoloType sử dụng chuẩn quốc tế để đo đạc hiệu suất gõ phím:
+- **Net WPM (Words Per Minute):** `(Tổng số ký tự đúng / 5) / (Thời gian thi tính bằng phút)`.
+- **CPM (Characters Per Minute):** Số ký tự chuẩn xác gõ được trong 60 giây.
+- **Xử lý Bộ gõ Tiếng Việt:** Thuật toán phân tách ký tự gốc và ký tự dấu (ví dụ: `w` tạo `ư`, `s` tạo dấu sắc) để tránh phạt lỗi sai sai lệch trong quá trình soạn thảo văn bản tiếng Việt Telex hoặc VNI.
+
+## Chế độ Luyện Gõ dành cho Lập trình viên
+
+Hỗ trợ các kho từ vựng chuyên dụng với cấu trúc cú pháp thật:
+- **TypeScript & JavaScript:** Các cú pháp arrow functions, generic types `<T>`, async/await.
+- **Rust & Go:** Các ký tự đặc thù `&mut`, `impl`, `:=`, `chan`.
+- **Python & C++:** Các toán tử con trỏ `*ptr`, `->`, indentations.
+
+<TabbedCodeBlock
+  client:load
+  title="Khởi tạo Phiên Thi SoloType"
+  tabs={[
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { SoloTypeEngine } from '@vntez/solotype-core';\n\nconst session = new SoloTypeEngine({\n  mode: 'vi_telex',\n  durationSeconds: 60,\n  includePunctuation: true,\n});\nsession.start();",
+    },
+  ]}
+/>

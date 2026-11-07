@@ -4,6 +4,7 @@
  */
 
 export * from './types';
+export * from './permissions';
 export * from './encoding';
 export * from './pkce';
 export * from './client';
@@ -11,4 +12,3 @@ export * from './cookies';
 export * from './store';
 export * from './guard';
 export * from './provider';
-export * from './server';

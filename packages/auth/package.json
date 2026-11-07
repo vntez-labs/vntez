@@ -37,6 +37,7 @@
     "./store": "./src/store.ts",
     "./guard": "./src/guard.tsx",
     "./provider": "./src/provider.tsx",
-    "./server": "./src/server.ts"
+    "./server": "./src/server.ts",
+    "./permissions": "./src/permissions.ts"
   }
 }

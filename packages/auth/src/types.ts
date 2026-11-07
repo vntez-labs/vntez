@@ -8,6 +8,10 @@ export interface VntezUser {
   email: string;
   name: string;
   avatar?: string;
+  phone?: string;
+  role?: string;
+  roles?: string[];
+  permissions?: string[];
   [key: string]: unknown;
 }
 

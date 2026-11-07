@@ -1,0 +1,65 @@
+{
+  "$ref": "#/definitions/docs",
+  "definitions": {
+    "docs": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "appId": {
+          "type": "string",
+          "enum": [
+            "workers-hub",
+            "vntez-iam",
+            "solotype",
+            "bonsai-reader",
+            "gitvn"
+          ]
+        },
+        "appName": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "order": {
+          "type": "number",
+          "default": 0
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "WS"
+          ]
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "badge": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "appId",
+        "appName",
+        "category"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

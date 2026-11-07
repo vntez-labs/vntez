@@ -1,0 +1,65 @@
+---
+title: "Phân phối Tác vụ & Alert Telegram"
+description: "Kích hoạt xử lý tác vụ nền bất đồng bộ và tự động phát cảnh báo sự cố sang kênh Telegram Bot."
+appId: "workers-hub"
+appName: "Workers Hub"
+category: "API Giám sát & Quản trị"
+order: 3
+method: "POST"
+endpoint: "/api/workers/dispatch"
+badge: "TASK DISPATCHER"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Kích hoạt các tác vụ xử lý hàng đợi (Queues) hoặc gửi sự kiện khẩn cấp sang Worker xử lý Telegram Bot để thông báo trực tiếp cho đội ngũ DevOps.
+
+## Dữ liệu Yêu cầu (Request Body)
+
+```json
+{
+  "target_worker": "telebot-worker",
+  "event_type": "alert_incident",
+  "payload": {
+    "severity": "critical",
+    "message": "P99 latency exceeded 200ms in Hanoi POP"
+  }
+}
+```
+
+## Mẫu gọi API đa ngôn ngữ
+
+<TabbedCodeBlock
+  client:load
+  title="Kích hoạt Dispatch"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/dispatch\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\"target_worker\":\"telebot-worker\",\"event_type\":\"alert_incident\",\"payload\":{\"severity\":\"critical\",\"message\":\"P99 latency spike\"}}'",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://workers.vntez.cloud/api/workers/dispatch', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    Authorization: `Bearer ${token}`,\n  },\n  body: JSON.stringify({\n    target_worker: 'telebot-worker',\n    event_type: 'alert_incident',\n    payload: { severity: 'critical', message: 'P99 latency spike' },\n  }),\n});\nconst result = await res.json();",
+    },
+    {
+      label: "Python",
+      lang: "python",
+      code: "import requests\n\nres = requests.post(\n  'https://workers.vntez.cloud/api/workers/dispatch',\n  json={\n    'target_worker': 'telebot-worker',\n    'event_type': 'alert_incident',\n    'payload': {'severity': 'critical', 'message': 'P99 latency spike'}\n  },\n  headers={'Authorization': f'Bearer {token}'}\n)",
+    },
+  ]}
+/>
+
+## Phản hồi Đã tiếp nhận (202 Accepted)
+
+```json
+{
+  "success": true,
+  "task_id": "dispatch_evt_892138",
+  "queued_at": "2026-11-07T08:05:00Z",
+  "target": "telebot-worker"
+}
+```

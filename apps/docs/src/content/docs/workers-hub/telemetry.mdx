@@ -1,0 +1,71 @@
+---
+title: "Giám sát & Telemetry vi mô"
+description: "Truy xuất chỉ số vi mô thời gian thực: thời gian thực thi CPU, độ trễ P99 tính bằng ms, và tỉ lệ lỗi HTTP 5xx."
+appId: "workers-hub"
+appName: "Workers Hub"
+category: "API Giám sát & Quản trị"
+order: 2
+method: "GET"
+endpoint: "/api/workers/telemetry"
+badge: "REAL-TIME TELEMETRY"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Endpoint cung cấp dữ liệu vi mô thời gian thực đo lường chất lượng dịch vụ của từng Worker cụ thể, phục vụ việc tự động phát hiện suy giảm hiệu năng (degradation) hoặc sự cố tắc nghẽn mạng.
+
+## Tham số Truy vấn (Query Parameters)
+
+| Tham số | Kiểu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `worker_id` | string | Có | Tên định danh Worker (VD: `vntez-iam-worker`). |
+| `timeframe` | string | Không | Khoảng thời gian: `1h`, `24h` hoặc `7d` (mặc định: `1h`). |
+
+## Mã gọi Mẫu đa ngôn ngữ
+
+<TabbedCodeBlock
+  client:load
+  title="Lấy Telemetry Worker"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X GET \"https://workers.vntez.cloud/api/workers/telemetry?worker_id=vntez-iam-worker&timeframe=24h\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\"",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const response = await fetch(\n  'https://workers.vntez.cloud/api/workers/telemetry?worker_id=vntez-iam-worker&timeframe=24h',\n  {\n    headers: { Authorization: `Bearer ${token}` },\n  }\n);\nconst telemetry = await response.json();",
+    },
+    {
+      label: "Go",
+      lang: "go",
+      code: "req, _ := http.NewRequest(\"GET\", \"https://workers.vntez.cloud/api/workers/telemetry?worker_id=vntez-iam-worker\", nil)\nreq.Header.Set(\"Authorization\", \"Bearer \" + token)\nres, _ := http.DefaultClient.Do(req)",
+    },
+    {
+      label: "Python",
+      lang: "python",
+      code: "import requests\n\nres = requests.get(\n  'https://workers.vntez.cloud/api/workers/telemetry',\n  params={'worker_id': 'vntez-iam-worker', 'timeframe': '24h'},\n  headers={'Authorization': f'Bearer {token}'}\n)\ndata = res.json()",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "worker_id": "vntez-iam-worker",
+  "timeframe": "24h",
+  "metrics": {
+    "requests_total": 489210,
+    "avg_latency_ms": 12.4,
+    "p99_latency_ms": 28.1,
+    "cpu_time_median_ms": 4.8,
+    "error_5xx_rate": "0.002%",
+    "data_egress_bytes": 142083921
+  },
+  "health_status": "optimal"
+}
+```

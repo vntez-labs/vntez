@@ -1,0 +1,32 @@
+---
+title: "Triết lý Bonsai Reader & Tiêu chuẩn Typography"
+description: "Trình đọc sách điện tử ePub, PDF và tài liệu Markdown/MDX với thiết kế tối giản, loại bỏ hoàn toàn phiền nhiễu."
+appId: "bonsai-reader"
+appName: "Bonsai Reader"
+category: "Triết lý & Thiết kế"
+order: 1
+badge: "MINIMALIST READER"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Triết lý Thiết kế Tối giản (Distraction-Free)
+
+**Bonsai Reader** hướng tới trải nghiệm đắm chìm vào con chữ. Mọi thanh công cụ, thông báo pop-up, hay yếu tố giao diện thừa thãi đều được ẩn đi khi người dùng bắt đầu đọc.
+
+### Các Quy chuẩn Typography Chuẩn mực cho Tiếng Việt:
+- **Font chữ chọn lọc:** Tích hợp bộ font serif và sans-serif được tinh chỉnh dấu tiếng Việt hoàn hảo (Literata, Be Vietnam Pro, EB Garamond).
+- **Tỉ lệ Line-height & Measure:** Chiều rộng dòng văn bản cố định tối đa 65-75 ký tự, khoảng cách dòng `1.65 - 1.8` đảm bảo mắt không bị mỏi khi đọc thời gian dài.
+- **Hỗ trợ định dạng kép:** Mở trực tiếp các tệp ePub tiêu chuẩn, tệp PDF kỹ thuật, và các tài liệu ghi chú Markdown cá nhân.
+
+<TabbedCodeBlock
+  client:load
+  title="Khởi tạo Bonsai Reader Container"
+  tabs={[
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { BonsaiViewer } from '@vntez/bonsai-reader';\n\nconst viewer = new BonsaiViewer({\n  container: '#reader-root',\n  theme: 'charcoal',\n  fontSize: 18,\n  fontFamily: 'Literata',\n});\nawait viewer.openBook('https://r2.vntez.cloud/books/clean-code.epub');",
+    },
+  ]}
+/>

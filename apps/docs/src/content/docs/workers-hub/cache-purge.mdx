@@ -1,0 +1,54 @@
+---
+title: "Xóa Cache Edge CDN Tức thời"
+description: "Vô hiệu hóa bộ nhớ đệm phân tán toàn cầu theo URL hoặc Cache-Tags chỉ trong dưới 150ms."
+appId: "workers-hub"
+appName: "Workers Hub"
+category: "API Giám sát & Quản trị"
+order: 4
+method: "POST"
+endpoint: "/api/workers/cache/purge"
+badge: "EDGE CACHE CONTROL"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Lập tức xóa bản sao lưu đệm tại toàn bộ các điểm PoP của Cloudflare. Hỗ trợ vô hiệu hóa theo mảng URL hoặc danh mục nhãn phân loại Cache-Tag.
+
+## Dữ liệu Yêu cầu (Request Body)
+
+```json
+{
+  "tags": ["apps-manifest", "blog-catalog"],
+  "urls": ["https://vntez.net/products"]
+}
+```
+
+<TabbedCodeBlock
+  client:load
+  title="Purge Edge Cache"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST \"https://workers.vntez.cloud/api/workers/cache/purge\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $VNTEZ_ACCESS_TOKEN\" \\\n  -d '{\"tags\":[\"apps-manifest\"]}'",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "const res = await fetch('https://workers.vntez.cloud/api/workers/cache/purge', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    Authorization: `Bearer ${token}`,\n  },\n  body: JSON.stringify({ tags: ['apps-manifest'] }),\n});",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "success": true,
+  "purged_items": 1,
+  "execution_time_ms": 112,
+  "zone_id": "zone_981273918237"
+}
+```

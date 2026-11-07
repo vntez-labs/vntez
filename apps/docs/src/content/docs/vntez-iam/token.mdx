@@ -1,0 +1,58 @@
+---
+title: "Trao đổi Token (Token Exchange)"
+description: "Đổi Authorization Code lấy Access Token và Refresh Token bảo mật theo RFC 6749."
+appId: "vntez-iam"
+appName: "VNTEZ IAM"
+category: "Giao thức OAuth 2.0"
+order: 2
+method: "POST"
+endpoint: "/oauth/token"
+badge: "OAUTH TOKEN ENDPOINT"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Sau khi người dùng cấp quyền tại trang đăng nhập VNTEZ IAM, client gửi mã `code` kèm `code_verifier` nguyên bản lên endpoint `/oauth/token` để nhận `access_token`.
+
+## Tham số Yêu cầu (Request Parameters)
+
+| Tham số | Kiểu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `grant_type` | string | Có | Giá trị cố định: `authorization_code`. |
+| `code` | string | Có | Mã ủy quyền tạm thời nhận được từ query string. |
+| `client_id` | string | Có | Client ID của ứng dụng đã đăng ký trên Console. |
+| `code_verifier` | string | Có | Chuỗi ngẫu nhiên bí mật tạo ở bước khởi tạo PKCE. |
+| `redirect_uri` | string | Có | Địa chỉ callback đã đăng ký chính xác. |
+
+## Mẫu gọi API
+
+<TabbedCodeBlock
+  client:load
+  title="Trao đổi Token"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X POST https://iam.vntez.cloud/oauth/token \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -d \"grant_type=authorization_code\" \\\n  -d \"client_id=vntez-console-app\" \\\n  -d \"code=auth_code_sample_123\" \\\n  -d \"code_verifier=secret_verifier_64_bytes\" \\\n  -d \"redirect_uri=https://yourapp.com/auth/callback\"",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { exchangeToken } from '@workspace/auth/server';\n\nconst tokenData = await exchangeToken({\n  clientId: 'vntez-console-app',\n  code,\n  codeVerifier,\n  redirectUri: 'https://yourapp.com/auth/callback',\n});",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "access_token": "vntez_at_98120391283019283",
+  "token_type": "Bearer",
+  "expires_in": 7200,
+  "refresh_token": "vntez_rt_81923019238120398",
+  "scope": "openid profile email"
+}
+```

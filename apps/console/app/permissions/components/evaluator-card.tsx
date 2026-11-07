@@ -1,11 +1,20 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Play, CheckCircle2, XCircle, ChevronDown, Check, KeyRound } from "lucide-react";
+import {
+  IconPlayerPlay,
+  IconCircleCheck,
+  IconCircleX,
+  IconChevronDown,
+  IconCheck,
+  IconKey,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { useAuth } from "@workspace/auth";
 import { usePermissionsStore } from "../permissions-store";
 
 export function EvaluatorCard() {
+  const { user } = useAuth();
   const {
     resources,
     actions,
@@ -20,6 +29,13 @@ export function EvaluatorCard() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Automatically initialize evalUserId with the real logged-in user ID
+  useEffect(() => {
+    if (user && (!evalUserId || evalUserId === "admin_user_01")) {
+      setEvalUserId(user.sub || user.email);
+    }
+  }, [user, evalUserId, setEvalUserId]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -56,7 +72,7 @@ export function EvaluatorCard() {
           Thử Nghiệm Quyền (Live Evaluator)
         </h4>
         <p className="text-xs text-muted-foreground">
-          Mô phỏng kiểm tra quyền hạn của một User ID hoặc Client ID bất kỳ theo RBAC engine
+          Kiểm tra quyền hạn thực tế của tài khoản hiện tại hoặc Client ID bất kỳ theo RBAC engine
         </p>
       </div>
 
@@ -95,9 +111,9 @@ export function EvaluatorCard() {
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground cursor-pointer"
             >
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
+              <IconChevronDown className={`h-3.5 w-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
             </button>
           </div>
 
@@ -126,10 +142,10 @@ export function EvaluatorCard() {
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <KeyRound className="h-3 w-3 text-muted-foreground shrink-0" />
+                        <IconKey className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="truncate">{key}</span>
                       </div>
-                      {isSelected && <Check className="h-3 w-3 text-primary shrink-0" />}
+                      {isSelected && <IconCheck className="h-3.5 w-3.5 text-primary shrink-0" />}
                     </button>
                   );
                 })
@@ -146,7 +162,7 @@ export function EvaluatorCard() {
             size="sm"
             className="w-full h-9 gap-1.5 rounded-xl shadow-xs font-semibold cursor-pointer"
           >
-            <Play className="h-3.5 w-3.5" />
+            <IconPlayerPlay className="h-3.5 w-3.5" />
             {isEvaluating ? "Đang kiểm tra..." : "Kiểm tra quyền"}
           </Button>
         </div>
@@ -161,9 +177,9 @@ export function EvaluatorCard() {
           }`}
         >
           {evalResult.allowed ? (
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+            <IconCircleCheck className="h-4 w-4 shrink-0 text-emerald-600" />
           ) : (
-            <XCircle className="h-4 w-4 shrink-0 text-rose-600" />
+            <IconCircleX className="h-4 w-4 shrink-0 text-rose-600" />
           )}
           <span>{evalResult.message}</span>
         </div>

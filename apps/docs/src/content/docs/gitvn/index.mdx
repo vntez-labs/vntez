@@ -1,0 +1,35 @@
+---
+title: "Tổng quan GitVN (Zero-Friction Git Platform)"
+description: "Nền tảng Git Repository tối giản chạy local, loại bỏ mọi rào cản và độ trễ phức tạp, tích hợp tinh thần Jira & Confluence."
+appId: "gitvn"
+appName: "GitVN"
+category: "Khái niệm Cốt lõi"
+order: 1
+badge: "ZERO-FRICTION GIT"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Triết lý Zero-Friction
+
+Các nền tảng lưu trữ mã nguồn truyền thống thường cồng kềnh, tiêu tốn tài nguyên và có quá nhiều tính năng phân tâm. **GitVN** được xây dựng với một mục tiêu duy nhất:
+
+> **Loại bỏ tối đa ma sát (Zero-Friction):** Giữ lại những tính năng mà lập trình viên thực sự sử dụng hàng ngày, kết hợp tinh thần quản trị công việc của **Jira** và tài liệu dự án của **Confluence** ngay trong kho mã nguồn local.
+
+## Các Đặc trưng Nổi bật
+
+- **Tốc độ phản hồi cực nhanh:** Clone và push qua SSH nội bộ chỉ trong vài miligiây.
+- **Tác vụ & Kanban tối giản (Jira-inspired):** Quản lý issues, story points, checklist và commit linking trực tiếp mà không cần đăng nhập vào hệ thống bên thứ ba.
+- **Tài liệu Markdown tích hợp (Confluence-inspired):** Toàn bộ wiki và kiến trúc dự án được lưu trữ bằng các tệp Markdown phiên bản hóa cùng mã nguồn.
+
+<TabbedCodeBlock
+  client:load
+  title="Clone Repo GitVN"
+  tabs={[
+    {
+      label: "cURL / Git CLI",
+      lang: "bash",
+      code: "git clone git@gitvn.local:hnamhocit/vntez-core.git\ncd vntez-core",
+    },
+  ]}
+/>

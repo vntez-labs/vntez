@@ -4,7 +4,7 @@ interface SampleConfig {
   method: string
   url: string
   headers?: Record<string, string>
-  body?: string
+  body?: string | Record<string, unknown> | unknown[]
   customTs?: string
   customPython?: string
   customGo?: string
@@ -21,7 +21,9 @@ export function buildUniversalCodeSubtabs(cfg: SampleConfig): DocSubtab[] {
   const method = cfg.method.toUpperCase()
   const headers = cfg.headers || { "Content-Type": "application/json" }
   const hasBody = Boolean(cfg.body && method !== "GET")
-  const jsonBody = cfg.body || '{\n  "status": "ready"\n}'
+  const jsonBody = typeof cfg.body === "object" 
+    ? JSON.stringify(cfg.body, null, 2) 
+    : (cfg.body || '{\n  "status": "ready"\n}')
 
   const headersBash = Object.entries(headers)
     .map(([k, v]) => `  -H "${k}: ${v}"`)

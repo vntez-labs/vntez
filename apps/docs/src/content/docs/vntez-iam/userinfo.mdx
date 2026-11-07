@@ -1,0 +1,50 @@
+---
+title: "Lấy Thông tin Người dùng (Userinfo)"
+description: "Truy xuất danh tính người dùng và OIDC standard claims bằng Access Token."
+appId: "vntez-iam"
+appName: "VNTEZ IAM"
+category: "Giao thức OAuth 2.0"
+order: 3
+method: "GET"
+endpoint: "/oauth/userinfo"
+badge: "OIDC USERINFO"
+---
+
+import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
+
+## Mô tả Endpoint
+
+Endpoint trả về thông tin danh tính chuẩn hóa của người dùng đã đăng nhập, bao gồm định danh duy nhất (`sub`), email, họ tên, ảnh đại diện và vai trò hệ thống.
+
+## Mẫu gọi API
+
+<TabbedCodeBlock
+  client:load
+  title="Lấy Userinfo"
+  tabs={[
+    {
+      label: "cURL",
+      lang: "bash",
+      code: "curl -X GET https://iam.vntez.cloud/oauth/userinfo \\\n  -H \"Authorization: Bearer vntez_at_98120391283019283\"",
+    },
+    {
+      label: "TypeScript",
+      lang: "typescript",
+      code: "import { fetchUserInfo } from '@workspace/auth/client';\n\nconst user = await fetchUserInfo(accessToken);",
+    },
+  ]}
+/>
+
+## Phản hồi Thành công (200 OK)
+
+```json
+{
+  "sub": "f71976bd-8001-4f39-8b12-d54cd09957a2",
+  "email": "hnamhocit@gmail.com",
+  "name": "Nam Nguyễn",
+  "avatar": "https://lh3.googleusercontent.com/a/ACg8oc...",
+  "role": "admin",
+  "roles": ["admin"],
+  "email_verified": true
+}
+```
