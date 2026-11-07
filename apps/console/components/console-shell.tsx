@@ -14,6 +14,7 @@ import {
   HardDrive,
   Layers,
   Newspaper,
+  Database,
   ArrowLeft,
   BookOpen,
 } from "lucide-react";
@@ -24,6 +25,7 @@ export const NAV_ITEMS = [
   { href: "/", label: "Bảng điều khiển", icon: LayoutDashboard },
   { href: "/apps", label: "Quản lý Ứng dụng", icon: Layers },
   { href: "/blog-posts", label: "Quản trị Blog", icon: Newspaper },
+  { href: "/database", label: "Cơ sở dữ liệu", icon: Database },
   { href: "/permissions", label: "Ma trận Phân quyền", icon: KeyRound },
   { href: "/telebot", label: "TeleBot Subscribers", icon: Send },
   { href: "/storage", label: "R2 Storage & Uploads", icon: HardDrive },

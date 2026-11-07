@@ -13,6 +13,7 @@ import {
   KeyRound,
   HardDrive,
   Send,
+  Database,
 } from "lucide-react";
 
 export function UserDropdown() {
@@ -91,6 +92,15 @@ export function UserDropdown() {
 
           {/* Menu Items */}
           <div className="py-1 space-y-0.5">
+            <Link
+              href="/database"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+            >
+              <Database className="h-4 w-4 text-primary" />
+              <span>Cơ sở Dữ liệu Supabase</span>
+            </Link>
+
             <Link
               href="/permissions"
               onClick={() => setIsOpen(false)}
