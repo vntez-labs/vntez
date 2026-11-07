@@ -144,9 +144,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* Banner / Thumbnail if present */}
       {post.thumbnailUrl && (
-        <div className="my-8 aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0c121e]">
+        <div className="my-8 max-h-[500px] w-full rounded-2xl overflow-hidden bg-slate-50 dark:bg-[#0c121e] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-center p-2 sm:p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.thumbnailUrl} alt={post.title} className="size-full object-cover" />
+          <img
+            src={post.thumbnailUrl}
+            alt={post.title}
+            className="max-h-[480px] w-auto max-w-full object-contain rounded-xl shadow-xs"
+          />
         </div>
       )}
 
