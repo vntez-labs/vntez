@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { UserCheck, X, Shield, AlertTriangle, Loader2 } from "lucide-react";
+import {
+  IconUserCheck,
+  IconX,
+  IconShield,
+  IconAlertTriangle,
+  IconLoader2,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { CustomSelect } from "@workspace/ui/components/custom-select";
 import { useUsersStore } from "../users-store";
@@ -62,7 +68,7 @@ export function UserEditModal() {
         <div className="flex items-center justify-between p-6 pb-5 border-b border-border/60">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Shield className="h-5 w-5" />
+              <IconShield className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-foreground font-display">
@@ -78,13 +84,13 @@ export function UserEditModal() {
             onClick={handleClose}
             className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
           >
-            <X className="h-4 w-4" />
+            <IconX className="h-4 w-4" />
           </button>
         </div>
 
         {formError && (
           <div className="mx-6 mt-5 p-3.5 rounded-xl bg-destructive/10 text-destructive text-xs flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <IconAlertTriangle className="h-4 w-4 shrink-0" />
             <span>{formError}</span>
           </div>
         )}
@@ -183,12 +189,12 @@ export function UserEditModal() {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
                   <span>Đang lưu...</span>
                 </>
               ) : (
                 <>
-                  <UserCheck className="h-3.5 w-3.5" />
+                  <IconUserCheck className="h-3.5 w-3.5" />
                   <span>Lưu thay đổi</span>
                 </>
               )}

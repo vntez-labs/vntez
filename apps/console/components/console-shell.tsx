@@ -4,34 +4,94 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
-  Users,
-  Settings,
-  Terminal,
-  ShieldCheck,
-  KeyRound,
-  Send,
-  HardDrive,
-  Layers,
-  Newspaper,
-  Database,
-  ArrowLeft,
-  BookOpen,
-} from "lucide-react";
+  IconTerminal2,
+  IconLayoutDashboard,
+  IconLayoutDashboardFilled,
+  IconApps,
+  IconAppsFilled,
+  IconArticle,
+  IconArticleFilled,
+  IconDatabase,
+  IconDatabaseFilled,
+  IconKey,
+  IconKeyFilled,
+  IconSend,
+  IconSendFilled,
+  IconCloud,
+  IconCloudFilled,
+  IconShieldCheck,
+  IconShieldCheckFilled,
+  IconUser,
+  IconUserFilled,
+  IconSettings,
+  IconSettingsFilled,
+  IconArrowLeft,
+  IconBook,
+} from "@tabler/icons-react";
 import { UserDropdown } from "@/components/user-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const NAV_ITEMS = [
-  { href: "/", label: "Bảng điều khiển", icon: LayoutDashboard },
-  { href: "/apps", label: "Quản lý Ứng dụng", icon: Layers },
-  { href: "/blog-posts", label: "Quản trị Blog", icon: Newspaper },
-  { href: "/database", label: "Cơ sở dữ liệu", icon: Database },
-  { href: "/permissions", label: "Ma trận Phân quyền", icon: KeyRound },
-  { href: "/telebot", label: "TeleBot Subscribers", icon: Send },
-  { href: "/storage", label: "R2 Storage & Uploads", icon: HardDrive },
-  { href: "/clients", label: "Quản lý Client OAuth", icon: ShieldCheck },
-  { href: "/users", label: "Quản trị Người dùng", icon: Users },
-  { href: "/settings", label: "Cài đặt Hệ thống", icon: Settings },
+  {
+    href: "/",
+    label: "Bảng điều khiển",
+    icon: IconLayoutDashboard,
+    activeIcon: IconLayoutDashboardFilled,
+  },
+  {
+    href: "/apps",
+    label: "Quản lý Ứng dụng",
+    icon: IconApps,
+    activeIcon: IconAppsFilled,
+  },
+  {
+    href: "/blog-posts",
+    label: "Quản trị Blog",
+    icon: IconArticle,
+    activeIcon: IconArticleFilled,
+  },
+  {
+    href: "/database",
+    label: "Cơ sở dữ liệu",
+    icon: IconDatabase,
+    activeIcon: IconDatabaseFilled,
+  },
+  {
+    href: "/permissions",
+    label: "Ma trận Phân quyền",
+    icon: IconKey,
+    activeIcon: IconKeyFilled,
+  },
+  {
+    href: "/telebot",
+    label: "TeleBot Subscribers",
+    icon: IconSend,
+    activeIcon: IconSendFilled,
+  },
+  {
+    href: "/storage",
+    label: "R2 Storage & Uploads",
+    icon: IconCloud,
+    activeIcon: IconCloudFilled,
+  },
+  {
+    href: "/clients",
+    label: "Quản lý Client OAuth",
+    icon: IconShieldCheck,
+    activeIcon: IconShieldCheckFilled,
+  },
+  {
+    href: "/users",
+    label: "Quản trị Người dùng",
+    icon: IconUser,
+    activeIcon: IconUserFilled,
+  },
+  {
+    href: "/settings",
+    label: "Cài đặt Hệ thống",
+    icon: IconSettings,
+    activeIcon: IconSettingsFilled,
+  },
 ];
 
 export function ConsoleShell({ children }: { children: React.ReactNode }) {
@@ -46,7 +106,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
         {/* Brand Header */}
         <div className="flex h-16 items-center gap-3 border-b border-zinc-200/70 dark:border-zinc-800/70 px-6 bg-white dark:bg-[#0c121e]">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
-            <Terminal className="h-5 w-5" />
+            <IconTerminal2 className="h-5 w-5" />
           </div>
           <div>
             <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">
@@ -64,8 +124,8 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
             Dịch vụ Edge Cloud
           </div>
           {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
+            const Icon = isActive ? item.activeIcon : item.icon;
             return (
               <Link
                 key={item.href}
@@ -96,7 +156,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-foreground transition-all cursor-pointer shadow-2xs"
                 title="Quay lại trang trước"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
+                <IconArrowLeft className="h-3.5 w-3.5" />
                 <span>Quay lại</span>
               </button>
             )}
@@ -122,7 +182,7 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               title="Xem Tài liệu kỹ thuật VNTEZ"
             >
-              <BookOpen className="h-3.5 w-3.5 text-primary" />
+              <IconBook className="h-3.5 w-3.5 text-primary" />
               <span>Tài liệu API</span>
             </a>
             <ThemeToggle />

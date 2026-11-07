@@ -61,6 +61,24 @@ export async function GET() {
 
       const isCurrent = u.id === user.sub || u.email === user.email;
 
+      const userRole =
+        u.user_metadata?.role ||
+        u.app_metadata?.role ||
+        (isCurrent ? "Admin" : "Viewer");
+
+      const displayRole =
+        String(userRole).toLowerCase().includes("admin")
+          ? "Quản trị viên (Super Admin)"
+          : String(userRole).toLowerCase().includes("dev")
+            ? "Lập trình viên (Developer)"
+            : String(userRole).toLowerCase().includes("oper")
+              ? "Vận hành (Operator)"
+              : "Người dùng ủy quyền (Member)";
+
+      const isBanned = Boolean(u.banned_until && new Date(u.banned_until) > new Date());
+      const accountStatus: "active" | "inactive" =
+        isBanned || u.user_metadata?.status === "inactive" ? "inactive" : "active";
+
       users.push({
         id: u.id,
         name: cleanName,
@@ -68,10 +86,8 @@ export async function GET() {
         avatar,
         phone: u.phone || "-",
         providers,
-        role: isCurrent
-          ? "Quản trị viên (Super Admin)"
-          : "Người dùng ủy quyền (Member)",
-        status: "active",
+        role: displayRole,
+        status: accountStatus,
         createdAt: u.created_at,
         updatedAt: u.updated_at || u.created_at || new Date().toISOString(),
         confirmedAt: u.confirmed_at || u.email_confirmed_at || null,

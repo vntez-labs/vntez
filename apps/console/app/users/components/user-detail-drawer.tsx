@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Copy, Check, Globe, Trash2 } from "lucide-react";
+import {
+  IconX,
+  IconCopy,
+  IconCheck,
+  IconWorld,
+  IconTrash,
+} from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { useUsersStore } from "../users-store";
 import { JsonCodeView } from "./json-code-view";
@@ -94,9 +100,9 @@ export function UserDetailDrawer() {
                   className="hover:text-foreground cursor-pointer p-0.5"
                 >
                   {copiedId === "drawer-email" ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
                   ) : (
-                    <Copy className="h-3.5 w-3.5 opacity-60 hover:opacity-100" />
+                    <IconCopy className="h-3.5 w-3.5 opacity-60 hover:opacity-100" />
                   )}
                 </button>
               </div>
@@ -108,7 +114,7 @@ export function UserDetailDrawer() {
             onClick={handleClose}
             className="text-muted-foreground hover:text-foreground p-1.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer"
           >
-            <X className="h-5 w-5" />
+            <IconX className="h-5 w-5" />
           </button>
         </div>
 
@@ -153,12 +159,12 @@ export function UserDetailDrawer() {
             >
               {copiedId === "raw-json" ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
                   <span>Đã sao chép</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5" />
+                  <IconCopy className="h-3.5 w-3.5" />
                   <span>Sao chép JSON</span>
                 </>
               )}
@@ -182,9 +188,9 @@ export function UserDetailDrawer() {
                   className="p-1 hover:text-foreground cursor-pointer text-muted-foreground shrink-0"
                 >
                   {copiedId === "drawer-uid" ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
                   ) : (
-                    <Copy className="h-3.5 w-3.5" />
+                    <IconCopy className="h-3.5 w-3.5" />
                   )}
                 </button>
               </div>
@@ -232,7 +238,7 @@ export function UserDetailDrawer() {
                     className="flex items-center justify-between p-3.5 rounded-xl bg-secondary/40 dark:bg-zinc-900/40 border border-border/50"
                   >
                     <div className="flex items-center gap-2 font-medium capitalize text-foreground">
-                      <Globe className="h-4 w-4 text-primary" />
+                      <IconWorld className="h-4 w-4 text-primary" />
                       <span>{p}</span>
                     </div>
                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
@@ -253,7 +259,7 @@ export function UserDetailDrawer() {
                   onClick={() => setDeletingUser(selectedUser)}
                   className="w-full gap-2 text-xs font-semibold h-10 rounded-xl cursor-pointer"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <IconTrash className="h-4 w-4" />
                   Xóa người dùng này khỏi hệ thống
                 </Button>
               </div>

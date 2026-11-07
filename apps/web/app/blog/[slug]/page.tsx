@@ -25,9 +25,36 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     return { title: "Không tìm thấy bài viết — vntez" };
   }
 
+  const title = `${post.title} — vntez Engineering Blog`;
+  const description = post.excerpt;
+  const url = `https://vntez.net/blog/${slug}`;
+  const images = post.thumbnailUrl
+    ? [{ url: post.thumbnailUrl, width: 1200, height: 630, alt: post.title }]
+    : [{ url: "https://vntez.net/vntez-logo.png", width: 800, height: 800, alt: "vntez" }];
+
   return {
-    title: `${post.title} — vntez Engineering Blog`,
-    description: post.excerpt,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      type: "article",
+      locale: "vi_VN",
+      url,
+      siteName: "vntez Engineering Blog",
+      title,
+      description,
+      publishedTime: post.date,
+      authors: [post.author],
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: post.thumbnailUrl ? [post.thumbnailUrl] : ["https://vntez.net/vntez-logo.png"],
+    },
   };
 }
 
@@ -39,8 +66,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    dateModified: post.updatedAt || post.date,
+    author: {
+      "@type": "Person",
+      name: post.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "VNTEZ LABS",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://vntez.net/icon.svg",
+      },
+    },
+    image: post.thumbnailUrl || "https://vntez.net/vntez-logo.png",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://vntez.net/blog/${slug}`,
+    },
+  };
+
   return (
     <article className="mx-auto max-w-4xl px-6 pt-8 sm:pt-12 pb-20 sm:pb-28">
+      {/* Structured Data for SEO / Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Back button */}
       <div className="mb-6">
         <Link

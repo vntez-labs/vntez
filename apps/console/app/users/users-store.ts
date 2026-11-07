@@ -181,38 +181,30 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
   handleEditUserSubmit: async (e: React.FormEvent) => {
     e.preventDefault();
-    const { editingUser, editFormData, users, selectedUser } = get();
+    const { editingUser, editFormData, fetchUsers } = get();
     if (!editingUser) return;
 
     set({ isSubmitting: true, formError: null });
 
     try {
-      // Update local state directly with sleek optimistic reactivity
-      const updatedUsers = users.map((u) => {
-        if (u.id === editingUser.id) {
-          return {
-            ...u,
-            name: editFormData.name.trim() || u.name,
-            role: editFormData.role,
-            status: editFormData.status,
-          };
-        }
-        return u;
+      const res = await fetch("/api/users/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: editingUser.id,
+          name: editFormData.name.trim(),
+          role: editFormData.role,
+          status: editFormData.status,
+        }),
       });
 
-      set({
-        users: updatedUsers,
-        editingUser: null,
-        selectedUser:
-          selectedUser?.id === editingUser.id
-            ? {
-                ...selectedUser,
-                name: editFormData.name.trim() || selectedUser.name,
-                role: editFormData.role,
-                status: editFormData.status,
-              }
-            : selectedUser,
-      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Không thể cập nhật người dùng trên Supabase Auth");
+      }
+
+      set({ editingUser: null });
+      await fetchUsers();
     } catch (err) {
       set({ formError: err instanceof Error ? err.message : String(err) });
     } finally {
