@@ -3,7 +3,6 @@
 import React from "react";
 import { Edit2, Trash2, ExternalLink, Eye, Heart, MessageSquare, Newspaper } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import { Badge } from "@workspace/ui/components/badge";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 import { getPublicBlogPostUrl } from "@/lib/portal-url";
 
@@ -15,47 +14,56 @@ interface BlogCardProps {
 
 export function BlogCard({ post, onEdit, onDelete }: BlogCardProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl bg-white dark:bg-card p-5 shadow-xs hover:shadow-sm transition-all duration-200">
+    <div className="flex flex-col justify-between rounded-2xl bg-card p-5 shadow-xs hover:shadow-md transition-all duration-200 border border-border">
       <div className="space-y-3.5">
-        {/* Top: Category & Status */}
-        <div className="flex items-center justify-between gap-2">
-          <Badge
-            variant="outline"
-            className="text-[10px] bg-primary/10 text-primary border-0 font-medium"
-          >
-            {post.category}
-          </Badge>
+        {/* Thumbnail Frame with embedded Badges */}
+        <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted group shadow-2xs border border-border/40">
+          {post.thumbnailUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={post.thumbnailUrl}
+                alt={post.title}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              {/* Soft overlay gradient for optimal badge contrast */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30 pointer-events-none" />
+            </>
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center text-white/90 shadow-2xs relative"
+              style={{ backgroundColor: post.color || "#fb291a" }}
+            >
+              <Newspaper className="h-10 w-10 opacity-70" />
+              <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            </div>
+          )}
 
-          <Badge
-            variant="outline"
-            className={`text-[10px] border-0 ${
-              post.status === "published"
-                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
-            }`}
-          >
-            {post.status === "published" ? "Xuất bản" : "Bản nháp"}
-          </Badge>
+          {/* Badges embedded directly inside thumbnail */}
+          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-10 gap-2">
+            {post.category ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-black/60 text-white backdrop-blur-md shadow-xs border border-white/20">
+                <span
+                  className="size-1.5 rounded-full"
+                  style={{ backgroundColor: post.color || "#fb291a" }}
+                />
+                {post.category}
+              </span>
+            ) : (
+              <span />
+            )}
+
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-semibold backdrop-blur-md shadow-xs ${
+                post.status === "published"
+                  ? "bg-emerald-600/90 text-white border border-emerald-400/30"
+                  : "bg-black/60 text-zinc-300 border border-white/20"
+              }`}
+            >
+              {post.status === "published" ? "Xuất bản" : "Bản nháp"}
+            </span>
+          </div>
         </div>
-
-        {/* Thumbnail (if any) or Banner */}
-        {post.thumbnailUrl ? (
-          <div className="h-36 w-full rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={post.thumbnailUrl}
-              alt={post.title}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ) : (
-          <div
-            className="flex h-24 w-full items-center justify-center rounded-xl text-white/90 shadow-2xs"
-            style={{ backgroundColor: post.color || "#fb291a" }}
-          >
-            <Newspaper className="h-8 w-8 opacity-80" />
-          </div>
-        )}
 
         {/* Title & Excerpt */}
         <div>
@@ -76,7 +84,7 @@ export function BlogCard({ post, onEdit, onDelete }: BlogCardProps) {
       </div>
 
       {/* Footer: Live Stats & Actions */}
-      <div className="mt-4 pt-3 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800/60 text-xs">
+      <div className="mt-4 pt-3 flex items-center justify-between border-t border-border text-xs">
         {/* Real counts: Views, Likes, Comments */}
         <div className="flex items-center gap-3 text-muted-foreground font-mono text-[11px]">
           <span className="flex items-center gap-1" title="Lượt xem">
@@ -99,7 +107,7 @@ export function BlogCard({ post, onEdit, onDelete }: BlogCardProps) {
             href={getPublicBlogPostUrl(post.slug)}
             target="_blank"
             rel="noreferrer"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
             title="Xem bài viết trên Web Portal"
           >
             <ExternalLink className="h-3.5 w-3.5" />
@@ -108,7 +116,7 @@ export function BlogCard({ post, onEdit, onDelete }: BlogCardProps) {
             variant="ghost"
             size="sm"
             onClick={() => onEdit(post)}
-            className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground"
+            className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
             title="Sửa bài viết"
           >
             <Edit2 className="h-3.5 w-3.5" />

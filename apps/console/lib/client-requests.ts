@@ -12,10 +12,19 @@ export async function getAllClientRequests(): Promise<{
 }> {
   try {
     const supabaseClient = getSupabaseAdminClient();
-    const { data, error } = await supabaseClient
-      .from("oauth_client_requests")
+    let { data, error } = await supabaseClient
+      .from("app_requests")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (error || !data) {
+      const fallback = await supabaseClient
+        .from("oauth_client_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (!error && Array.isArray(data)) {
       return {
@@ -232,38 +241,23 @@ export async function checkUserClientStatus(
   rejectedRequests: ClientRequestRecord[];
   approvedRequests: ClientRequestRecord[];
 }> {
-  // Super Admin bypass: always granted access
-  const isSuperAdmin =
-    userEmail === "hnamhocit@gmail.com" ||
-    userEmail.endsWith("@vntez.com") ||
-    userEmail.includes("admin");
-
+  const isSuperAdmin = userEmail === "hnamhocit@gmail.com" || userEmail.endsWith("@vntez.com") || userEmail.includes("admin");
   const { records } = await getAllClientRequests();
   const userRequests = records.filter(
-    (r) =>
-      (r.user_id && r.user_id === userId) ||
-      r.applicant_email.toLowerCase() === userEmail.toLowerCase()
+    (r) => (r.user_id && r.user_id === userId) || r.applicant_email.toLowerCase() === userEmail.toLowerCase()
   );
 
   const approvedRequests = userRequests.filter((r) => r.status === "approved");
   const pendingRequests = userRequests.filter((r) => r.status === "pending");
   const rejectedRequests = userRequests.filter((r) => r.status === "rejected");
 
-  // Query Supabase oauth_clients to see if any client matches
-  let approvedClientIds: string[] = approvedRequests
-    .map((r) => r.approved_client_id)
-    .filter(Boolean) as string[];
+  let approvedClientIds: string[] = approvedRequests.map((r) => r.approved_client_id).filter(Boolean) as string[];
 
-  // Also query real clients from Supabase
   try {
     const supabaseClient = getSupabaseAdminClient();
-    const { data: clients } = await supabaseClient
-      .from("oauth_clients")
-      .select("client_id");
-    if (clients && clients.length > 0) {
-      if (isSuperAdmin) {
-        approvedClientIds = clients.map((c) => c.client_id);
-      }
+    const { data: clients } = await supabaseClient.from("apps").select("id");
+    if (clients && clients.length > 0 && isSuperAdmin) {
+      approvedClientIds = clients.map((c) => c.id);
     }
   } catch {
     // Ignore

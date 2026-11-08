@@ -3,6 +3,8 @@
 import React from "react";
 import { Edit2, Trash2, Key, Check, X } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { TableMeta } from "../types";
 
 interface DatabaseGridProps {
@@ -78,14 +80,12 @@ export function DatabaseGrid({
       <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[600px]">
         <table className="w-full border-collapse text-left text-xs min-w-full">
           {/* Table Header */}
-          <thead className="sticky top-0 z-10 bg-zinc-50 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800">
+          <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur-md border-b border-border">
             <tr>
               <th className="w-10 px-3 py-3 text-center">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={isAllSelected}
-                  onChange={onToggleSelectAll}
-                  className="rounded border-zinc-300 text-primary focus:ring-primary cursor-pointer size-4"
+                  onCheckedChange={onToggleSelectAll}
                   title="Chọn tất cả các dòng"
                 />
               </th>
@@ -111,11 +111,21 @@ export function DatabaseGrid({
           {/* Table Body */}
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
             {isLoading ? (
-              <tr>
-                <td colSpan={tableMeta.columns.length + 2} className="py-20 text-center text-muted-foreground">
-                  Đang tải dữ liệu bảng {tableMeta.name}...
-                </td>
-              </tr>
+              Array.from({ length: 6 }).map((_, rIdx) => (
+                <tr key={rIdx}>
+                  <td className="px-3 py-3 text-center">
+                    <Skeleton className="h-4 w-4 rounded mx-auto" />
+                  </td>
+                  {tableMeta.columns.map((col) => (
+                    <td key={col.name} className="px-4 py-3">
+                      <Skeleton className="h-4 w-24 rounded" />
+                    </td>
+                  ))}
+                  <td className="px-4 py-3 text-right">
+                    <Skeleton className="h-7 w-7 rounded-lg ml-auto" />
+                  </td>
+                </tr>
+              ))
             ) : rows.length === 0 ? (
               <tr>
                 <td colSpan={tableMeta.columns.length + 2} className="py-20 text-center text-muted-foreground">
@@ -137,11 +147,9 @@ export function DatabaseGrid({
                     }`}
                   >
                     <td className="px-3 py-2.5 text-center">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={isSelected}
-                        onChange={() => onToggleSelectRow(pkValue)}
-                        className="rounded border-zinc-300 text-primary focus:ring-primary cursor-pointer size-4"
+                        onCheckedChange={() => onToggleSelectRow(pkValue)}
                       />
                     </td>
                     {tableMeta.columns.map((col) => (

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Clock } from "lucide-react";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { DashboardStats } from "./dashboard-types";
 
 interface RecentCodesTableProps {
@@ -12,7 +13,7 @@ export function RecentCodesTable({ stats }: RecentCodesTableProps) {
   const events = stats?.recentEvents || [];
 
   return (
-    <div className="bg-white dark:bg-card shadow-xs rounded-2xl overflow-hidden w-full max-w-full">
+    <div className="bg-card shadow-xs rounded-2xl overflow-hidden w-full max-w-full border border-border">
       <div className="p-4 sm:p-5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
@@ -22,7 +23,7 @@ export function RecentCodesTable({ stats }: RecentCodesTableProps) {
             <h3 className="text-sm font-bold text-foreground">
               Nhật Ký Xác Thực Gần Đây
             </h3>
-            <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
               {events.length}
             </span>
           </div>
@@ -31,7 +32,7 @@ export function RecentCodesTable({ stats }: RecentCodesTableProps) {
 
       <div className="w-full max-w-full overflow-x-auto">
         <table className="w-full text-left text-xs min-w-[640px]">
-          <thead className="bg-zinc-50/70 dark:bg-zinc-900/40 text-muted-foreground font-mono uppercase tracking-wider">
+          <thead className="bg-muted/60 text-muted-foreground font-mono uppercase tracking-wider border-b border-border">
             <tr>
               <th className="py-3 px-5 font-medium whitespace-nowrap">Mã Code</th>
               <th className="py-3 px-5 font-medium whitespace-nowrap">Client</th>
@@ -41,18 +42,23 @@ export function RecentCodesTable({ stats }: RecentCodesTableProps) {
               <th className="py-3 px-5 font-medium whitespace-nowrap text-right">Trạng thái</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40 font-mono text-xs">
+          <tbody className="divide-y divide-border font-mono text-xs">
             {!stats ? (
-              <tr>
-                <td colSpan={6} className="py-8 text-center text-muted-foreground font-sans">
-                  Đang tải dữ liệu...
-                </td>
-              </tr>
+              Array.from({ length: 4 }).map((_, idx) => (
+                <tr key={idx}>
+                  <td className="py-3 px-5"><Skeleton className="h-4 w-24 rounded" /></td>
+                  <td className="py-3 px-5"><Skeleton className="h-4 w-28 rounded" /></td>
+                  <td className="py-3 px-5"><Skeleton className="h-4 w-12 rounded" /></td>
+                  <td className="py-3 px-5"><Skeleton className="h-4 w-36 rounded" /></td>
+                  <td className="py-3 px-5"><Skeleton className="h-4 w-20 rounded" /></td>
+                  <td className="py-3 px-5 text-right"><Skeleton className="h-4 w-16 rounded-full ml-auto" /></td>
+                </tr>
+              ))
             ) : events.length > 0 ? (
               events.map((evt, idx) => (
                 <tr
                   key={evt.codePrefix || idx}
-                  className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors"
+                  className="hover:bg-muted/50 transition-colors"
                 >
                   <td className="py-3 px-5 font-semibold text-foreground">
                     {evt.codePrefix}••••••••

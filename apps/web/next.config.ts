@@ -3,6 +3,9 @@ import type { NextConfig } from "next"
 const DOCS_BASE_URL =
   process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"
 
+const LEGAL_BASE_URL =
+  process.env.NEXT_PUBLIC_LEGAL_URL || "https://vntez-legal.vercel.app"
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@workspace/ui"],
   async redirects() {
@@ -20,6 +23,11 @@ const nextConfig: NextConfig = {
       {
         source: "/docs/:appId((?!openapi)[^/]+)/:slug*",
         destination: `${DOCS_BASE_URL}/docs/:appId/:slug*`,
+        permanent: false,
+      },
+      {
+        source: "/legal/:appId/:slug*",
+        destination: `${LEGAL_BASE_URL}/:appId/:slug*`,
         permanent: false,
       },
     ]

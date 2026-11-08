@@ -17,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useStorageStore } from "../storage-store";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { R2FileItem } from "../storage-types";
 
 function formatBytes(bytes: number): string {
@@ -40,6 +41,7 @@ function getFileIcon(type: string) {
 export function FilesTable() {
   const {
     files,
+    isLoading,
     searchQuery,
     setSearchQuery,
     filterType,
@@ -80,14 +82,14 @@ export function FilesTable() {
   };
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-card shadow-xs overflow-hidden">
+    <div className="rounded-2xl bg-card shadow-xs overflow-hidden border border-border">
       {/* Header & Controls */}
       <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-bold text-foreground">
             Tập Tin Lưu Trữ
           </h3>
-          <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
             {filteredFiles.length}
           </span>
         </div>
@@ -101,19 +103,19 @@ export function FilesTable() {
               placeholder="Tìm theo file key..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-44 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:ring-1 focus:ring-primary"
+              className="w-44 rounded-lg bg-card border border-input shadow-2xs py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
 
           {/* Filter Pills */}
-          <div className="flex rounded-lg bg-zinc-100/80 p-0.5 text-xs dark:bg-zinc-800/60">
+          <div className="flex rounded-lg bg-muted/60 border border-border/60 p-0.5 text-xs">
             {(["all", "image", "document", "archive"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setFilterType(t)}
                 className={`rounded-md px-2.5 py-1 capitalize transition-colors ${
                   filterType === t
-                    ? "bg-white font-semibold text-foreground shadow-xs dark:bg-zinc-700"
+                    ? "bg-card font-semibold text-foreground shadow-xs border border-border/80"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -162,7 +164,7 @@ export function FilesTable() {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-50/70 text-muted-foreground dark:bg-zinc-900/40 uppercase font-mono tracking-wider">
+          <thead className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border">
             <tr>
               <th className="px-5 py-3 font-medium">Tên file / Key</th>
               <th className="px-4 py-3 font-medium">Định dạng</th>
@@ -172,7 +174,22 @@ export function FilesTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40">
-            {filteredFiles.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx}>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <Skeleton className="h-6 w-6 rounded-md shrink-0" />
+                      <Skeleton className="h-4 w-40 rounded" />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3"><Skeleton className="h-4 w-20 rounded" /></td>
+                  <td className="px-4 py-3"><Skeleton className="h-4 w-16 rounded" /></td>
+                  <td className="px-4 py-3"><Skeleton className="h-4 w-28 rounded" /></td>
+                  <td className="px-5 py-3 text-right"><Skeleton className="h-7 w-20 rounded-lg ml-auto" /></td>
+                </tr>
+              ))
+            ) : filteredFiles.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-8 text-center text-muted-foreground">
                   Không tìm thấy tập tin nào phù hợp.

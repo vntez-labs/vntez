@@ -13,6 +13,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import type { DashboardStats } from "./dashboard-types";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 interface RegisteredClientsCardProps {
   stats: DashboardStats | null;
@@ -46,7 +47,7 @@ export function RegisteredClientsCard({ stats }: RegisteredClientsCardProps) {
   const clients = stats?.clients || [];
 
   return (
-    <div className="bg-white dark:bg-card shadow-xs rounded-2xl p-6 space-y-4 w-full max-w-full">
+    <div className="bg-card shadow-xs rounded-2xl p-6 space-y-4 w-full max-w-full border border-border">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -58,7 +59,7 @@ export function RegisteredClientsCard({ stats }: RegisteredClientsCardProps) {
               <h3 className="text-sm font-bold text-foreground">
                 Ứng Dụng OAuth Clients
               </h3>
-              <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
                 {clients.length}
               </span>
             </div>
@@ -94,7 +95,7 @@ export function RegisteredClientsCard({ stats }: RegisteredClientsCardProps) {
             return (
               <div
                 key={cl.clientId}
-                className="rounded-xl bg-zinc-50/70 hover:bg-zinc-100/70 dark:bg-zinc-900/40 dark:hover:bg-zinc-800/40 p-4 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                className="rounded-xl bg-muted/40 hover:bg-muted/70 border border-border/50 p-4 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-4"
               >
                 {/* Left: App icon, Name, Client ID */}
                 <div className="flex items-start gap-3 min-w-0">
@@ -159,8 +160,22 @@ export function RegisteredClientsCard({ stats }: RegisteredClientsCardProps) {
             );
           })
         ) : !stats ? (
-          <div className="py-6 text-center text-muted-foreground text-xs">
-            Đang tải dữ liệu ứng dụng...
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="rounded-xl bg-muted/40 border border-border/50 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+              >
+                <div className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 rounded-xl shrink-0" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32 rounded" />
+                    <Skeleton className="h-3 w-48 rounded" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-28 rounded" />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="py-6 text-center text-muted-foreground text-xs">

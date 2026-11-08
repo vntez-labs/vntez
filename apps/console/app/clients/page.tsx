@@ -1,37 +1,26 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
-import { useClientsStore } from "./clients-store";
-import { ClientsHeader } from "./components/clients-header";
-import { ClientsTable } from "./components/clients-table";
-import { ClientsFormModal } from "./components/clients-form-modal";
-import { ClientsDeleteModal } from "./components/clients-delete-modal";
 
 export default function ClientsPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/apps");
+  }, [router]);
+
   return (
     <AuthGuard>
       <ConsoleShell>
-        <ClientsContent />
+        <div className="flex h-72 items-center justify-center rounded-2xl bg-white dark:bg-card shadow-xs">
+          <span className="text-xs text-muted-foreground animate-pulse">
+            Đang chuyển hướng sang trang Quản lý Ứng dụng & OAuth...
+          </span>
+        </div>
       </ConsoleShell>
     </AuthGuard>
-  );
-}
-
-function ClientsContent() {
-  const fetchClients = useClientsStore((s) => s.fetchClients);
-
-  useEffect(() => {
-    fetchClients();
-  }, [fetchClients]);
-
-  return (
-    <div className="space-y-6 min-w-0 w-full max-w-full">
-      <ClientsHeader />
-      <ClientsTable />
-      <ClientsFormModal />
-      <ClientsDeleteModal />
-    </div>
   );
 }

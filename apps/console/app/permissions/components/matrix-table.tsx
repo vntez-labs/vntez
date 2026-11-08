@@ -38,7 +38,7 @@ export function MatrixTable() {
   return (
     <div className="space-y-4">
       {/* Action Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-card p-4 rounded-2xl shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card p-4 rounded-2xl shadow-xs border border-border">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
             <IconShieldCheck className="h-5 w-5" />
@@ -48,7 +48,7 @@ export function MatrixTable() {
               <h4 className="text-sm font-bold text-foreground capitalize">
                 {currentRole?.name || "Vai trò"}
               </h4>
-              <Badge variant="outline" className="text-[10px] bg-zinc-100 dark:bg-zinc-800 border-0 text-muted-foreground font-mono">
+              <Badge variant="outline" className="text-[10px] bg-muted border-0 text-muted-foreground font-mono">
                 {activeCount}/{totalCells} quyền
               </Badge>
             </div>
@@ -103,7 +103,7 @@ export function MatrixTable() {
       </div>
 
       {/* Modern 2D Interactive Grid */}
-      <div className="overflow-x-auto rounded-2xl bg-white dark:bg-card shadow-xs p-4">
+      <div className="overflow-x-auto rounded-2xl bg-card shadow-xs p-4 border border-border">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr>
@@ -120,9 +120,9 @@ export function MatrixTable() {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100/70 dark:divide-zinc-800/40">
+          <tbody className="divide-y divide-border/40">
             {resources.map((res) => (
-              <tr key={res} className="hover:bg-zinc-50/40 dark:hover:bg-zinc-800/20 transition-colors">
+              <tr key={res} className="hover:bg-muted/30 transition-colors">
                 <td className="py-2.5 px-3 font-medium text-foreground">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-primary/70" />
@@ -142,7 +142,7 @@ export function MatrixTable() {
                           "group relative inline-flex size-7.5 items-center justify-center rounded-lg transition-all cursor-pointer select-none",
                           isChecked
                             ? "bg-primary text-white hover:bg-primary/90 shadow-xs hover:scale-105 active:scale-95"
-                            : "bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800/60 dark:hover:bg-zinc-700/80 text-zinc-300 dark:text-zinc-600 hover:text-zinc-500"
+                            : "bg-muted hover:bg-muted/80 text-muted-foreground/40 hover:text-muted-foreground"
                         )}
                         title={`${selectedRoleId} - ${permKey}`}
                         aria-label={`Toggle ${permKey}`}

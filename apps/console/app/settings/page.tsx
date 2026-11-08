@@ -37,8 +37,8 @@ function SettingsContent() {
       <ProfileEditCard />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Session Card - Borderless */}
-        <div className="border-0 bg-white dark:bg-card shadow-[0_1px_4px_rgba(0,0,0,0.03)] rounded-2xl p-6 space-y-5">
+        {/* Session Card */}
+        <div className="bg-card border border-border shadow-xs rounded-2xl p-6 space-y-5">
           <div className="space-y-1">
             <h3 className="text-base font-bold flex items-center gap-2 text-foreground">
               <Database className="h-4 w-4 text-cyan-500" />
@@ -50,15 +50,15 @@ function SettingsContent() {
           </div>
 
           <div className="space-y-3 font-mono text-xs">
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-[#f7f5ef] dark:bg-muted/40">
+            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-muted/50">
               <span className="text-muted-foreground">Tài khoản:</span>
               <span className="font-semibold text-foreground">{user?.email || "admin@vntez.com"}</span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-[#f7f5ef] dark:bg-muted/40">
+            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-muted/50">
               <span className="text-muted-foreground">Loại phiên:</span>
               <span className="font-semibold text-foreground">VNTEZ IAM SSO (PKCE)</span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-[#f7f5ef] dark:bg-muted/40">
+            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-muted/50">
               <span className="text-muted-foreground">Thời hạn hiệu lực:</span>
               <span className="font-semibold text-foreground">7 ngày (Auto Refresh)</span>
             </div>
@@ -68,15 +68,15 @@ function SettingsContent() {
             variant="outline"
             size="sm"
             onClick={() => window.location.reload()}
-            className="w-full gap-1.5 text-xs border-0 bg-[#f7f5ef] hover:bg-[#eee9df] text-foreground shadow-xs cursor-pointer h-9 rounded-xl"
+            className="w-full gap-1.5 text-xs text-foreground shadow-xs cursor-pointer h-9 rounded-xl"
           >
             <RefreshCw className="h-3.5 w-3.5 text-primary" />
             Đồng bộ dữ liệu phiên
           </Button>
         </div>
 
-        {/* Danger Zone Card - Borderless */}
-        <div className="border-0 bg-white dark:bg-card shadow-[0_1px_4px_rgba(0,0,0,0.03)] rounded-2xl p-6 space-y-5">
+        {/* Danger Zone Card */}
+        <div className="bg-white dark:bg-card border border-destructive/20 shadow-xs rounded-2xl p-6 space-y-5">
           <div className="space-y-1">
             <h3 className="text-base font-bold flex items-center gap-2 text-destructive">
               <ShieldAlert className="h-4 w-4" />

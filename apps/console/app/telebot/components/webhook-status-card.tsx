@@ -13,7 +13,7 @@ export function WebhookStatusCard() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Subscribers Metric */}
-      <div className="rounded-2xl bg-white dark:bg-card p-5 shadow-xs flex flex-col justify-between">
+      <div className="rounded-2xl bg-card p-5 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between border border-border">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium text-muted-foreground">Subscribers Bot</span>
           <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-600 border-0 dark:bg-emerald-950/40">
@@ -27,7 +27,7 @@ export function WebhookStatusCard() {
           </div>
         </div>
         <div className="mt-4 pt-3">
-          <Button size="sm" onClick={openBroadcastModal} className="w-full gap-2 rounded-xl text-xs shadow-xs">
+          <Button size="sm" onClick={openBroadcastModal} className="w-full gap-2 rounded-xl text-xs shadow-xs cursor-pointer">
             <Send className="h-3.5 w-3.5" />
             Soạn tin Broadcast
           </Button>
@@ -35,7 +35,7 @@ export function WebhookStatusCard() {
       </div>
 
       {/* Webhook Status */}
-      <div className="rounded-2xl bg-white dark:bg-card p-5 shadow-xs md:col-span-2 flex flex-col justify-between">
+      <div className="rounded-2xl bg-card p-5 shadow-xs hover:shadow-sm transition-all md:col-span-2 flex flex-col justify-between border border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Radio className="h-4 w-4 text-emerald-500 animate-pulse" />
@@ -49,7 +49,7 @@ export function WebhookStatusCard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           <div className="space-y-1">
             <span className="text-[11px] text-muted-foreground">Endpoint</span>
-            <div className="font-mono text-xs text-foreground truncate bg-zinc-50 dark:bg-zinc-900/60 p-2 rounded-xl">
+            <div className="font-mono text-xs text-foreground truncate bg-muted/60 border border-border/60 p-2 rounded-xl">
               {webhook?.url || "https://telebot.hnamhocit.workers.dev/api/webhook"}
             </div>
           </div>

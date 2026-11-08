@@ -20,7 +20,7 @@ export function SubscribersTable() {
   return (
     <div className="space-y-3">
       {/* Search Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-card p-4 rounded-2xl shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-card p-4 rounded-2xl shadow-xs border border-zinc-200/70 dark:border-zinc-800/70">
         <div className="flex items-center gap-2">
           <h4 className="text-sm font-bold text-foreground">Danh Sách Subscribers</h4>
           <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-mono font-medium text-muted-foreground">
@@ -35,18 +35,18 @@ export function SubscribersTable() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo ID, username..."
-            className="w-full h-8 pl-8 pr-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 text-xs text-foreground outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+            className="w-full h-8 pl-8 pr-3 rounded-xl bg-card border border-input shadow-2xs text-xs text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-muted-foreground/60 transition-all"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl bg-white dark:bg-card shadow-xs">
+      <div className="overflow-x-auto rounded-2xl bg-card shadow-xs border border-border">
         {filtered.length === 0 ? (
           <div className="py-12 text-center text-xs text-muted-foreground space-y-2">
             <p className="font-medium text-foreground">Chưa có người dùng đăng ký nhận thông báo.</p>
             <p className="text-[11px] text-muted-foreground">
-              Người dùng có thể gửi lệnh <code className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono">/start</code> tới{" "}
+              Người dùng có thể gửi lệnh <code className="px-1.5 py-0.5 rounded bg-muted font-mono">/start</code> tới{" "}
               <a
                 href="https://t.me/vntez_bot"
                 target="_blank"
@@ -61,7 +61,7 @@ export function SubscribersTable() {
         ) : (
           <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-zinc-50/70 dark:bg-zinc-900/40 text-muted-foreground uppercase font-mono tracking-wider">
+            <tr className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border">
               <th className="py-3 px-4 font-semibold">Chat ID</th>
               <th className="py-3 px-4 font-semibold">Người dùng</th>
               <th className="py-3 px-4 font-semibold">Ngày tham gia</th>

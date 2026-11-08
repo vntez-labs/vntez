@@ -4,7 +4,6 @@ import React from "react";
 import {
   ShieldCheck,
   Plus,
-  RefreshCw,
   Layers,
   Lock,
   Globe,
@@ -38,17 +37,6 @@ export function ClientsHeader() {
 
         <div className="flex items-center gap-2.5 shrink-0">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchClients}
-            disabled={isLoading}
-            className="gap-1.5 text-xs border-0 bg-white dark:bg-card shadow-xs cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
-            Làm mới
-          </Button>
-
-          <Button
             size="sm"
             onClick={openCreateModal}
             className="gap-1.5 text-xs border-0 shadow-xs cursor-pointer font-semibold"
@@ -60,6 +48,25 @@ export function ClientsHeader() {
       </div>
 
       {/* Summary Cards */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-foreground">Hợp nhất Định danh vào Không gian Ứng dụng</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-primary text-white font-semibold">Mới</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Mỗi ứng dụng hiện đã tích hợp sẵn Client ID, Client Secret, ma trận phân quyền per-app, tài liệu MDX, và Remote Config.
+          </p>
+        </div>
+        <a
+          href="/apps"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-primary text-white hover:opacity-90 transition-all shrink-0 shadow-xs"
+        >
+          <span>Khám phá Quản lý Ứng dụng</span>
+          <span>→</span>
+        </a>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="border-0 bg-white dark:bg-card shadow-[0_1px_4px_rgba(0,0,0,0.03)] rounded-2xl p-5 space-y-1.5">
           <div className="text-xs text-muted-foreground font-medium flex items-center justify-between">

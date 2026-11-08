@@ -272,7 +272,7 @@ function BlogEditorContent() {
 
   if (isFullscreen) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#fbf9f5] dark:bg-[#080c14] flex flex-col p-4 sm:p-6 overflow-hidden">
+      <div className="fixed inset-0 z-50 bg-white dark:bg-[#080c14] flex flex-col p-4 sm:p-6 overflow-hidden">
         {editorLayout}
       </div>
     );

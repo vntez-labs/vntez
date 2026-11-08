@@ -1,0 +1,15 @@
+---
+title: "Chính sách Bảo mật Workers Hub"
+description: "Cam kết an toàn dữ liệu giám sát Cloudflare Workers, R2 Buckets và D1 Databases."
+version: "1.0"
+effectiveDate: "01/11/2026"
+lastUpdated: "08/11/2026"
+order: 30
+---
+
+## 1. Giám sát & Đo lường Từ xa (Telemetry)
+Workers Hub thu thập các chỉ số vận hành hệ thống (CPU time, số lượng requests, cache hit ratio, error status codes) phục vụ mục đích phân tích hiệu năng và cảnh báo lỗi.
+
+## 2. Dữ liệu Khóa API & R2 Credentials
+- Các chuỗi khóa xác thực (Cloudflare API Tokens, R2 S3 Access Keys) được lưu trữ mã hóa và chỉ dùng cho việc đối soát trạng thái dịch vụ.
+- Workers Hub không can thiệp hoặc trích xuất nội dung các đối tượng nhị phân lưu trong bucket R2 của người dùng.

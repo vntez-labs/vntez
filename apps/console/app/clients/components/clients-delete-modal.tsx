@@ -9,11 +9,25 @@ export function ClientsDeleteModal() {
   const { deletingClient, setDeletingClient, handleDeleteSubmit, isSubmitting } =
     useClientsStore();
 
+  React.useEffect(() => {
+    if (!deletingClient) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDeletingClient(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [deletingClient, setDeletingClient]);
+
   if (!deletingClient) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-      <div className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setDeletingClient(null);
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+    >
+      <div className="bg-card border border-border shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-full bg-destructive/10 text-destructive">
             <Trash2 className="h-5 w-5" />
@@ -45,7 +59,7 @@ export function ClientsDeleteModal() {
             type="button"
             variant="outline"
             onClick={() => setDeletingClient(null)}
-            className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9"
+            className="text-xs h-9"
           >
             Hủy bỏ
           </Button>

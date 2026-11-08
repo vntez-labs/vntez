@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Key, Loader2, Plus } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import type { TableMeta } from "../types";
 
 interface DatabaseRowModalProps {
@@ -42,6 +43,15 @@ export function DatabaseRowModal({
     setError(null);
   }, [initialRow, tableMeta, isOpen]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleFieldChange = (colName: string, rawVal: string, colType: string) => {
@@ -75,8 +85,13 @@ export function DatabaseRowModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xl overflow-hidden">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+    >
+      <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-card border border-border shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800/80">
           <div>
@@ -139,12 +154,10 @@ export function DatabaseRowModal({
                     />
                   ) : col.type === "boolean" ? (
                     <div className="flex items-center gap-3 pt-1">
-                      <label className="flex items-center gap-2 cursor-pointer text-xs">
-                        <input
-                          type="checkbox"
+                      <label className="flex items-center gap-2 cursor-pointer text-xs select-none">
+                        <Checkbox
                           checked={Boolean(val)}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, [col.name]: e.target.checked }))}
-                          className="rounded border-zinc-300 text-primary focus:ring-primary size-4"
+                          onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, [col.name]: checked }))}
                         />
                         <span className="font-mono">{Boolean(val) ? "TRUE" : "FALSE"}</span>
                       </label>

@@ -9,16 +9,14 @@ interface DatabaseSqlModalProps {
   onClose: () => void;
 }
 
-const MIGRATION_SQL = `-- 1. APPS TABLE
+const MIGRATION_SQL = `-- 1. APPS TABLE (Consolidated Apps & OAuth Clients)
 CREATE TABLE IF NOT EXISTS public.apps (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  category TEXT NOT NULL,
   description TEXT NOT NULL,
+  url TEXT DEFAULT NULL, -- Live website URL (hoặc NULL)
   release_date TEXT,
   platforms TEXT[] DEFAULT '{}',
-  color TEXT DEFAULT '#fb291a',
-  cta_link TEXT DEFAULT '/docs',
   avatar_url TEXT,
   illustration_key TEXT DEFAULT 'ecosystem',
   status TEXT DEFAULT 'active',
@@ -26,14 +24,24 @@ CREATE TABLE IF NOT EXISTS public.apps (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. BLOG POSTS TABLE
+-- 2. APP REQUESTS TABLE (Đổi tên & chuẩn hóa từ oauth_client_requests)
+CREATE TABLE IF NOT EXISTS public.app_requests (
+  id TEXT PRIMARY KEY,
+  app_name TEXT NOT NULL,
+  team_email TEXT NOT NULL,
+  redirect_uris TEXT[] DEFAULT '{}',
+  url TEXT,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. BLOG POSTS TABLE
 CREATE TABLE IF NOT EXISTS public.blog_posts (
   slug TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   excerpt TEXT NOT NULL,
   content TEXT NOT NULL,
   category TEXT NOT NULL,
-  color TEXT DEFAULT '#fb291a',
   author TEXT NOT NULL,
   date TEXT NOT NULL,
   read_time TEXT DEFAULT '5 phút đọc',
@@ -48,7 +56,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. RELATIONAL BLOG COMMENTS TABLE
+-- 4. RELATIONAL BLOG COMMENTS TABLE
 CREATE TABLE IF NOT EXISTS public.blog_comments (
   id TEXT PRIMARY KEY,
   post_slug TEXT NOT NULL REFERENCES public.blog_posts(slug) ON DELETE CASCADE,
@@ -58,6 +66,16 @@ CREATE TABLE IF NOT EXISTS public.blog_comments (
   avatar TEXT,
   content TEXT NOT NULL,
   likes_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. MIGRATION NÂNG CẤP DỮ LIỆU HIỆN CÓ:
+-- ALTER TABLE public.apps ADD COLUMN IF NOT EXISTS url TEXT;
+-- ALTER TABLE public.apps DROP COLUMN IF EXISTS category;
+-- ALTER TABLE public.apps DROP COLUMN IF EXISTS cta_link;
+-- ALTER TABLE public.apps DROP COLUMN IF EXISTS color;
+-- ALTER TABLE IF EXISTS public.oauth_client_requests RENAME TO app_requests;
+-- DROP TABLE IF EXISTS public.oauth_clients;
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -77,6 +95,15 @@ CREATE POLICY "Allow all blog_comments" ON public.blog_comments FOR ALL USING (t
 export function DatabaseSqlModal({ isOpen, onClose }: DatabaseSqlModalProps) {
   const [copied, setCopied] = useState(false);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleCopy = async () => {
@@ -86,8 +113,13 @@ export function DatabaseSqlModal({ isOpen, onClose }: DatabaseSqlModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl max-h-[85vh] flex flex-col rounded-3xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xl overflow-hidden">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+    >
+      <div className="relative w-full max-w-3xl max-h-[85vh] flex flex-col rounded-3xl bg-card border border-border shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800/80">
           <div className="flex items-center gap-2.5">

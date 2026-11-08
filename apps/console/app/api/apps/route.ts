@@ -1,12 +1,28 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@workspace/auth/server";
-import { getStoredApps, saveStoredApps } from "@/lib/storage-content";
-import { deleteR2AssetByUrl } from "@/lib/r2-gc";
+import { getStoredApps } from "@/lib/storage-content";
+import {
+  fetchAppMetadataMap,
+  saveFullAppWorkspace,
+} from "@/lib/apps-storage-service";
+import { generateAppClientId, generateAppSecret } from "@/lib/apps-repository";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 
 export async function GET() {
   const apps = await getStoredApps();
-  return NextResponse.json({ success: true, apps });
+  const metaMap = await fetchAppMetadataMap();
+
+  const enriched = apps.map((a) => {
+    const meta = metaMap[a.id];
+    return {
+      ...a,
+      clientId: meta?.clientId || generateAppClientId(a.id),
+      redirectUris: meta?.redirectUris || [`https://${a.id}.vntez.net/auth/callback`],
+      isInternal: meta?.isInternal ?? true,
+    };
+  });
+
+  return NextResponse.json({ success: true, apps: enriched });
 }
 
 export async function POST(req: Request) {
@@ -17,115 +33,48 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, category, description, platforms, color, ctaLink, avatarUrl, illustrationKey, status } = body;
+    const { name, category, description, platforms, color, ctaLink, url, avatarUrl, illustrationKey, status } = body;
 
     if (!name || !description) {
       return NextResponse.json({ error: "Tên và mô tả là bắt buộc" }, { status: 400 });
     }
 
     const id = body.id || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const apps = await getStoredApps();
+    const clientId = body.clientId || generateAppClientId(id);
+    const clientSecret = body.clientSecret || generateAppSecret();
 
-    const existingIndex = apps.findIndex((a) => a.id === id);
+    const resolvedUrl = url !== undefined
+      ? (url ? String(url).trim() : null)
+      : (ctaLink && String(ctaLink).startsWith("http") ? String(ctaLink).trim() : null);
 
     const newApp: AppItem = {
       id,
       name: name.trim(),
-      category: category?.trim() || "Tiện ích & Hệ sinh thái",
       description: description.trim(),
+      url: resolvedUrl,
+      category: category?.trim() || "Tiện ích & Hệ sinh thái",
       releaseDate: body.releaseDate || new Date().toLocaleDateString("vi-VN", { month: "2-digit", year: "numeric" }),
       platforms: Array.isArray(platforms) ? platforms : ["Web"],
       color: color || "#fb291a",
-      ctaLink: ctaLink || `/docs#${id}`,
+      ctaLink: resolvedUrl || ctaLink || `/docs/${id}`,
       avatarUrl: avatarUrl || null,
       illustrationKey: illustrationKey || "ecosystem",
       status: status === "draft" ? "draft" : "active",
+      clientId,
+      clientSecret,
+      redirectUris: Array.isArray(body.redirectUris) && body.redirectUris.length > 0
+        ? body.redirectUris
+        : [`https://${id}.vntez.net/auth/callback`, "http://localhost:3000/auth/callback"],
+      isInternal: body.isInternal !== undefined ? Boolean(body.isInternal) : true,
       updatedAt: new Date().toISOString(),
     };
 
-    if (existingIndex >= 0) {
-      apps[existingIndex] = newApp;
-    } else {
-      apps.unshift(newApp);
-    }
-    const saved = await saveStoredApps(apps);
+    const saved = await saveFullAppWorkspace(newApp);
     if (!saved) throw new Error("Lưu vào cơ sở dữ liệu thất bại");
 
     return NextResponse.json({ success: true, app: newApp });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Lỗi tạo app" }, { status: 500 });
-  }
-}
-
-export async function PUT(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const body = await req.json();
-    const { id } = body;
-    if (!id) {
-      return NextResponse.json({ error: "Thiếu ID app" }, { status: 400 });
-    }
-
-    const apps = await getStoredApps();
-    const index = apps.findIndex((a) => a.id === id);
-    if (index === -1) {
-      return NextResponse.json({ error: "Không tìm thấy app" }, { status: 404 });
-    }
-
-    // Purge old avatar from R2 if avatarUrl is being updated or removed
-    const oldAvatar = apps[index]?.avatarUrl;
-    if (oldAvatar && body.avatarUrl !== undefined && body.avatarUrl !== oldAvatar) {
-      await deleteR2AssetByUrl(oldAvatar);
-    }
-
-    apps[index] = {
-      ...apps[index],
-      ...body,
-      updatedAt: new Date().toISOString(),
-    };
-
-    const saved = await saveStoredApps(apps);
-    if (!saved) throw new Error("Lưu thất bại");
-
-    return NextResponse.json({ success: true, app: apps[index] });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Lỗi cập nhật app";
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    if (!id) {
-      return NextResponse.json({ error: "Thiếu ID app" }, { status: 400 });
-    }
-
-    const apps = await getStoredApps();
-    const targetApp = apps.find((a) => a.id === id);
-
-    // Purge associated avatar image from R2 to prevent orphan garbage
-    if (targetApp?.avatarUrl) {
-      await deleteR2AssetByUrl(targetApp.avatarUrl);
-    }
-
-    const filtered = apps.filter((a) => a.id !== id);
-    const saved = await saveStoredApps(filtered);
-    if (!saved) throw new Error("Xóa thất bại");
-
-    return NextResponse.json({ success: true, id });
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Lỗi xóa app";
+    const msg = err instanceof Error ? err.message : "Lỗi tạo app";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

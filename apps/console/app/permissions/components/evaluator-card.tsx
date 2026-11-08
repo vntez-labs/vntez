@@ -66,7 +66,7 @@ export function EvaluatorCard() {
   }, [allPermissionKeys, evalPermission]);
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-card p-5 shadow-xs space-y-4">
+    <div className="rounded-2xl bg-card p-5 shadow-xs border border-border space-y-4">
       <div className="space-y-0.5">
         <h4 className="text-sm font-bold text-foreground">
           Thử Nghiệm Quyền (Live Evaluator)
@@ -86,7 +86,7 @@ export function EvaluatorCard() {
             type="text"
             value={evalUserId}
             onChange={(e) => setEvalUserId(e.target.value)}
-            className="w-full h-9 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 px-3 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary border border-zinc-200/80 dark:border-zinc-800"
+            className="w-full h-9 rounded-xl bg-card px-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary border border-input shadow-2xs transition-all"
             placeholder="usr_123 hoặc client_id..."
           />
         </div>
@@ -105,7 +105,7 @@ export function EvaluatorCard() {
                 setEvalPermission(e.target.value);
                 setIsDropdownOpen(true);
               }}
-              className="w-full h-9 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 pl-3 pr-8 text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary border border-zinc-200/80 dark:border-zinc-800"
+              className="w-full h-9 rounded-xl bg-card pl-3 pr-8 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary border border-input shadow-2xs transition-all"
               placeholder="Chọn hoặc gõ: users:read..."
             />
             <button
@@ -119,7 +119,7 @@ export function EvaluatorCard() {
 
           {/* Autocomplete Dropdown List */}
           {isDropdownOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-full max-h-56 overflow-y-auto rounded-2xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 space-y-0.5">
+            <div className="absolute left-0 top-full mt-1.5 w-full max-h-56 overflow-y-auto rounded-2xl bg-card border border-border p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 space-y-0.5">
               {filteredKeys.length === 0 ? (
                 <div className="p-2.5 text-center text-xs text-muted-foreground">
                   Không tìm thấy quyền phù hợp

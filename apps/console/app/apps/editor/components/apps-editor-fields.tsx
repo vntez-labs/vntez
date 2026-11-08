@@ -106,14 +106,14 @@ export function AppsEditorFields({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
-            Liên kết Tài liệu
+            Website Trực tiếp (Live Website URL)
           </label>
           <input
             type="text"
             value={ctaLink}
-            placeholder="/docs#ung-dung"
+            placeholder="https://solotype.vntez.com (hoặc để trống)"
             onChange={(e) => setCtaLink(e.target.value)}
-            className="w-full bg-transparent border-0 border-b border-zinc-200/80 dark:border-zinc-800 focus:border-primary px-0 py-2 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
+            className="w-full bg-transparent border-0 border-b border-border focus:border-primary px-0 py-2 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none transition-colors"
           />
         </div>
 

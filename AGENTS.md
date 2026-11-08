@@ -7,6 +7,7 @@
 
 ## 1. QUY TẮC ĐỌC TÀI LIỆU TRƯỚC TIÊN (MANDATORY READ FIRST)
 Trước khi phân tích, viết code, refactor hay trả lời người dùng, AI PHẢI ĐỌC các tài liệu hướng dẫn tương ứng với ứng dụng đang thao tác:
+- Kế hoạch & Trạng thái chuyển giao phiên làm việc: `HANDOVER.md`
 - Root Monorepo: `README.md`
 - Cổng thông tin & Docs 3 cột: `apps/web/README.md`
 - Quản trị Console BaaS: `apps/console/README.md`

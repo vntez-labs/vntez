@@ -1,0 +1,19 @@
+---
+title: "Điều khoản Sử dụng Dịch vụ VNTEZ IAM"
+description: "Quy định cấp quyền, phân quyền ứng dụng và trách nhiệm an toàn trong VNTEZ IAM."
+version: "2.0"
+effectiveDate: "01/11/2026"
+lastUpdated: "08/11/2026"
+order: 21
+---
+
+## 1. Trách nhiệm Bảo mật Khóa ứng dụng
+Lập trình viên và quản trị viên ứng dụng có trách nhiệm:
+- Bảo mật tuyệt đối Client Secret được cấp phát.
+- Sử dụng đúng cấu hình Redirect URIs và báo cáo ngay khi phát hiện rò rỉ thông tin xác thực.
+
+## 2. Cam kết Dịch vụ SSO (IdP SLA)
+VNTEZ IAM cam kết khả năng phản hồi dịch vụ xác thực đạt tỷ lệ 99.95%, đảm bảo trải nghiệm đăng nhập một chạm (Single Sign-On) xuyên suốt toàn bộ hệ sinh thái.
+
+## 3. Chấm dứt & Thu hồi Quyền
+Hệ thống có quyền tạm khóa hoặc thu hồi Client ID vi phạm chính sách bảo mật hoặc cố tình tấn công từ chối dịch vụ (DDoS).

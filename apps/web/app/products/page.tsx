@@ -60,10 +60,10 @@ export default async function ProductsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-20 lg:gap-y-24">
           {products.map((prod) => {
             const ThumbnailComponent = ART_MAP[prod.illustrationKey || "ecosystem"] || IsometricEcosystemArt;
-            const hasLink = Boolean(prod.ctaLink && prod.ctaLink.trim().length > 0);
-            const rawHref = hasLink ? prod.ctaLink.trim() : undefined;
+            const liveUrl = prod.url || (prod.ctaLink && prod.ctaLink.trim().length > 0 ? prod.ctaLink.trim() : undefined);
+            const hasLink = Boolean(liveUrl);
             const docsBaseUrl = process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app";
-            const targetHref = rawHref?.startsWith("/docs") ? `${docsBaseUrl}${rawHref}` : rawHref;
+            const targetHref = liveUrl?.startsWith("/docs") ? `${docsBaseUrl}${liveUrl}` : liveUrl;
             const isExternal = Boolean(targetHref && targetHref.startsWith("http"));
 
             return (
@@ -78,12 +78,14 @@ export default async function ProductsPage() {
                       className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block cursor-pointer"
                     >
                       {/* Category badge */}
-                      <div className="absolute top-3.5 left-3.5 z-10">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
-                          <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
-                          {prod.category}
-                        </span>
-                      </div>
+                      {prod.category && (
+                        <div className="absolute top-3.5 left-3.5 z-10">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                            <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
+                            {prod.category}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Thumbnail: Render avatar image or Isometric Illustration */}
                       {prod.avatarUrl ? (

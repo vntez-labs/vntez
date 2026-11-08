@@ -140,6 +140,7 @@ function AppsEditorContent() {
         description: description.trim(),
         color,
         platforms,
+        url: ctaLink.trim() ? ctaLink.trim() : null,
         ctaLink: ctaLink.trim(),
         status,
         illustrationKey,

@@ -32,7 +32,7 @@ export function StorageMeterCard() {
   );
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-card p-6 shadow-xs">
+    <div className="rounded-2xl bg-card p-6 shadow-xs hover:shadow-sm transition-all border border-border">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">
@@ -80,10 +80,10 @@ export function StorageMeterCard() {
         </div>
       </div>
 
-      {/* Sub metrics: No harsh borders, soft clean surfaces */}
+      {/* Sub metrics: Clean surfaces with crisp border */}
       <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {/* Class A Operations */}
-        <div className="rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 p-3.5">
+        <div className="rounded-xl bg-muted/60 border border-border/60 p-3.5">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Class A (Put / List)</span>
             <Activity className="h-3.5 w-3.5 text-zinc-400" />
@@ -104,7 +104,7 @@ export function StorageMeterCard() {
         </div>
 
         {/* Class B Operations */}
-        <div className="rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 p-3.5">
+        <div className="rounded-xl bg-muted/60 border border-border/60 p-3.5">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Class B (Get / Head)</span>
             <Database className="h-3.5 w-3.5 text-zinc-400" />
@@ -125,7 +125,7 @@ export function StorageMeterCard() {
         </div>
 
         {/* Bandwidth Egress */}
-        <div className="rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 p-3.5">
+        <div className="rounded-xl bg-muted/60 border border-border/60 p-3.5">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Egress Bandwidth</span>
             <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500" />

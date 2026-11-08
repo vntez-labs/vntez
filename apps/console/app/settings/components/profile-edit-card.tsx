@@ -90,7 +90,7 @@ export function ProfileEditCard() {
   };
 
   return (
-    <div className="border-0 bg-white dark:bg-card shadow-[0_1px_4px_rgba(0,0,0,0.03)] rounded-2xl p-6 sm:p-7 space-y-6">
+    <div className="bg-white dark:bg-card border border-zinc-200/70 dark:border-zinc-800/70 shadow-xs rounded-2xl p-6 sm:p-7 space-y-6">
       <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
         <div>
           <h3 className="text-base font-bold flex items-center gap-2 text-foreground font-display">

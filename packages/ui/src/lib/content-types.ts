@@ -1,16 +1,71 @@
+export interface AppLegalPolicies {
+  privacyPolicyMdx?: string;
+  termsOfServiceMdx?: string;
+  updatedAt?: string;
+}
+
+export interface AppDocPage {
+  slug: string;
+  title: string;
+  category?: string;
+  content: string;
+  order?: number;
+  updatedAt?: string;
+}
+
+export interface AppLegalDocument {
+  slug: string;
+  title: string;
+  version?: string;
+  effectiveDate?: string;
+  content: string;
+  updatedAt?: string;
+}
+
+export interface AppRole {
+  id: string;
+  name: string;
+  description?: string;
+  isSystem?: boolean;
+}
+
 export interface AppItem {
   id: string;
   name: string;
-  category: string;
   description: string;
+  url?: string | null; // Live website URL (hoặc null nếu chưa có)
+  category?: string;
   releaseDate?: string;
   platforms: string[];
-  color: string;
-  ctaLink: string;
+  color?: string;
+  ctaLink?: string;
   avatarUrl?: string | null;
-  illustrationKey?: string;
+  illustrationKey?: "storage" | "security" | "offline" | "supply-chain" | "telemetry" | "ecosystem" | "iam" | "sdk";
   status: "active" | "draft";
   updatedAt: string;
+
+  // Consolidated OAuth 2.0 Credentials & Scopes
+  clientId?: string;
+  clientSecret?: string;
+  redirectUris?: string[];
+  isInternal?: boolean;
+
+  // Scoped RBAC Permissions Matrix per App
+  roles?: AppRole[];
+  resources?: string[];
+  rolePermissions?: Record<string, string[]>;
+  customPermissions?: string[];
+
+  // Multi-page Docs (MDX)
+  docsPages?: AppDocPage[];
+  docsMdx?: string;
+
+  // Multi-page Legal Policies (MDX)
+  legalDocuments?: AppLegalDocument[];
+  legal?: AppLegalPolicies;
+
+  // Remote Config (Feature flags & runtime settings per app)
+  remoteConfig?: Record<string, unknown>;
 }
 
 export interface BlogComment {

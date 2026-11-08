@@ -1,0 +1,23 @@
+---
+title: "Chính sách Bảo mật SoloType"
+description: "Cam kết bảo vệ dữ liệu gõ phím, quyền riêng tư và xử lý dữ liệu ngoại tuyến của SoloType."
+version: "1.0"
+effectiveDate: "01/11/2026"
+lastUpdated: "08/11/2026"
+order: 10
+---
+
+## 1. Nguyên tắc Không lưu trữ Phím bấm (Zero-Keystroke Logging)
+SoloType hoạt động theo cơ chế tính toán cục bộ (Client-side Execution). Toàn bộ thao tác gõ phím, tốc độ gõ (WPM/CPM) và phân tích lỗi ngón tay được xử lý trực tiếp trên trình duyệt của người dùng.
+
+Hệ thống cam kết:
+- **Tuyệt đối không lưu trữ văn bản gõ phím:** SoloType không gửi nội dung bài gõ hoặc phím bấm về máy chủ.
+- **Dữ liệu điểm số & xếp hạng:** Chỉ điểm số tổng hợp (WPM, độ chính xác %) được gửi lên bảng xếp hạng khi người dùng chủ động lưu kết quả.
+
+## 2. Xác thực và Định danh
+SoloType sử dụng giao thức xác thực OAuth 2.0 PKCE thông qua VNTEZ IAM:
+- Chỉ lưu trữ mã người dùng (User ID) và tên hiển thị công khai.
+- Không truy cập hoặc lưu trữ mật khẩu của người dùng.
+
+## 3. Quyền của người dùng
+Người dùng có toàn quyền xóa lịch sử luyện tập và kết quả bảng xếp hạng bất kỳ lúc nào thông qua trang Cài đặt tài khoản.

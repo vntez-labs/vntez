@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, RefreshCw, UserPlus, Search } from "lucide-react";
+import { Users, UserPlus, Search } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { useUsersStore } from "../users-store";
 
@@ -44,20 +44,9 @@ export function UsersTableHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo tên, email, UID, role..."
-              className="w-full h-9 pl-8 pr-3 text-xs bg-white dark:bg-card shadow-xs rounded-xl outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
+              className="w-full h-9 pl-8 pr-3 text-xs bg-card text-foreground border border-input shadow-2xs rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-muted-foreground/60 transition-all"
             />
           </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchUsers}
-            disabled={isLoading}
-            className="gap-1.5 text-xs bg-white dark:bg-card shadow-xs cursor-pointer h-9"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
-            <span>Làm mới</span>
-          </Button>
 
           <Button
             size="sm"

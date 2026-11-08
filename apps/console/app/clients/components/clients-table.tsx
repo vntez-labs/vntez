@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { TableSkeleton } from "@workspace/ui/components/skeleton";
 import { useClientsStore } from "../clients-store";
 
 export function ClientsTable() {
@@ -60,7 +61,7 @@ export function ClientsTable() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo tên, client_id, uri..."
-              className="w-full h-8.5 pl-8 pr-3 text-xs bg-[#f7f5ef] dark:bg-muted/40 border-0 rounded-xl outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground placeholder:text-muted-foreground/60"
+              className="w-full h-8.5 pl-8 pr-3 text-xs bg-muted/50 border border-input rounded-xl outline-none focus:ring-1 focus:ring-ring transition-colors text-foreground placeholder:text-muted-foreground/60"
             />
           </div>
         </div>
@@ -68,11 +69,8 @@ export function ClientsTable() {
 
       <div className="p-0 w-full max-w-full">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-xs text-muted-foreground">
-              Đang tải danh sách Client từ Supabase...
-            </p>
+          <div className="p-4">
+            <TableSkeleton rows={5} columns={7} />
           </div>
         ) : filteredClients.length === 0 ? (
           <div className="text-center py-16 text-xs text-muted-foreground space-y-3">
@@ -86,7 +84,7 @@ export function ClientsTable() {
         ) : (
           <div className="w-full max-w-full overflow-x-auto">
             <table className="w-full text-left text-sm min-w-[780px]">
-              <thead className="bg-[#faf8f4] dark:bg-muted/40 text-[#6e6a61] dark:text-slate-300 font-mono uppercase text-xs tracking-wider">
+              <thead className="bg-muted/40 text-muted-foreground font-mono uppercase text-xs tracking-wider border-b border-border">
                 <tr>
                   <th className="py-3 px-5">Tên Ứng dụng</th>
                   <th className="py-3 px-5">Client ID (VNTEZ)</th>
@@ -97,11 +95,11 @@ export function ClientsTable() {
                   <th className="py-3 px-5 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f5f2eb] dark:divide-border/30 text-sm">
+              <tbody className="divide-y divide-border/40 text-sm">
                 {filteredClients.map((client) => (
                   <tr
                     key={client.client_id}
-                    className="hover:bg-[#fbf9f5] dark:hover:bg-muted/20 transition-colors"
+                    className="hover:bg-zinc-50 dark:hover:bg-muted/20 transition-colors"
                   >
                     <td className="py-3.5 px-5 font-semibold text-foreground">
                       <div className="flex items-center gap-2.5">
@@ -155,7 +153,7 @@ export function ClientsTable() {
                         {client.redirect_uris.map((uri) => (
                           <span
                             key={uri}
-                            className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#f4f1ea] dark:bg-muted text-[#6e6a61] truncate max-w-[200px]"
+                            className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border/50 truncate max-w-[200px]"
                             title={uri}
                           >
                             {uri}
@@ -166,11 +164,11 @@ export function ClientsTable() {
 
                     <td className="py-3.5 px-5">
                       {client.is_internal ? (
-                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-100/70 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400">
+                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                           Nội bộ
                         </span>
                       ) : (
-                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#f4f1ea] text-[#6e6a61]">
+                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">
                           Công khai
                         </span>
                       )}
@@ -197,7 +195,7 @@ export function ClientsTable() {
                           type="button"
                           onClick={() => openEditModal(client)}
                           title="Chỉnh sửa Client"
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-[#f4f1ea] dark:hover:bg-muted transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                         >
                           <Edit className="h-4 w-4" />
                         </button>

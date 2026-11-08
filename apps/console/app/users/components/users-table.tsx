@@ -13,6 +13,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useUsersStore } from "../users-store";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { SupabaseAuthUser } from "@/app/api/users/route";
 
 function getRoleBadge(roleStr: string) {
@@ -85,12 +86,40 @@ export function UsersTable() {
   });
 
   return (
-    <div className="bg-white/80 dark:bg-card/70 shadow-xs rounded-2xl overflow-hidden w-full max-w-full backdrop-blur-md">
+    <div className="bg-card shadow-xs rounded-2xl overflow-hidden w-full max-w-full border border-border">
       <div className="p-0 w-full max-w-full">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-xs text-muted-foreground">Đang tải danh sách người dùng...</p>
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/60 text-muted-foreground text-xs uppercase tracking-wider font-mono border-b border-border">
+                <tr>
+                  <th className="py-3.5 px-6">Người dùng</th>
+                  <th className="py-3.5 px-5">UID</th>
+                  <th className="py-3.5 px-5">Vai trò (Role)</th>
+                  <th className="py-3.5 px-5">Đăng nhập cuối</th>
+                  <th className="py-3.5 px-6 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border text-xs">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx}>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+                        <div className="space-y-1.5">
+                          <Skeleton className="h-4 w-28 rounded" />
+                          <Skeleton className="h-3 w-40 rounded" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-5"><Skeleton className="h-4 w-20 rounded" /></td>
+                    <td className="py-4 px-5"><Skeleton className="h-5 w-16 rounded-md" /></td>
+                    <td className="py-4 px-5"><Skeleton className="h-4 w-28 rounded" /></td>
+                    <td className="py-4 px-6 text-right"><Skeleton className="h-8 w-16 rounded-lg ml-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-16 text-xs text-muted-foreground space-y-2">
@@ -100,7 +129,7 @@ export function UsersTable() {
         ) : (
           <div className="w-full max-w-full overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-zinc-50/70 dark:bg-zinc-900/40 text-muted-foreground text-xs uppercase tracking-wider font-mono">
+              <thead className="bg-muted/60 text-muted-foreground text-xs uppercase tracking-wider font-mono border-b border-border">
                 <tr>
                   <th className="py-3.5 px-6">Người dùng</th>
                   <th className="py-3.5 px-5">UID</th>
@@ -109,13 +138,13 @@ export function UsersTable() {
                   <th className="py-3.5 px-6 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40 text-sm">
+              <tbody className="divide-y divide-border text-sm">
                 {filteredUsers.map((item: SupabaseAuthUser) => (
                   <tr
                     key={item.id}
                     onClick={() => setSelectedUser(item)}
-                    className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer ${
-                      selectedUser?.id === item.id ? "bg-zinc-50/90 dark:bg-zinc-800/40" : ""
+                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                      selectedUser?.id === item.id ? "bg-muted" : ""
                     }`}
                   >
                     {/* User display name & email */}

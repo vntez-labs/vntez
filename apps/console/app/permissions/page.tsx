@@ -4,9 +4,9 @@ import React, { useEffect } from "react";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
 import { usePermissionsStore } from "./permissions-store";
+import { TableSkeleton } from "@workspace/ui/components/skeleton";
 import { RoleSelector } from "./components/role-selector";
 import { MatrixTable } from "./components/matrix-table";
-import { EvaluatorCard } from "./components/evaluator-card";
 import { CreateRoleModal } from "./components/create-role-modal";
 
 export default function PermissionsPage() {
@@ -36,16 +36,11 @@ function PermissionsContent() {
       </div>
 
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center rounded-2xl bg-white dark:bg-card shadow-xs">
-          <span className="text-xs text-muted-foreground animate-pulse">
-            Đang tải dữ liệu phân quyền...
-          </span>
-        </div>
+        <TableSkeleton rows={6} columns={6} />
       ) : (
         <>
           <RoleSelector />
           <MatrixTable />
-          <EvaluatorCard />
           <CreateRoleModal />
         </>
       )}

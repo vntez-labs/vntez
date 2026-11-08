@@ -1,0 +1,20 @@
+---
+title: "Chính sách Bảo mật VNTEZ IAM"
+description: "Cam kết bảo vệ dữ liệu danh tính, phân quyền RBAC và token bảo mật của hệ thống VNTEZ IAM."
+version: "2.0"
+effectiveDate: "01/11/2026"
+lastUpdated: "08/11/2026"
+order: 20
+---
+
+## 1. Tiêu chuẩn Mã hóa Danh tính
+VNTEZ IAM áp dụng các tiêu chuẩn an toàn bảo mật cấp cao:
+- **Mã hóa khi lưu trữ:** Mọi khóa bí mật (Client Secret) và token định danh đều được băm (hashing) với thuật toán HMAC-SHA256 hoặc lưu trữ bảo mật với AES-GCM.
+- **Mã hóa khi truyền tải:** Bắt buộc giao thức HTTPS TLS 1.3 đối với toàn bộ các điểm cuối cấp phát Token (`/oauth/token`) và xác thực (`/oauth/authorize`).
+
+## 2. Quản lý Phiên & Token
+- Mã ủy quyền Authorization Code có thời gian hết hạn tối đa 60 giây và chỉ sử dụng một lần (One-Time Use).
+- Mã băm PKCE Code Verifier (S256) được kiểm tra bắt buộc đối với tất cả ứng dụng Public Client.
+
+## 3. Quyền của Chủ thể Dữ liệu
+Người dùng có quyền hủy ủy quyền (Revoke Tokens) của bất kỳ ứng dụng nào đã từng liên kết trong giao diện Quản trị danh tính.

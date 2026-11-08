@@ -51,7 +51,7 @@ export function UserDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full p-1 pl-1.5 pr-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer border-0"
+        className="flex items-center gap-2 rounded-full p-1 pl-1.5 pr-2.5 hover:bg-muted transition-colors cursor-pointer border-0"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -77,11 +77,16 @@ export function UserDropdown() {
         />
       </button>
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-card p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100">
+      {/* Dropdown Menu with bidirectional IN & OUT animation */}
+      <div
+        className={`absolute right-0 mt-2 w-64 rounded-2xl bg-card border border-border p-1.5 shadow-xl z-50 transition-all duration-150 ease-out origin-top-right ${
+          isOpen
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+        }`}
+      >
           {/* User Profile Header */}
-          <div className="px-3.5 py-2.5 border-b border-zinc-100 dark:border-zinc-800">
+          <div className="px-3.5 py-2.5 border-b border-border">
             <p className="text-xs font-bold text-foreground truncate">
               {fixVietnameseEncoding(user?.name) || "Administrator"}
             </p>
@@ -95,7 +100,7 @@ export function UserDropdown() {
             <Link
               href="/database"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <Database className="h-4 w-4 text-primary" />
               <span>Cơ sở Dữ liệu Supabase</span>
@@ -104,7 +109,7 @@ export function UserDropdown() {
             <Link
               href="/permissions"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <KeyRound className="h-4 w-4" />
               <span>Ma trận Phân quyền</span>
@@ -113,7 +118,7 @@ export function UserDropdown() {
             <Link
               href="/storage"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <HardDrive className="h-4 w-4" />
               <span>R2 Storage & Uploads</span>
@@ -122,7 +127,7 @@ export function UserDropdown() {
             <Link
               href="/telebot"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <Send className="h-4 w-4" />
               <span>TeleBot Subscribers</span>
@@ -131,7 +136,7 @@ export function UserDropdown() {
             <Link
               href="/clients"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <ShieldCheck className="h-4 w-4" />
               <span>Quản lý Client OAuth</span>
@@ -140,7 +145,7 @@ export function UserDropdown() {
             <Link
               href="/users"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <Users className="h-4 w-4" />
               <span>Quản trị Người dùng</span>
@@ -149,7 +154,7 @@ export function UserDropdown() {
             <Link
               href="/settings"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <Settings className="h-4 w-4" />
               <span>Cài đặt Hệ thống</span>
@@ -157,7 +162,7 @@ export function UserDropdown() {
           </div>
 
           {/* Logout Section */}
-          <div className="pt-1 border-t border-zinc-100 dark:border-zinc-800">
+          <div className="pt-1 border-t border-border">
             <button
               type="button"
               onClick={() => {
@@ -171,7 +176,6 @@ export function UserDropdown() {
             </button>
           </div>
         </div>
-      )}
     </div>
   );
 }

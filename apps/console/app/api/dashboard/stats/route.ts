@@ -14,16 +14,32 @@ export async function GET() {
   try {
     const supabaseClient = getSupabaseAdminClient();
 
-    // Fetch real clients, codes, and deal requests, and measure real database latency
-    const [clientsRes, codesRes, requestsRes] = await Promise.all([
-      supabaseClient.from("oauth_clients").select("*"),
+    // Fetch real apps/clients, codes, and deal requests
+    let [appsRes, codesRes, requestsRes] = await Promise.all([
+      supabaseClient.from("apps").select("*"),
       supabaseClient.from("oauth_codes").select("*").order("created_at", { ascending: false }),
-      supabaseClient.from("oauth_client_requests").select("*"),
+      supabaseClient.from("app_requests").select("*"),
     ]);
+
+    // Fallback if legacy tables exist
+    if (appsRes.error || !appsRes.data || appsRes.data.length === 0) {
+      appsRes = await supabaseClient.from("oauth_clients").select("*");
+    }
+    if (requestsRes.error || !requestsRes.data) {
+      requestsRes = await supabaseClient.from("oauth_client_requests").select("*");
+    }
 
     const latencyMs = Math.round(performance.now() - startTime);
 
-    const clients = clientsRes.data || [];
+    const rawClients = appsRes.data || [];
+    const clients = rawClients.map((c: any) => ({
+      clientId: c.id || c.client_id,
+      name: c.name,
+      description: c.description,
+      redirect_uris: c.redirect_uris || [`https://${c.id}.vntez.net/auth/callback`],
+      is_internal: c.is_internal !== undefined ? c.is_internal : true,
+      created_at: c.created_at,
+    }));
     const codes = codesRes.data || [];
     const requests = requestsRes.data || [];
 
@@ -211,7 +227,7 @@ export async function GET() {
         redirectUriDistribution: redirectUriMap,
       },
       clients: clients.map((cl) => ({
-        clientId: cl.client_id,
+        clientId: cl.clientId,
         name: cl.name,
         description: cl.description,
         redirectUris: cl.redirect_uris || [],

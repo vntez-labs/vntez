@@ -34,9 +34,23 @@ export function CustomSelect({
   disabled = false,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      // If less than 200px space below and more space above, open upward
+      if (spaceBelow < 200 && rect.top > spaceBelow) {
+        setOpenUpward(true);
+      } else {
+        setOpenUpward(false);
+      }
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -78,7 +92,10 @@ export function CustomSelect({
     : options;
 
   return (
-    <div className={`relative w-full ${className}`} ref={containerRef}>
+    <div
+      className={`relative w-full ${isOpen ? "z-50" : "z-10"} ${className}`}
+      ref={containerRef}
+    >
       {/* Trigger Button */}
       <button
         type="button"
@@ -120,7 +137,11 @@ export function CustomSelect({
 
       {/* Custom Dropdown Popover */}
       {isOpen && (
-        <div className="absolute left-0 top-full mt-1.5 w-full min-w-[200px] max-h-64 overflow-hidden rounded-2xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col">
+        <div
+          className={`absolute left-0 ${
+            openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
+          } w-full min-w-[200px] max-h-64 overflow-hidden rounded-2xl bg-white dark:bg-[#0c121e] border border-border p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col`}
+        >
           {searchable && (
             <div className="relative p-1 border-b border-zinc-100 dark:border-zinc-800 mb-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />

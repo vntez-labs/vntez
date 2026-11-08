@@ -40,9 +40,9 @@ export function UsersModals() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
+            className="bg-card border border-border shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-[#f5f2eb] dark:border-border/40">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
               <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-emerald-600" />
                 Thêm người dùng mới
@@ -75,7 +75,7 @@ export function UsersModals() {
                   value={addFormData.email}
                   onChange={(e) => setAddFormData({ email: e.target.value })}
                   placeholder="user@example.com"
-                  className="w-full h-9 px-3 bg-[#f7f5ef] dark:bg-muted/40 border-0 rounded-xl outline-none focus:ring-1 focus:ring-primary text-foreground"
+                  className="w-full h-9 px-3 bg-muted/50 border border-input rounded-xl outline-none focus:ring-1 focus:ring-ring text-foreground"
                 />
               </div>
 
@@ -90,7 +90,7 @@ export function UsersModals() {
                   value={addFormData.password}
                   onChange={(e) => setAddFormData({ password: e.target.value })}
                   placeholder="Tối thiểu 6 ký tự"
-                  className="w-full h-9 px-3 bg-[#f7f5ef] dark:bg-muted/40 border-0 rounded-xl outline-none focus:ring-1 focus:ring-primary text-foreground"
+                  className="w-full h-9 px-3 bg-muted/50 border border-input rounded-xl outline-none focus:ring-1 focus:ring-ring text-foreground"
                 />
               </div>
 
@@ -104,7 +104,7 @@ export function UsersModals() {
                   value={addFormData.full_name}
                   onChange={(e) => setAddFormData({ full_name: e.target.value })}
                   placeholder="Ví dụ: Nguyễn Văn A"
-                  className="w-full h-9 px-3 bg-[#f7f5ef] dark:bg-muted/40 border-0 rounded-xl outline-none focus:ring-1 focus:ring-primary text-foreground"
+                  className="w-full h-9 px-3 bg-muted/50 border border-input rounded-xl outline-none focus:ring-1 focus:ring-ring text-foreground"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export function UsersModals() {
                   value={addFormData.phone}
                   onChange={(e) => setAddFormData({ phone: e.target.value })}
                   placeholder="+84 901 234 567"
-                  className="w-full h-9 px-3 bg-[#f7f5ef] dark:bg-muted/40 border-0 rounded-xl outline-none focus:ring-1 focus:ring-primary text-foreground"
+                  className="w-full h-9 px-3 bg-muted/50 border border-input rounded-xl outline-none focus:ring-1 focus:ring-ring text-foreground"
                 />
               </div>
 
@@ -127,7 +127,7 @@ export function UsersModals() {
                   type="button"
                   variant="outline"
                   onClick={closeAddUserModal}
-                  className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9 cursor-pointer"
+                  className="text-xs h-9 cursor-pointer"
                 >
                   Hủy bỏ
                 </Button>
@@ -152,7 +152,7 @@ export function UsersModals() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="border-0 bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
+            className="bg-card border border-border shadow-2xl rounded-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-full bg-destructive/10 text-destructive">
@@ -183,7 +183,7 @@ export function UsersModals() {
                 type="button"
                 variant="outline"
                 onClick={() => setDeletingUser(null)}
-                className="border-0 bg-[#f7f5ef] hover:bg-[#efebe2] text-xs h-9 cursor-pointer"
+                className="text-xs h-9 cursor-pointer"
               >
                 Hủy bỏ
               </Button>
