@@ -129,17 +129,26 @@ export const vntezIdUserinfoSection: DocSection = {
       description: "Bearer <access_token>",
       example: "Bearer eyJhbGciOiJSUzI1NiIs...",
     },
+    {
+      name: "X-App-Id",
+      in: "header",
+      type: "string",
+      required: false,
+      description: "App ID của ứng dụng cần lấy role và permissions (ví dụ: 'solotype', hoặc để trống/null nếu là Root Console)",
+      example: "solotype",
+    },
   ],
   responses: [
     {
       status: 200,
-      description: "Thông tin hồ sơ người dùng OIDC tiêu chuẩn.",
+      description: "Thông tin hồ sơ người dùng OIDC tiêu chuẩn kèm RBAC phân quyền chuyên biệt theo app.",
       json: JSON.stringify(
         {
           sub: "usr_9812401",
           name: "Hoàng Nam",
           email: "dev@vntez.cloud",
           email_verified: true,
+          avatar: "https://iam.vntez.cloud/avatars/usr_9812401.png",
           picture: "https://iam.vntez.cloud/avatars/usr_9812401.png",
           app_id: "solotype",
           role: "admin",
