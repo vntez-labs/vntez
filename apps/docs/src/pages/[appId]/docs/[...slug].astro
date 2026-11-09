@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from "astro:content";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+
+export async function getStaticPaths() {
+  const allDocs = await getCollection("docs");
+
+  return allDocs.map((doc) => {
+    const cleanId = doc.id.replace(/\.(md|mdx)$/, "");
+    const parts = cleanId.split("/");
+    const appId = parts[0] || doc.data.appId || "root";
+    const rawSlug = parts.slice(1).join("/");
+    const slug = rawSlug === "index" ? undefined : (rawSlug || undefined);
+
+    return {
+      params: { appId, slug },
+      props: { doc, allDocs },
+    };
+  });
+}
+
+const { doc, allDocs } = Astro.props;
+const { Content, headings } = await render(doc);
+
+const navItems = allDocs
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((d) => {
+    const cleanId = d.id.replace(/\.(md|mdx)$/, "");
+    const parts = cleanId.split("/");
+    const appId = parts[0] || d.data.appId || "root";
+    const rawSlug = parts.slice(1).join("/");
+    const href = (!rawSlug || rawSlug === "index") ? `/docs/${appId}` : `/docs/${appId}/${rawSlug}`;
+    return {
+      id: cleanId,
+      title: d.data.title,
+      appId,
+      category: d.data.category,
+      method: d.data.method,
+      endpoint: d.data.endpoint,
+      href,
+    };
+  });
+---
+
+<DocsLayout
+  title={doc.data.title}
+  description={doc.data.description}
+  appId={doc.data.appId || "root"}
+  category={doc.data.category}
+  method={doc.data.method}
+  endpoint={doc.data.endpoint}
+  headings={headings}
+  allDocs={navItems}
+  currentSlug={doc.id}
+>
+  <Content />
+</DocsLayout>

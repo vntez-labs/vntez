@@ -69,76 +69,88 @@ export function DocsTab() {
     setSelectedSlug(nextPages[0]?.slug || "index");
   };
 
-  const publicDocUrl = `https://vntez-docs.vercel.app/docs/${app.id}${
-    currentPage.slug === "index" ? "" : `/${currentPage.slug}`
-  }`;
+  const isRoot = !app.id || app.id === "root";
+  const publicDocUrl = isRoot
+    ? "https://vntez-docs.vercel.app"
+    : `https://vntez-docs.vercel.app/docs/${app.id}${
+        currentPage.slug === "index" ? "" : `/${currentPage.slug}`
+      }`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
-      {/* 1. Left Sidebar: Pages List */}
-      <div className="lg:col-span-1 space-y-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-card border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <IconFileText className="h-4 w-4 text-primary" />
-              <h4 className="text-xs font-bold font-display uppercase tracking-wider text-foreground">
-                Danh Sách Trang ({pages.length})
-              </h4>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-              title="Thêm trang mới"
-            >
-              <IconPlus className="h-4 w-4" />
-            </button>
+    <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-border min-h-[720px] w-full min-w-0">
+      {/* 1. Docked Left Sidebar: Pages Tree */}
+      <div className="w-full lg:w-72 xl:w-80 shrink-0 bg-muted/20 flex flex-col divide-y divide-border">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-muted/40">
+          <div className="flex items-center gap-2">
+            <IconFileText className="h-4 w-4 text-primary" />
+            <h4 className="text-xs font-bold font-display uppercase tracking-wider text-foreground">
+              Danh Sách Trang ({pages.length})
+            </h4>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+            title="Thêm trang mới"
+          >
+            <IconPlus className="h-4 w-4" />
+          </button>
+        </div>
 
-          <div className="space-y-1">
-            {pages.map((p) => {
-              const isSelected = p.slug === currentPage.slug;
-              return (
-                <div
-                  key={p.slug}
-                  onClick={() => setSelectedSlug(p.slug)}
-                  className={`group flex items-center justify-between p-2.5 rounded-xl text-left cursor-pointer transition-colors ${
-                    isSelected
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <div className="min-w-0 flex-1 pr-2">
-                    <div className="text-xs truncate">{p.title}</div>
-                    <div className="text-[10px] font-mono text-muted-foreground truncate">
-                      /{p.slug}
-                    </div>
+        {/* Pages Navigation List */}
+        <div className="flex-1 p-2 space-y-1 overflow-y-auto max-h-[600px]">
+          {pages.map((p) => {
+            const isSelected = p.slug === currentPage.slug;
+            return (
+              <div
+                key={p.slug}
+                onClick={() => setSelectedSlug(p.slug)}
+                className={`group flex items-center justify-between p-2.5 rounded-xl text-left cursor-pointer transition-colors ${
+                  isSelected
+                    ? "bg-primary text-white font-semibold shadow-xs"
+                    : "hover:bg-muted/70 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <div className="min-w-0 flex-1 pr-2">
+                  <div className={`text-xs truncate ${isSelected ? "text-white font-bold" : "text-foreground"}`}>
+                    {p.title}
                   </div>
-
-                  {pages.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePage(p.slug);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-rose-500 hover:bg-rose-500/10 cursor-pointer transition-opacity"
-                      title="Xóa trang"
-                    >
-                      <IconTrash className="h-3 w-3" />
-                    </button>
-                  )}
+                  <div className={`text-[10px] font-mono truncate ${isSelected ? "text-white/80" : "text-muted-foreground"}`}>
+                    /{p.slug}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
+                {pages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePage(p.slug);
+                    }}
+                    className={`opacity-0 group-hover:opacity-100 p-1 rounded-md cursor-pointer transition-opacity ${
+                      isSelected
+                        ? "text-white/90 hover:bg-white/20"
+                        : "text-rose-500 hover:bg-rose-500/10"
+                    }`}
+                    title="Xóa trang"
+                  >
+                    <IconTrash className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Sidebar Bottom Action */}
+        <div className="p-3 bg-muted/30">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => setIsModalOpen(true)}
-            className="w-full text-xs rounded-xl cursor-pointer gap-1.5"
+            className="w-full text-xs rounded-xl cursor-pointer gap-1.5 bg-card border-border shadow-2xs hover:bg-muted font-medium"
           >
             <IconPlus className="h-3.5 w-3.5" />
             <span>Thêm trang tài liệu</span>
@@ -146,100 +158,99 @@ export function DocsTab() {
         </div>
       </div>
 
-      {/* 2. Main Pane: Page Editor & Preview */}
-      <div className="lg:col-span-3 space-y-4">
-        {/* Page metadata bar */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-card border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-1">
-              <input
-                type="text"
-                value={currentPage.title}
-                onChange={(e) => handleUpdateCurrentPage({ title: e.target.value })}
-                className="font-bold text-sm sm:text-base text-foreground font-display bg-transparent border-0 focus:outline-none focus:ring-0 w-full"
-                placeholder="Tiêu đề trang..."
-              />
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              {/* View mode toggle */}
-              <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-0.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("edit")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "edit" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Chỉ soạn thảo"
-                >
-                  <IconEdit className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("split")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "split" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Chia đôi màn hình"
-                >
-                  <IconLayoutColumns className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("preview")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "preview" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Xem trước"
-                >
-                  <IconEye className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              <a
-                href={publicDocUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-primary text-white hover:opacity-90 transition-all cursor-pointer shadow-xs"
-              >
-                <span>Xem Docs</span>
-                <IconExternalLink className="h-3 w-3" />
-              </a>
-            </div>
+      {/* 2. Main Workbench Area: Header Bar + Editor & Live Preview */}
+      <div className="flex-1 flex flex-col min-w-0 bg-card">
+        {/* Top Workbench Header Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-3 border-b border-border bg-card">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <input
+              type="text"
+              value={currentPage.title}
+              onChange={(e) => handleUpdateCurrentPage({ title: e.target.value })}
+              className="font-bold text-sm sm:text-base text-foreground font-display bg-transparent border-0 focus:outline-none focus:ring-0 w-full"
+              placeholder="Tiêu đề trang tài liệu..."
+            />
+            <span className="text-[11px] font-mono text-muted-foreground shrink-0 px-2 py-0.5 rounded-md bg-muted border border-border/60">
+              /{currentPage.slug}
+            </span>
+            <span className="text-[11px] font-sans text-muted-foreground shrink-0 hidden md:inline">
+              • {currentPage.category || "Tài liệu"}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
-            <span>Slug:</span>
-            <span className="text-foreground">/{currentPage.slug}</span>
-            <span className="text-muted-foreground/30">•</span>
-            <span>Phân nhóm:</span>
-            <span className="text-foreground">{currentPage.category || "Chung"}</span>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* View Mode Toggle: Edit / Split / Preview */}
+            <div className="flex items-center rounded-xl bg-muted/70 p-0.5 text-xs border border-border/60">
+              <button
+                type="button"
+                onClick={() => setViewMode("edit")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "edit" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Chỉ mở trình soạn thảo"
+              >
+                <IconEdit className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("split")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "split" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Chia đôi màn hình (Editor + Preview)"
+              >
+                <IconLayoutColumns className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("preview")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "preview" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Xem trước kết quả rendered"
+              >
+                <IconEye className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            <a
+              href={publicDocUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-primary text-white hover:opacity-90 transition-all cursor-pointer shadow-xs"
+            >
+              <span>Xem Docs</span>
+              <IconExternalLink className="h-3 w-3" />
+            </a>
           </div>
         </div>
 
-        {/* Content Pane */}
-        <div
-          className={`grid gap-5 min-w-0 max-w-full ${
-            viewMode === "split"
-              ? "grid-cols-1 xl:grid-cols-2"
-              : "grid-cols-1"
-          }`}
-        >
-          {(viewMode === "edit" || viewMode === "split") && (
-            <div className="min-w-0 max-w-full overflow-hidden">
-              <MarkdownCodeEditor
-                value={currentPage.content || ""}
-                onChange={(val) => handleUpdateCurrentPage({ content: val })}
-                minHeight="560px"
-              />
-            </div>
-          )}
+        {/* Unified Canvas: Split Editor & Preview */}
+        <div className="flex-1 grid min-w-0 h-full">
+          <div
+            className={`grid min-w-0 h-full ${
+              viewMode === "split"
+                ? "grid-cols-1 xl:grid-cols-2 divide-y xl:divide-y-0 xl:divide-x divide-border"
+                : "grid-cols-1"
+            }`}
+          >
+            {(viewMode === "edit" || viewMode === "split") && (
+              <div className="min-w-0 h-full flex flex-col">
+                <MarkdownCodeEditor
+                  value={currentPage.content || ""}
+                  onChange={(val) => handleUpdateCurrentPage({ content: val })}
+                  minHeight="640px"
+                  borderless={true}
+                />
+              </div>
+            )}
 
-          {(viewMode === "preview" || viewMode === "split") && (
-            <div className="min-w-0 max-w-full overflow-hidden">
-              <MdxLivePreview content={currentPage.content} />
-            </div>
-          )}
+            {(viewMode === "preview" || viewMode === "split") && (
+              <div className="min-w-0 h-full flex flex-col overflow-y-auto max-h-[700px]">
+                <MdxLivePreview content={currentPage.content} borderless={true} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

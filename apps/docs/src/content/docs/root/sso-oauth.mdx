@@ -1,0 +1,17 @@
+---
+title: "Định danh Tập trung SSO & Chuẩn OAuth 2.0 PKCE"
+description: "Cơ chế xác thực an toàn bằng giao thức Proof Key for Code Exchange (RFC 7636) bảo vệ phiên đăng nhập chống tấn công trung gian."
+appId: "root"
+appName: "VNTEZ Ecosystem"
+category: "Bảo mật & Định danh"
+order: 3
+badge: "OAUTH 2.0 PKCE"
+---
+
+## 1. Quy trình Xác thực Chuẩn PKCE
+
+1. Client sinh ngẫu nhiên `code_verifier` (43-128 ký tự an toàn) và mã hóa SHA-256 để tạo `code_challenge`.
+2. Client chuyển hướng trình duyệt tới `https://id.vntez.net/oauth/authorize?response_type=code&client_id=...&code_challenge=...&code_challenge_method=S256`.
+3. Người dùng đăng nhập và ủy quyền quyền hạn ứng dụng.
+4. VNTEZ IAM trả về mã xác thực `code` ngắn hạn (hiệu lực 10 phút, chỉ sử dụng 1 lần).
+5. Client gửi yêu cầu POST đổi token kèm `code_verifier` ban đầu để nhận `access_token` và `id_token`.

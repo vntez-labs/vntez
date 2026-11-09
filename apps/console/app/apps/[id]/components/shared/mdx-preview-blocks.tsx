@@ -13,19 +13,21 @@ export function CodeFenceBlock({ lang, code }: { lang: string; code: string }) {
   };
 
   return (
-    <div className="my-3 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 text-xs font-mono shadow-xs">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800 text-[10px] text-zinc-400">
-        <span className="font-semibold uppercase tracking-wider">{lang || "code"}</span>
+    <div className="my-4 rounded-xl overflow-hidden bg-[#0d1117] border border-zinc-800 text-sm font-mono shadow-xs">
+      <div className="flex items-center justify-between px-3.5 py-2 bg-zinc-900/90 border-b border-zinc-800 text-xs text-zinc-400">
+        <span className="font-semibold uppercase tracking-wider text-[11px] text-zinc-300">
+          {lang || "code"}
+        </span>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] hover:bg-zinc-800 text-zinc-300 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs hover:bg-zinc-800 text-zinc-300 transition-colors cursor-pointer"
         >
-          {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
           <span>{copied ? "Đã chép" : "Sao chép"}</span>
         </button>
       </div>
-      <pre className="p-3.5 text-zinc-200 overflow-x-auto leading-relaxed whitespace-pre font-mono">
+      <pre className="p-4 text-zinc-100 overflow-x-auto leading-relaxed whitespace-pre font-mono text-[13.5px] sm:text-sm selection:bg-primary/30">
         <code>{code}</code>
       </pre>
     </div>
@@ -33,20 +35,37 @@ export function CodeFenceBlock({ lang, code }: { lang: string; code: string }) {
 }
 
 export function AsciiDiagramBlock({ diagram }: { diagram: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(diagram);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="my-4 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xs">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900/90 border-b border-zinc-800 text-[10px] text-zinc-400">
-        <div className="flex items-center gap-1.5 font-mono text-zinc-300">
-          <Terminal className="h-3 w-3 text-primary" />
+    <div className="my-4 rounded-xl overflow-hidden bg-[#0a0f18] border border-zinc-800/90 shadow-xs">
+      <div className="flex items-center justify-between px-3.5 py-2 bg-zinc-900/90 border-b border-zinc-800 text-xs text-zinc-400">
+        <div className="flex items-center gap-2 font-mono text-zinc-200 font-semibold text-xs">
+          <Terminal className="h-3.5 w-3.5 text-emerald-400" />
           <span>Sơ đồ Quy trình Tuần tự (Sequence Flow)</span>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-rose-500/80" />
-          <span className="h-2 w-2 rounded-full bg-amber-500/80" />
-          <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+          >
+            {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+            <span>{copied ? "Đã chép" : "Sao chép"}</span>
+          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+          </div>
         </div>
       </div>
-      <pre className="p-4 text-emerald-400 overflow-x-auto whitespace-pre font-mono text-[11px] leading-tight select-all">
+      <pre className="p-4.5 text-emerald-300 overflow-x-auto whitespace-pre font-mono text-[13.5px] sm:text-sm leading-relaxed tracking-normal select-all bg-black/40">
         {diagram}
       </pre>
     </div>
@@ -66,11 +85,11 @@ export function InteractiveTabbedCodeBlock({ data }: { data: TabbedCodeBlockData
   };
 
   return (
-    <div className="my-4 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xs text-xs">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
+    <div className="my-4 rounded-xl overflow-hidden bg-[#0d1117] border border-zinc-800 shadow-xs text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 bg-zinc-900 border-b border-zinc-800">
         <div className="flex items-center gap-2">
-          <Code2 className="h-3.5 w-3.5 text-primary" />
-          <span className="font-semibold text-zinc-200 text-[11px]">{data.title}</span>
+          <Code2 className="h-4 w-4 text-primary" />
+          <span className="font-semibold text-zinc-200 text-xs">{data.title}</span>
         </div>
 
         <div className="flex items-center gap-1 bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
@@ -79,7 +98,7 @@ export function InteractiveTabbedCodeBlock({ data }: { data: TabbedCodeBlockData
               key={idx}
               type="button"
               onClick={() => setActiveTabIdx(idx)}
-              className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                 idx === activeTabIdx
                   ? "bg-zinc-800 text-white font-bold"
                   : "text-zinc-400 hover:text-zinc-200"
@@ -93,16 +112,18 @@ export function InteractiveTabbedCodeBlock({ data }: { data: TabbedCodeBlockData
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] text-zinc-300 hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs text-zinc-300 hover:bg-zinc-800 transition-colors cursor-pointer"
         >
-          {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
           <span>{copied ? "Đã chép" : "Sao chép"}</span>
         </button>
       </div>
 
-      <pre className="p-3.5 text-zinc-200 overflow-x-auto leading-relaxed whitespace-pre font-mono text-[11px]">
-        <code>{activeTab?.code || ""}</code>
-      </pre>
+      {activeTab && (
+        <pre className="p-4 text-zinc-100 overflow-x-auto leading-relaxed whitespace-pre font-mono text-[13.5px] sm:text-sm selection:bg-primary/30">
+          <code>{activeTab.code}</code>
+        </pre>
+      )}
     </div>
   );
 }

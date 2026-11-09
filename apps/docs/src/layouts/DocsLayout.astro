@@ -49,7 +49,7 @@ const currentApp = ALL_APPS.find((a) => a.id === appId) || ALL_APPS[0];
 // Exact URL matching for 100% accurate active tab
 const normalizedCurrentPath = (Astro.url.pathname || "/").replace(/\/$/, "") || "/";
 
-const appDocs = allDocs.filter((d) => d.appId === appId);
+const appDocs = allDocs.filter((d) => (d.appId || "root") === (appId || "root"));
 const groupedCategories = appDocs.reduce<Record<string, NavItem[]>>((acc, item) => {
   if (!acc[item.category]) acc[item.category] = [];
   acc[item.category].push(item);

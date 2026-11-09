@@ -84,10 +84,14 @@ export function LegalTab() {
     setSelectedSlug(nextDocs[0]?.slug || "privacy");
   };
 
-  const canonicalUrl = `https://vntez-legal.vercel.app/${app.id}/${currentDoc.slug}`;
+  const isRoot = !app.id || app.id === "root";
+  const canonicalUrl = isRoot
+    ? `https://vntez-legal.vercel.app/${currentDoc.slug}`
+    : `https://vntez-legal.vercel.app/${app.id}/${currentDoc.slug}`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
+    <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-border min-h-[720px] w-full min-w-0">
+      {/* 1. Docked Left Sidebar: Documents Tree */}
       <LegalSidebar
         docs={docs}
         currentSlug={currentDoc.slug}
@@ -96,116 +100,124 @@ export function LegalTab() {
         onOpenCreateModal={() => setIsModalOpen(true)}
       />
 
-      {/* Main Pane: Document Editor & Live Preview */}
-      <div className="lg:col-span-3 space-y-4">
-        {/* Document Header & Canonical Link */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-card border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-1">
-              <input
-                type="text"
-                value={currentDoc.title}
-                onChange={(e) => handleUpdateCurrentDoc({ title: e.target.value })}
-                className="font-bold text-sm sm:text-base text-foreground font-display bg-transparent border-0 focus:outline-none focus:ring-0 w-full"
-                placeholder="Tiêu đề văn bản..."
-              />
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-0.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("edit")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "edit" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Chỉ soạn thảo"
-                >
-                  <IconEdit className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("split")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "split" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Chia đôi màn hình"
-                >
-                  <IconLayoutColumns className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("preview")}
-                  className={`p-1.5 rounded-lg cursor-pointer ${
-                    viewMode === "preview" ? "bg-white dark:bg-card text-foreground shadow-2xs" : "text-muted-foreground"
-                  }`}
-                  title="Xem trước"
-                >
-                  <IconEye className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              <a
-                href={canonicalUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground transition-all cursor-pointer shadow-2xs"
-              >
-                <span>Xem trang thật</span>
-                <IconExternalLink className="h-3 w-3" />
-              </a>
-            </div>
+      {/* 2. Main Workbench Area: Header Bar + Editor & Live Preview */}
+      <div className="flex-1 flex flex-col min-w-0 bg-card">
+        {/* Top Workbench Header Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-3 border-b border-border bg-card">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <input
+              type="text"
+              value={currentDoc.title}
+              onChange={(e) => handleUpdateCurrentDoc({ title: e.target.value })}
+              className="font-bold text-sm sm:text-base text-foreground font-display bg-transparent border-0 focus:outline-none focus:ring-0 w-full"
+              placeholder="Tiêu đề văn bản pháp lý..."
+            />
+            <span className="text-[11px] font-mono text-muted-foreground shrink-0 px-2 py-0.5 rounded-md bg-muted border border-border/60">
+              /{currentDoc.slug}
+            </span>
+            <span className="text-[11px] font-mono text-muted-foreground shrink-0 hidden md:inline">
+              v{currentDoc.version || "1.0"}
+            </span>
           </div>
 
-          {/* Canonical Info Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800 text-xs font-mono">
-            <div className="flex items-center gap-2 truncate text-muted-foreground">
-              <span className="text-muted-foreground/60">Canonical:</span>
-              <span className="text-foreground font-semibold truncate">{canonicalUrl}</span>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* View Mode Toggle: Edit / Split / Preview */}
+            <div className="flex items-center rounded-xl bg-muted/70 p-0.5 text-xs border border-border/60">
+              <button
+                type="button"
+                onClick={() => setViewMode("edit")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "edit" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Chỉ mở trình soạn thảo"
+              >
+                <IconEdit className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("split")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "split" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Chia đôi màn hình (Editor + Preview)"
+              >
+                <IconLayoutColumns className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("preview")}
+                className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                  viewMode === "preview" ? "bg-card text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Xem trước kết quả rendered"
+              >
+                <IconEye className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(canonicalUrl, "legalCanonical")}
-              className="text-[11px] text-primary hover:underline font-sans font-medium inline-flex items-center gap-1 shrink-0 cursor-pointer"
+
+            <a
+              href={canonicalUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition-all cursor-pointer shadow-xs"
             >
-              {copiedField === "legalCanonical" ? (
-                <>
-                  <IconCheck className="h-3 w-3 text-emerald-500" />
-                  <span>Đã sao chép</span>
-                </>
-              ) : (
-                <>
-                  <IconCopy className="h-3 w-3" />
-                  <span>Sao chép</span>
-                </>
-              )}
-            </button>
+              <span>Xem trang thật</span>
+              <IconExternalLink className="h-3 w-3" />
+            </a>
           </div>
         </div>
 
-        {/* Content Pane */}
-        <div
-          className={`grid gap-5 min-w-0 max-w-full ${
-            viewMode === "split"
-              ? "grid-cols-1 xl:grid-cols-2"
-              : "grid-cols-1"
-          }`}
-        >
-          {(viewMode === "edit" || viewMode === "split") && (
-            <div className="min-w-0 max-w-full overflow-hidden">
-              <MarkdownCodeEditor
-                value={currentDoc.content || ""}
-                onChange={(val) => handleUpdateCurrentDoc({ content: val })}
-                minHeight="560px"
-              />
-            </div>
-          )}
+        {/* Canonical Info Sub-bar */}
+        <div className="flex items-center justify-between px-5 py-2 bg-muted/20 border-b border-border text-xs font-mono">
+          <div className="flex items-center gap-2 truncate text-muted-foreground">
+            <span className="text-muted-foreground/60">Canonical:</span>
+            <span className="text-foreground font-semibold truncate">{canonicalUrl}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => copyToClipboard(canonicalUrl, "legalCanonical")}
+            className="text-[11px] text-primary hover:underline font-sans font-medium inline-flex items-center gap-1 shrink-0 cursor-pointer"
+          >
+            {copiedField === "legalCanonical" ? (
+              <>
+                <IconCheck className="h-3 w-3 text-emerald-500" />
+                <span>Đã sao chép</span>
+              </>
+            ) : (
+              <>
+                <IconCopy className="h-3 w-3" />
+                <span>Sao chép URL</span>
+              </>
+            )}
+          </button>
+        </div>
 
-          {(viewMode === "preview" || viewMode === "split") && (
-            <div className="min-w-0 max-w-full overflow-hidden">
-              <MdxLivePreview content={currentDoc.content} />
-            </div>
-          )}
+        {/* Unified Canvas: Split Editor & Preview */}
+        <div className="flex-1 grid min-w-0 h-full">
+          <div
+            className={`grid min-w-0 h-full ${
+              viewMode === "split"
+                ? "grid-cols-1 xl:grid-cols-2 divide-y xl:divide-y-0 xl:divide-x divide-border"
+                : "grid-cols-1"
+            }`}
+          >
+            {(viewMode === "edit" || viewMode === "split") && (
+              <div className="min-w-0 h-full flex flex-col">
+                <MarkdownCodeEditor
+                  value={currentDoc.content || ""}
+                  onChange={(val) => handleUpdateCurrentDoc({ content: val })}
+                  minHeight="640px"
+                  borderless={true}
+                />
+              </div>
+            )}
+
+            {(viewMode === "preview" || viewMode === "split") && (
+              <div className="min-w-0 h-full flex flex-col overflow-y-auto max-h-[700px]">
+                <MdxLivePreview content={currentDoc.content} borderless={true} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

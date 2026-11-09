@@ -281,6 +281,63 @@
 - **Khắc phục Triệt để Trùng lặp Bảng Trong Trang Database ([`route.ts`](apps/console/app/api/database/tables/route.ts))**:
   - Thêm cơ chế deduplicate theo `table.name` đảm bảo không bao giờ xuất hiện 2 tab cùng tên.
 
+### 1.12. Nền Trắng Sạch Sẽ (`bg-white`) Cho Database Tabs & Docs/Legal 100% Real Data
+- **Giao diện Nền Trắng Cho Bảng Dữ Liệu ([`database-table-tabs.tsx`](apps/console/app/database/components/database-table-tabs.tsx))**:
+  - Chuyển đổi khung chứa tab danh sách bảng từ xám đục `bg-muted/60` sang trắng tinh khôi `bg-white dark:bg-card border border-border shadow-2xs`.
+  - Bộ chuyển chế độ hiển thị `Tất cả (Flex)` và `Cuộn ngang` đồng bộ nền trắng thanh lịch `bg-white dark:bg-card`.
+  - Nút bấm bảng chưa chọn có hiệu ứng tương phản êm dịu `hover:bg-zinc-100 dark:hover:bg-zinc-800`.
+- **Hệ Thống Docs & Legal Chuẩn Dữ Liệu Thật 100% (Loại bỏ Mock Data)**:
+  - **Cấp Root (`app_id = null`) Mặc Định**:
+    - Dỡ bỏ ràng buộc NOT NULL của cột `app_id` trên cả 2 bảng Supabase Postgres: `ALTER TABLE app_docs_pages ALTER COLUMN app_id DROP NOT NULL;` và `ALTER TABLE app_legal_docs ALTER COLUMN app_id DROP NOT NULL;`.
+    - Seed 4 trang tài liệu kiến trúc Root thật vào `app_docs_pages` (`root:index`, `root:architecture`, `root:sso-oauth`, `root:sdk-guide`) với `app_id = null`.
+    - Seed 6 văn bản pháp lý Root thật vào `app_legal_docs` (`terms-of-service`, `terms`, `privacy-policy`, `privacy`, `data-sovereignty-sla`, `sla`) với `app_id = null`.
+  - **Đồng bộ Dữ liệu Tự động Trước Khi Build ([`sync-docs.ts`](apps/docs/src/lib/sync-docs.ts) & [`sync-legal.ts`](apps/legal/src/lib/sync-legal.ts))**:
+    - Tự động kéo 100% dữ liệu thực từ Supabase Postgres (`23` trang docs và `16` văn bản pháp lý) vào collection của Astro trước khi build hoặc chạy dev.
+    - Cơ chế fallback an toàn vào file local nếu mất kết nối mạng.
+  - **Đa Tuyến Định Tuyến (Multi-Routing: `/docs/{app}`, `/{app}/docs`, `/domains/{app}/docs`)**:
+    - `apps/docs`: Mặc định `/` hiển thị tài liệu Root (`app_id = null`, VNTEZ Ecosystem Architecture) kèm dải chuyển nhanh tới các ứng dụng.
+    - Hỗ trợ đầy đủ các dạng đường dẫn: `/docs/[appId]/[slug]`, `/[appId]/docs/[slug]`, và `/domains/[appId]/docs/[slug]`.
+    - Thêm lựa chọn `VNTEZ Ecosystem (Root)` vào [`AppSwitcher.tsx`](apps/docs/src/components/islands/AppSwitcher.tsx).
+    - `apps/legal`: Hỗ trợ `/domains/[appId]/legal/[slug]` và `/[appId]/[slug]`.
+  - **Tích Hợp Web Portal (`apps/web`)**:
+    - Route `/docs` chuyển hướng chính xác về Root Docs `${DOCS_BASE_URL}` thay vì bị gán cứng vào `workers-hub`.
+    - Route `/privacy` và `/terms` kết nối trực tiếp Supabase qua [`supabase-legal.ts`](apps/web/lib/supabase-legal.ts), render nội dung thật từ bảng `app_legal_docs`.
+
+### 1.7. Hợp nhất Giao diện Workbench & Tối ưu Cỡ chữ Trình soạn thảo (IDE Ergonomics)
+- **Khắc phục Triệt để Bố cục Rời rạc (Unified IDE Workbench Canvas)**:
+  - **Docs & Legal Tabs ([`DocsTab`](apps/console/app/apps/[id]/components/tabs/docs-tab.tsx) & [`LegalTab`](apps/console/app/apps/[id]/components/tabs/legal-tab.tsx))**:
+    - Thay thế hoàn toàn bố cục 4 card trôi nổi độc lập bằng một khung IDE Workbench duy nhất: Sidebar danh sách trang/văn bản neo cố định bên trái, Header hành động tinh gọn ở trên cùng, và khu vực soạn thảo/xem trước chia đôi liền mạch bằng `divide-x`.
+  - **Remote Config Console ([`RemoteConfigTab`](apps/console/app/apps/[id]/components/tabs/remote-config-tab.tsx))**:
+    - Chuyển đổi từ hộp JSON đơn lẻ trơ trọi thành bảng điều khiển Edge Remote Config chuyên nghiệp 2 cột:
+      - Cột trái: Monaco JSON Editor tích hợp sẵn kiểm tra hợp lệ thời gian thực.
+      - Cột phải: [`RemoteConfigInspector`](apps/console/app/apps/[id]/components/tabs/remote-config/remote-config-inspector.tsx) kiểm tra trực tiếp các key-value đang hoạt động, 3 mẫu cấu hình nhanh 1-click (Zero Trust, Web Standard, Maintenance) và mẫu mã tích hợp Edge SDK.
+- **Phóng to Cỡ chữ Code & Trình Xem trước (Code Typography & Readability)**:
+  - **Monaco Code Editors ([`MarkdownCodeEditor`](apps/console/components/markdown-code-editor.tsx), [`JsonCodeEditor`](apps/console/components/json-code-editor.tsx), [`SqlCodeEditor`](apps/console/app/database/components/sql-code-editor.tsx))**:
+    - Cỡ chữ mặc định nâng từ 13px lên **15px**, khoảng cách dòng giãn thoáng `25px` (1.65x).
+    - Bổ sung bộ điều khiển phóng to/thu nhỏ tương tác **`[A- / A+]`** (từ 12px đến 20px) trực tiếp trên thanh công cụ của mỗi editor.
+  - **Trình Xem trước MDX ([`MdxPreviewBlocks`](apps/console/app/apps/[id]/components/shared/mdx-preview-blocks.tsx) & [`MdxLivePreview`](apps/console/app/apps/[id]/components/shared/mdx-live-preview.tsx))**:
+    - Sơ đồ chuỗi ASCII (Sequence Diagrams) nâng từ 11px mờ nhạt lên **13.5px / 14px** với màu xanh ngọc lục bảo nổi bật (`text-emerald-300 font-mono`) trên nền tối `#0a0f18`.
+    - Khối code fence nâng lên **14px** font chữ `JetBrains Mono / Fira Code`.
+    - Văn bản xem trước và danh sách nâng lên **14.5px** sắc nét.
+
+### 1.8. Cải tổ Ma trận Phân quyền Doanh nghiệp (Enterprise RBAC Matrix Table)
+- **Tệp thành phần**:
+  - [`resource-display-utils.tsx`](apps/console/app/apps/[id]/components/tabs/permissions/resource-display-utils.tsx): Format tên tài nguyên đẹp mắt, icon chuyên biệt theo từng phân loại (OAuth, Tokens, Policies, Logs, Database, ...) và theme màu ngữ nghĩa (Sky, Emerald, Amber, Rose).
+  - [`action-header-cell.tsx`](apps/console/app/apps/[id]/components/tabs/permissions/action-header-cell.tsx): Header cột phân nhóm hành động kèm nút **Bật/Tắt toàn bộ cột** (Column Master Toggle) và badge đếm tỷ lệ kích hoạt.
+  - [`permission-matrix-row.tsx`](apps/console/app/apps/[id]/components/tabs/permissions/permission-matrix-row.tsx): Từng dòng tài nguyên với icon, chip URN kèm nút sao chép, chip nút bấm tương tác `size-8 rounded-xl` (hiệu ứng micro-bounce, icon Check trắng sắc nét, dấu `+` khi hover), và cụm tác vụ nhanh dòng (Chọn hết, Chỉ đọc, Bỏ chọn).
+  - [`permissions-matrix-grid.tsx`](apps/console/app/apps/[id]/components/tabs/permissions/permissions-matrix-grid.tsx): Thanh công cụ hiển thị thanh tiến trình độ phủ quyền (Coverage Progress Bar), ô tìm kiếm tài nguyên tức thì và tab lọc trạng thái (Tất cả / Đã cấp / Chưa có).
+
+### 1.9. Chuẩn hóa 100% Monaco Editor cho Toàn bộ Phân hệ Markdown (Blog Posts & App Docs)
+- **Loại bỏ Hoàn toàn Textarea Thô sơ**:
+  - Tệp [`blog-workspace-panes.tsx`](apps/console/app/blog-posts/editor/components/blog-workspace-panes.tsx) đã được nâng cấp thay thế `<textarea>` bằng [`MarkdownCodeEditor`](apps/console/components/markdown-code-editor.tsx) (Monaco VS Code Engine).
+  - Tích hợp `editorRef` và cơ chế `executeEdits` tại [`page.tsx`](apps/console/app/blog-posts/editor/page.tsx): Khi bấm các nút thêm nhanh H1, H2, Bold, Code trên thanh công cụ `MarkdownToolbar`, Monaco sẽ tự động chèn định dạng chuẩn xác tại vị trí con trỏ đang chọn.
+  - Cung cấp trải nghiệm đồng nhất trên toàn hệ thống: Số dòng, tô màu cú pháp Markdown, phím tắt VS Code, giãn dòng 25px và bộ điều khiển phóng to cỡ chữ `[A- / A+]`.
+
+- **Kiểm Thử Hoàn Hảo**:
+  - `find apps packages ... wc -l >= 300`: Đạt chuẩn **0 dòng**.
+  - `bun run typecheck`: 6/6 packages thành công (0 errors).
+  - `bun run build`: Biên dịch thành công 4/4 apps (`console`, `web`, `docs`, `legal`).
+
 ---
 
 ## 2. KẾ HOẠCH CHO PHIÊN LÀM VIỆC TIẾP THEO (NEXT PRIORITIES)

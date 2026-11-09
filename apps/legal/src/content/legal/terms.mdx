@@ -1,0 +1,39 @@
+---
+title: "Điều Khoản Dịch Vụ VNTEZ"
+description: "Quy định sử dụng tài khoản, IAM API rate limiting, chính sách chống lạm dụng và quyền lợi người dùng."
+version: "2.5.0"
+effectiveDate: "2026-01-01"
+lastUpdated: "2026-11-07"
+order: 1
+---
+
+## 1. Giới thiệu và Phạm vi Áp dụng
+
+Chào mừng bạn đến với **Hệ sinh thái VNTEZ** (bao gồm VNTEZ IAM, Workers Hub, SoloType, Bonsai Reader, GitVN). Bằng việc truy cập hoặc sử dụng bất kỳ dịch vụ nào trong hệ sinh thái, bạn đồng ý tuân thủ các điều khoản và điều kiện được nêu tại văn bản này.
+
+Nếu bạn đại diện cho một tổ chức doanh nghiệp, bạn xác nhận rằng mình có đầy đủ thẩm quyền pháp lý để ràng buộc tổ chức đó với các điều khoản này.
+
+## 2. Quản lý Tài khoản & Phân quyền IAM
+
+- **Danh tính Duy nhất:** Mỗi tài khoản được cấp một định danh duy nhất (`sub` UUID) thông qua hệ thống Single Sign-On (SSO) VNTEZ IAM.
+- **Bảo mật Thông tin Đăng nhập:** Người dùng chịu trách nhiệm bảo mật khóa riêng tư, mã bí mật OAuth Client Secret, và các mã phiên đăng nhập PKCE.
+- **Chính sách RBAC:** Quyền truy cập tài nguyên được kiểm soát nghiêm ngặt theo Ma trận phân quyền (RBAC/ABAC). Nghiêm cấm hành vi thăm dò, can thiệp hoặc giả mạo token phân quyền.
+
+## 3. Chính sách Giới hạn Tần suất (Rate Limiting) & Chống Lạm dụng
+
+Để đảm bảo chất lượng dịch vụ đồng đều cho toàn thể cộng đồng lập trình viên:
+
+- **Edge API Rate Limit:** Mặc định mỗi IP hoặc Client ID được phép gửi tối đa 1.000 requests/phút đối với các API định danh và 5.000 requests/phút đối với các dịch vụ Edge CDN.
+- **Hành vi bị cấm:**
+  - Tấn công từ chối dịch vụ (DDoS) hoặc gửi request quá tải vào các cụm Cloudflare Workers.
+  - Khai thác lỗ hổng hoặc truyền tải mã độc hại, bot scraping trái phép.
+  - Sử dụng dịch vụ cho các mục đích vi phạm pháp luật hiện hành của nước Cộng hòa Xã hội Chủ nghĩa Việt Nam.
+
+## 4. Quyền Sở hữu Trí tuệ & Mã Nguồn
+
+- Mã nguồn, tài liệu hướng dẫn, logo, thương hiệu và giao diện phần mềm thuộc quyền sở hữu độc quyền của VNTEZ hoặc các tác giả cấp phép.
+- Các kho lưu trữ mã nguồn cá nhân do bạn khởi tạo trên GitVN thuộc quyền sở hữu trí tuệ hoàn toàn của bạn. VNTEZ cam kết không truy cập hoặc sử dụng mã nguồn của bạn cho mục đích đào tạo mô hình mà không có sự đồng ý bằng văn bản.
+
+## 5. Giới hạn Trách nhiệm
+
+Dịch vụ được cung cấp trên nguyên tắc "nguyên trạng" (as-is). VNTEZ không chịu trách nhiệm đối với các thiệt hại gián tiếp phát sinh từ việc gián đoạn đường truyền cáp quang quốc tế hoặc các sự kiện bất khả kháng ngoài tầm kiểm soát của các nhà mạng viễn thông nội địa.

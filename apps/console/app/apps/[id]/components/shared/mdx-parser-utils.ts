@@ -101,13 +101,13 @@ export function parseTabbedCodeBlocks(content: string): {
 
     // Extract title
     const titleMatch = fullMatch.match(/title=["']([^"']+)["']/);
-    const title = titleMatch ? titleMatch[1] : "Mã Nguồn Mẫu";
+    const title = titleMatch?.[1] || "Mã Nguồn Mẫu";
 
     // Extract tabs array
     const tabs: { label: string; lang: string; code: string }[] = [];
     const tabsBlockMatch = fullMatch.match(/tabs=\{(\[[\s\S]*?\])\}/);
 
-    if (tabsBlockMatch && tabsBlockMatch[1]) {
+    if (tabsBlockMatch?.[1]) {
       try {
         // Safe evaluation of the JS tabs array
         const rawArrayStr = tabsBlockMatch[1];
@@ -118,7 +118,7 @@ export function parseTabbedCodeBlocks(content: string): {
             const langMatch = objStr.match(/lang:\s*["']([^"']+)["']/);
             const codeMatch = objStr.match(/code:\s*["']([\s\S]*?)["']\s*(?:,|\})/);
 
-            if (labelMatch && langMatch && codeMatch) {
+            if (labelMatch?.[1] && langMatch?.[1] && codeMatch?.[1]) {
               const codeClean = codeMatch[1]
                 .replace(/\\n/g, "\n")
                 .replace(/\\"/g, '"')

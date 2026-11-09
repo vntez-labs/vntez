@@ -1,0 +1,36 @@
+---
+title: "Chính Sách Bảo Mật Thông Tin"
+description: "Cam kết bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP và chuẩn mực bảo mật quốc tế GDPR."
+version: "2.5.0"
+effectiveDate: "2026-01-01"
+lastUpdated: "2026-11-07"
+order: 2
+---
+
+## 1. Nguyên tắc Thu thập Dữ liệu Tối giản (Data Minimization)
+
+VNTEZ tôn trọng quyền riêng tư tuyệt đối của người dùng và áp dụng nguyên tắc chỉ thu thập những trường thông tin tối thiểu cần thiết để vận hành hệ thống định danh:
+
+- **Thông tin cơ bản:** Địa chỉ email, tên hiển thị (full name), ảnh đại diện (avatar URL), và số điện thoại liên lạc (nếu được người dùng tự nguyện cung cấp).
+- **Dữ liệu phiên làm việc:** Địa chỉ IP truy cập, User-Agent trình duyệt, và mã định danh OAuth Client ID phục vụ kiểm toán bảo mật (Audit Log).
+- **Cam kết không theo dõi:** VNTEZ không sử dụng cookie theo dõi quảng cáo của bên thứ ba, không bán hoặc thương mại hóa dữ liệu người dùng dưới mọi hình thức.
+
+## 2. Lưu trữ & Mã hóa Dữ liệu
+
+- **Mã hóa khi Lưu trữ (At Rest):** Toàn bộ mật khẩu và thông tin xác thực nhạy cảm được băm (hash) bằng thuật toán Argon2id / bcrypt. Dữ liệu cơ sở dữ liệu trên Supabase Postgres được mã hóa cấp đĩa AES-256.
+- **Mã hóa khi Truyền tải (In Transit):** 100% lưu lượng mạng giữa client và hệ thống biên Cloudflare Edge được mã hóa qua giao thức TLS 1.3 với chứng chỉ mã hóa hiện đại.
+- **Chính sách Cookie:** Phiên đăng nhập `vntez_user_session` được bảo vệ bằng cờ `HttpOnly`, `SameSite=Lax`, và `Secure`, ngăn chặn hoàn toàn nguy cơ tấn công XSS trích xuất token.
+
+## 3. Quyền của Chủ thể Dữ liệu (Nghị định 13/2023/NĐ-CP)
+
+Người dùng có đầy đủ các quyền hợp pháp theo luật định:
+
+1. **Quyền Được Biết:** Yêu cầu cung cấp thông tin về loại dữ liệu cá nhân đang được xử lý.
+2. **Quyền Đồng ý & Rút lại Đồng ý:** Cho phép hoặc từ chối cấp quyền truy cập profile cho các ứng dụng OAuth bên thứ ba bất kỳ lúc nào tại Console.
+3. **Quyền Chỉnh sửa & Xóa Dữ liệu (Right to be Forgotten):** Tự do cập nhật hồ sơ cá nhân hoặc gửi yêu cầu xóa vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan khỏi hệ thống.
+
+## 4. Liên hệ Phụ trách Bảo vệ Dữ liệu (DPO)
+
+Mọi thắc mắc hoặc yêu cầu thực thi quyền riêng tư, vui lòng liên hệ Ban Quản trị Bảo mật VNTEZ:
+- Email: `security@vntez.net` / `support@vntez.net`
+- Địa chỉ: VNTEZ Cloud Infrastructure Security Division, Hà Nội, Việt Nam.

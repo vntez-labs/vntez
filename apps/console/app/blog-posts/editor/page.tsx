@@ -61,7 +61,7 @@ function BlogEditorContent() {
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<BlogPostItem["comments"]>([]);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<any>(null);
 
   useEffect(() => {
     if (!editSlug) return;
@@ -96,22 +96,23 @@ function BlogEditorContent() {
   }, [editSlug]);
 
   const handleInsert = (prefix: string, suffix = "") => {
-    const el = textareaRef.current;
-    if (!el) {
-      setContent((prev) => prev + prefix + suffix);
-      return;
+    const editor = editorRef.current;
+    if (editor) {
+      const selection = editor.getSelection();
+      const model = editor.getModel();
+      if (selection && model) {
+        const selectedText = model.getValueInRange(selection);
+        const replacement = prefix + selectedText + suffix;
+        editor.executeEdits("toolbar-insert", [
+          { range: selection, text: replacement, forceMoveMarkers: true },
+        ]);
+        editor.focus();
+        return;
+      }
     }
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const selected = content.substring(start, end);
-    const replacement = prefix + selected + suffix;
-    const newContent = content.substring(0, start) + replacement + content.substring(end);
+    const newContent = content + prefix + suffix;
     setContent(newContent);
     setReadTime(computeReadTime(newContent));
-    setTimeout(() => {
-      el.focus();
-      el.setSelectionRange(start + prefix.length, end + prefix.length);
-    }, 0);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,7 +251,7 @@ function BlogEditorContent() {
           setContent(newVal);
           setReadTime(computeReadTime(newVal));
         }}
-        textareaRef={textareaRef}
+        editorRef={editorRef}
         onInsert={handleInsert}
         meta={{
           title,

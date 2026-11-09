@@ -1,0 +1,35 @@
+---
+title: "Hướng dẫn Tích hợp SDK Đa nền tảng (TS, Go, Dart)"
+description: "Cẩm nang cài đặt và tích hợp thư viện VNTEZ Client SDK trên các nền tảng Web, Mobile và Backend."
+appId: "root"
+appName: "VNTEZ Ecosystem"
+category: "Lập trình viên"
+order: 4
+badge: "SDK QUICKSTART"
+---
+
+## 1. Cài đặt Thư viện
+
+```bash
+# TypeScript / Node.js
+npm install @vntez/sdk
+# hoặc
+bun add @vntez/sdk
+
+# Go
+go get github.com/vntez/sdk-go
+
+# Flutter / Dart
+flutter pub add vntez_auth
+```
+
+## 2. Khởi tạo Client
+
+```typescript
+import { VntezClient } from "@vntez/sdk";
+
+const client = new VntezClient({
+  clientId: "vntez_your_app",
+  redirectUri: "https://your-domain.com/auth/callback",
+});
+```

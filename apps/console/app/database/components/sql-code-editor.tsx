@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { Trash2, Terminal } from "lucide-react";
+import { Trash2, Terminal, ZoomIn, ZoomOut } from "lucide-react";
 import type { TableMeta } from "../types";
 import { SQL_KEYWORDS, getTableDisplayInfo } from "../database-schema-constants";
 
@@ -27,6 +27,10 @@ export function SqlCodeEditor({
   const providerRef = useRef<any>(null);
   const onExecuteRef = useRef(onExecute);
   onExecuteRef.current = onExecute;
+  const [fontSize, setFontSize] = useState(15);
+
+  const zoomIn = () => setFontSize((prev) => Math.min(prev + 1, 20));
+  const zoomOut = () => setFontSize((prev) => Math.max(prev - 1, 12));
 
   useEffect(() => {
     return () => {
@@ -129,6 +133,29 @@ export function SqlCodeEditor({
           <span className="text-zinc-500">Postgres Dialect</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* Font Zoom Controller */}
+          <div className="flex items-center gap-1 bg-zinc-800 p-0.5 rounded border border-zinc-700 text-[11px] font-mono">
+            <button
+              type="button"
+              onClick={zoomOut}
+              className="p-1 rounded hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 cursor-pointer transition-colors"
+              title="Giảm cỡ chữ (A-)"
+            >
+              <ZoomOut className="h-3 w-3" />
+            </button>
+            <span className="px-1 font-semibold text-zinc-300 select-none" title="Cỡ chữ hiện tại">
+              {fontSize}px
+            </span>
+            <button
+              type="button"
+              onClick={zoomIn}
+              className="p-1 rounded hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 cursor-pointer transition-colors"
+              title="Tăng cỡ chữ (A+)"
+            >
+              <ZoomIn className="h-3 w-3" />
+            </button>
+          </div>
+
           <span className="text-zinc-500 hidden sm:inline">
             <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Ctrl</kbd> +{" "}
             <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Enter</kbd> để chạy
@@ -160,7 +187,8 @@ export function SqlCodeEditor({
             </div>
           }
           options={{
-            fontSize: 14,
+            fontSize,
+            lineHeight: Math.round(fontSize * 1.65),
             fontFamily: "var(--font-mono, 'Fira Code', 'JetBrains Mono', Menlo, Consolas, monospace)",
             fontLigatures: true,
             lineNumbers: "on",

@@ -12,7 +12,17 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/docs",
-        destination: `${DOCS_BASE_URL}/docs/workers-hub`,
+        destination: `${DOCS_BASE_URL}`,
+        permanent: false,
+      },
+      {
+        source: "/domains/:appId/docs/:slug*",
+        destination: `${DOCS_BASE_URL}/domains/:appId/docs/:slug*`,
+        permanent: false,
+      },
+      {
+        source: "/domains/:appId/legal/:slug*",
+        destination: `${LEGAL_BASE_URL}/domains/:appId/legal/:slug*`,
         permanent: false,
       },
       {

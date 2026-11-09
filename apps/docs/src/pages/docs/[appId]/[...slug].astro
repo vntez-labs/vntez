@@ -8,7 +8,7 @@ export async function getStaticPaths() {
   return allDocs.map((doc) => {
     const cleanId = doc.id.replace(/\.(md|mdx)$/, "");
     const parts = cleanId.split("/");
-    const appId = parts[0] || doc.data.appId;
+    const appId = parts[0] || doc.data.appId || "root";
     const rawSlug = parts.slice(1).join("/");
     const slug = rawSlug === "index" ? undefined : (rawSlug || undefined);
 
@@ -27,7 +27,7 @@ const navItems = allDocs
   .map((d) => {
     const cleanId = d.id.replace(/\.(md|mdx)$/, "");
     const parts = cleanId.split("/");
-    const appId = parts[0] || d.data.appId;
+    const appId = parts[0] || d.data.appId || "root";
     const rawSlug = parts.slice(1).join("/");
     const href = (!rawSlug || rawSlug === "index") ? `/docs/${appId}` : `/docs/${appId}/${rawSlug}`;
     return {
@@ -45,7 +45,7 @@ const navItems = allDocs
 <DocsLayout
   title={doc.data.title}
   description={doc.data.description}
-  appId={doc.data.appId}
+  appId={doc.data.appId || "root"}
   category={doc.data.category}
   method={doc.data.method}
   endpoint={doc.data.endpoint}

@@ -1,0 +1,34 @@
+---
+title: "Tổng quan Kiến trúc Hệ sinh thái VNTEZ"
+description: "Cổng tài liệu kỹ thuật tổng hợp toàn bộ hệ sinh thái VNTEZ: Hạ tầng Serverless Edge, Định danh SSO PKCE, Bán lẻ Offline và Lưu trữ Object S3."
+appId: "root"
+appName: "VNTEZ Ecosystem"
+category: "Tổng quan Hệ thống"
+order: 1
+badge: "ROOT ARCHITECTURE"
+---
+
+## 1. Tầm nhìn & Triết lý Thiết kế
+
+**Hệ sinh thái VNTEZ** là nền tảng điện toán đám mây và hạ tầng dịch vụ (Backend-as-a-Service) tối ưu riêng cho cộng đồng lập trình viên và doanh nghiệp Việt Nam:
+
+- **100% Chủ quyền Dữ liệu:** Toàn bộ dữ liệu cơ sở dữ liệu và lưu trữ đối tượng được đặt tại các Data Center chuẩn Tier 3 nội địa (Hà Nội, TP.HCM).
+- **Mạng lưới Biên Siêu Tốc (Cloudflare Edge):** Độ trễ mạng nội địa chỉ từ **2ms - 15ms**, loại bỏ hoàn toàn ảnh hưởng khi xảy ra sự cố đứt cáp quang biển.
+- **Định danh Tập trung (Single Sign-On):** Một tài khoản định danh duy nhất xác thực an toàn qua giao thức **OAuth 2.0 Authorization Code with PKCE** trên toàn bộ các ứng dụng.
+
+## 2. Các Phân hệ Ứng dụng Cốt lõi
+
+1. **Workers Hub (Edge Cloud):** Bảng điều khiển quản lý và điều phối các cụm serverless workers, R2 Buckets và D1 Databases.
+2. **VNTEZ IAM (Identity & Access Management):** Cổng định danh tập trung, quản lý RBAC/ABAC và phát hành access token chuẩn JWT.
+3. **SoloType (Productivity Typing):** Nền tảng luyện gõ phím 10 ngón tối ưu thuật toán WPM/CPM cho bộ gõ tiếng Việt Telex/VNI và lập trình viên.
+4. **Bonsai Reader (Distraction-Free Reader):** Trình đọc sách ePub, PDF và tài liệu kỹ thuật với tiêu chuẩn typographic Việt Nam.
+5. **GitVN (Zero-Friction Git Platform):** Nền tảng Git Repository tối giản tích hợp bảng Kanban và Wiki Confluence Markdown trực tiếp trong kho mã nguồn.
+
+## 3. Bản đồ Điều hướng Tài liệu
+
+- Để xem tài liệu chi tiết của từng ứng dụng, chọn ứng dụng tương ứng trên thanh điều hướng hoặc truy cập đường dẫn trực tiếp:
+  - Workers Hub: `/docs/workers-hub`
+  - VNTEZ IAM: `/docs/vntez-iam`
+  - SoloType: `/docs/solotype`
+  - Bonsai Reader: `/docs/bonsai-reader`
+  - GitVN: `/docs/gitvn`

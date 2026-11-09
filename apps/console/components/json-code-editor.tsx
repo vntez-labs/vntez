@@ -3,7 +3,7 @@
 import React, { useRef, useState, useMemo } from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { Check, Copy, Sparkles, Code2, AlertCircle } from "lucide-react";
+import { Check, Copy, Sparkles, Code2, AlertCircle, ZoomIn, ZoomOut } from "lucide-react";
 
 interface JsonCodeEditorProps {
   value: string;
@@ -11,6 +11,7 @@ interface JsonCodeEditorProps {
   readOnly?: boolean;
   minHeight?: string;
   className?: string;
+  borderless?: boolean;
 }
 
 export function JsonCodeEditor({
@@ -19,10 +20,12 @@ export function JsonCodeEditor({
   readOnly = false,
   minHeight = "340px",
   className = "",
+  borderless = false,
 }: JsonCodeEditorProps) {
   const { resolvedTheme } = useTheme();
   const editorRef = useRef<any>(null);
   const [copied, setCopied] = useState(false);
+  const [fontSize, setFontSize] = useState(15);
 
   const validation = useMemo(() => {
     if (!value.trim()) return { isValid: true, error: null };
@@ -60,12 +63,19 @@ export function JsonCodeEditor({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const zoomIn = () => setFontSize((prev) => Math.min(prev + 1, 20));
+  const zoomOut = () => setFontSize((prev) => Math.max(prev - 1, 12));
+
   return (
     <div
-      className={`rounded-2xl border border-border bg-card shadow-xs overflow-hidden flex flex-col ${className}`}
+      className={`bg-card flex flex-col h-full w-full ${
+        borderless
+          ? ""
+          : "rounded-2xl border border-border shadow-xs overflow-hidden"
+      } ${className}`}
     >
       {/* Editor Header Toolbar */}
-      <div className="flex items-center justify-between border-b border-border bg-muted/60 px-4 py-2.5 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5 backdrop-blur-xs gap-2 shrink-0">
         <div className="flex items-center gap-2 text-xs">
           <Code2 className="h-4 w-4 text-primary" />
           <span className="font-mono font-semibold text-foreground">
@@ -88,13 +98,36 @@ export function JsonCodeEditor({
           )}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          {/* Font Size Zoom Controller */}
+          <div className="flex items-center gap-1 bg-muted/60 p-0.5 rounded-lg border border-border/60 text-[11px] font-mono">
+            <button
+              type="button"
+              onClick={zoomOut}
+              className="p-1 rounded hover:bg-card text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+              title="Giảm cỡ chữ (A-)"
+            >
+              <ZoomOut className="h-3 w-3" />
+            </button>
+            <span className="px-1 font-semibold text-foreground select-none" title="Cỡ chữ hiện tại">
+              {fontSize}px
+            </span>
+            <button
+              type="button"
+              onClick={zoomIn}
+              className="p-1 rounded hover:bg-card text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+              title="Tăng cỡ chữ (A+)"
+            >
+              <ZoomIn className="h-3 w-3" />
+            </button>
+          </div>
+
           {!readOnly && (
             <button
               type="button"
               onClick={handleFormat}
               disabled={!validation.isValid}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-card border border-border hover:bg-muted text-foreground transition-colors cursor-pointer disabled:opacity-40"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-card border border-border hover:bg-muted text-foreground transition-colors cursor-pointer disabled:opacity-40 shadow-2xs"
               title="Tự động căn lề và định dạng JSON"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
@@ -105,7 +138,7 @@ export function JsonCodeEditor({
           <button
             type="button"
             onClick={handleCopy}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-card border border-border hover:bg-muted text-foreground transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-card border border-border hover:bg-muted text-foreground transition-colors cursor-pointer shadow-2xs"
             title="Sao chép nội dung"
           >
             {copied ? (
@@ -124,7 +157,7 @@ export function JsonCodeEditor({
       </div>
 
       {/* Monaco Editor Container */}
-      <div className="w-full relative" style={{ height: minHeight }}>
+      <div className="w-full relative flex-1" style={{ minHeight }}>
         <Editor
           height={minHeight}
           language="json"
@@ -134,15 +167,20 @@ export function JsonCodeEditor({
           onMount={handleEditorDidMount}
           options={{
             readOnly,
-            fontSize: 13,
-            fontFamily: "var(--font-mono, 'Fira Code', 'JetBrains Mono', Consolas, monospace)",
-            lineHeight: 22,
+            fontSize,
+            fontFamily: "var(--font-mono, 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace)",
+            lineHeight: Math.round(fontSize * 1.65),
+            letterSpacing: 0.3,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
             wordWrap: "on",
             tabSize: 2,
             automaticLayout: true,
-            padding: { top: 12, bottom: 12 },
+            padding: { top: 14, bottom: 14 },
+            scrollbar: {
+              verticalScrollbarSize: 8,
+              horizontalScrollbarSize: 8,
+            },
           }}
         />
       </div>

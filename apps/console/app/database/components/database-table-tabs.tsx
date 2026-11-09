@@ -57,7 +57,7 @@ export function DatabaseTableTabs({
 
   if (isLoading && tables.length === 0) {
     return (
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-muted/60 border border-border/70 overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white dark:bg-card border border-border overflow-x-auto shadow-2xs">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-8.5 w-24 rounded-xl shrink-0" />
         ))}
@@ -81,13 +81,13 @@ export function DatabaseTableTabs({
         </div>
 
         {/* Layout Mode Toggle */}
-        <div className="flex items-center gap-1 bg-muted/60 p-0.5 rounded-xl border border-border/60">
+        <div className="flex items-center gap-1 bg-white dark:bg-card p-0.5 rounded-xl border border-border shadow-2xs">
           <button
             type="button"
             onClick={() => setIsWrapMode(true)}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
               isWrapMode
-                ? "bg-card text-foreground shadow-2xs font-semibold"
+                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
             title="Hiển thị tất cả dạng Flex Wrap (tự xuống dòng, không cần cuộn)"
@@ -100,7 +100,7 @@ export function DatabaseTableTabs({
             onClick={() => setIsWrapMode(false)}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
               !isWrapMode
-                ? "bg-card text-foreground shadow-2xs font-semibold"
+                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
             title="Hiển thị 1 hàng cuộn ngang"
@@ -134,7 +134,7 @@ export function DatabaseTableTabs({
           }`}
         >
           <div
-            className={`p-1 rounded-2xl bg-muted/60 border border-border/70 shadow-2xs ${
+            className={`p-1.5 rounded-2xl bg-white dark:bg-card border border-border shadow-2xs ${
               isWrapMode
                 ? "flex flex-wrap items-center gap-1.5"
                 : "inline-flex items-center gap-1"
@@ -154,7 +154,7 @@ export function DatabaseTableTabs({
                   className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-sans transition-all shrink-0 cursor-pointer ${
                     isSelected
                       ? "bg-primary text-white font-semibold shadow-xs"
-                      : "text-muted-foreground hover:text-foreground hover:bg-card/70 border border-transparent font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800/80 border border-transparent font-medium"
                   }`}
                 >
                   <Table
@@ -170,7 +170,7 @@ export function DatabaseTableTabs({
                     className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full shrink-0 transition-colors ${
                       isSelected
                         ? "bg-white/20 text-white font-bold"
-                        : "bg-muted text-muted-foreground font-semibold group-hover:bg-card border border-border/40"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-muted-foreground font-semibold group-hover:bg-zinc-200/80 dark:group-hover:bg-zinc-700/80 border border-border/40"
                     }`}
                   >
                     {t.rowCount}

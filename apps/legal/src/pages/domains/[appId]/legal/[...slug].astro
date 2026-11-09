@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from "astro:content";
+import LegalLayout from "../../../../layouts/LegalLayout.astro";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("legal");
+  return docs.map((doc) => {
+    const clean = doc.id.replace(/\.(md|mdx)$/, "");
+    const parts = clean.split("/");
+    const appId = parts.length > 1 ? parts[0] : "root";
+    const slug = parts.length > 1 ? parts.slice(1).join("/") : parts[0];
+
+    return {
+      params: { appId, slug },
+      props: { doc },
+    };
+  });
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+---
+
+<LegalLayout
+  title={doc.data.title}
+  description={doc.data.description}
+  version={doc.data.version}
+  effectiveDate={doc.data.effectiveDate}
+  lastUpdated={doc.data.lastUpdated}
+  headings={headings}
+  currentSlug={doc.id.replace(/\.(md|mdx)$/, "")}
+>
+  <div class="mb-8 pb-6 border-b border-slate-200 dark:border-slate-800">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-900/60">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+        Văn bản có hiệu lực thi hành
+      </span>
+      <span class="px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+        Phiên bản {doc.data.version}
+      </span>
+    </div>
+    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl mb-3">
+      {doc.data.title}
+    </h1>
+    <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+      {doc.data.description}
+    </p>
+    <div class="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-500 dark:text-slate-400">
+      <span>Hiệu lực: {doc.data.effectiveDate}</span>
+      <span>•</span>
+      <span>Cập nhật: {doc.data.lastUpdated}</span>
+      <span>•</span>
+      <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Tuân thủ NĐ 13/2023/NĐ-CP</span>
+    </div>
+  </div>
+
+  <article class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 prose-headings:text-slate-900 dark:prose-headings:text-white prose-h2:text-xl prose-h2:border-b prose-h2:border-slate-200 dark:prose-h2:border-slate-800 prose-h2:pb-2.5 prose-h2:mt-8 prose-h3:text-base leading-relaxed">
+    <Content />
+  </article>
+</LegalLayout>

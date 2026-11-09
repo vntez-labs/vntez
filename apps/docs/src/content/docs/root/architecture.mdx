@@ -1,0 +1,17 @@
+---
+title: "Mô hình Hạ tầng & Mạng lưới Biên Cloudflare Edge"
+description: "Kiến trúc mạng lưới biên, chiến lược caching CDN và cơ chế định tuyến Anycast tối ưu độ trễ cho người dùng Việt Nam."
+appId: "root"
+appName: "VNTEZ Ecosystem"
+category: "Kiến trúc Kỹ thuật"
+order: 2
+badge: "EDGE CLOUD"
+---
+
+## 1. Cấu trúc Mạng lưới Biên (Edge Network)
+
+VNTEZ tận dụng mạng lưới phân tán toàn cầu của Cloudflare kết hợp cụm máy chủ NVMe Postgres đặt tại Singapore & Việt Nam:
+
+- **Anycast Routing:** Mọi yêu cầu HTTP/HTTPS được định tuyến đến điểm hiện diện (PoP) gần nhất (HAN / SGN).
+- **Edge Caching & ETag:** Phản hồi tĩnh và tài liệu API được lưu cache tại biên với cơ chế ETag revalidation thông minh.
+- **Zero-Egress Traffic:** Miễn phí 100% băng thông tải ra cho khách hàng và ứng dụng đối tác.

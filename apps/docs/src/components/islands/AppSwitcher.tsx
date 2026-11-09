@@ -13,6 +13,15 @@ export interface AppDefinition {
 
 export const ALL_APPS: AppDefinition[] = [
   {
+    id: "root",
+    name: "VNTEZ Ecosystem",
+    category: "Hệ sinh thái Toàn cục",
+    badge: "Root Architecture",
+    href: "/",
+    description: "Tổng quan kiến trúc toàn hệ sinh thái, Single Sign-On PKCE và SDK.",
+    icon: "🌐",
+  },
+  {
     id: "workers-hub",
     name: "Workers Hub",
     category: "Hạ tầng & Dịch vụ Biên",

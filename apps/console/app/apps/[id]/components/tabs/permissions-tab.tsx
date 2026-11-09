@@ -56,6 +56,33 @@ export function PermissionsTab() {
     updateApp({ rolePermissions: { ...rolePerms, [currentRole.id]: Array.from(nextSet) } });
   };
 
+  const handleRevokeAllForResource = (res: string) => {
+    const nextSet = new Set(activePermsForRole);
+    STANDARD_APP_ACTIONS.forEach((act) => nextSet.delete(`${app.id}:${res}:${act}`));
+    updateApp({ rolePermissions: { ...rolePerms, [currentRole.id]: Array.from(nextSet) } });
+  };
+
+  const handleGrantReadOnlyForResource = (res: string) => {
+    const nextSet = new Set(activePermsForRole);
+    nextSet.add(`${app.id}:${res}:read:self`);
+    nextSet.add(`${app.id}:${res}:read:all`);
+    updateApp({ rolePermissions: { ...rolePerms, [currentRole.id]: Array.from(nextSet) } });
+  };
+
+  const handleToggleColumnAction = (act: string) => {
+    const nextSet = new Set(activePermsForRole);
+    const allActiveForColumn = resources.every((r) => nextSet.has(`${app.id}:${r}:${act}`));
+    resources.forEach((r) => {
+      const key = `${app.id}:${r}:${act}`;
+      if (allActiveForColumn) {
+        nextSet.delete(key);
+      } else {
+        nextSet.add(key);
+      }
+    });
+    updateApp({ rolePermissions: { ...rolePerms, [currentRole.id]: Array.from(nextSet) } });
+  };
+
   const handleGrantAllRole = () => {
     const nextSet = new Set<string>();
     resources.forEach((r) => {
@@ -112,6 +139,9 @@ export function PermissionsTab() {
         rolePerms={activePermsForRole}
         onTogglePerm={handleTogglePerm}
         onGrantAllForResource={handleGrantAllForResource}
+        onRevokeAllForResource={handleRevokeAllForResource}
+        onGrantReadOnlyForResource={handleGrantReadOnlyForResource}
+        onToggleColumnAction={handleToggleColumnAction}
       />
 
       <CreateAppRoleModal

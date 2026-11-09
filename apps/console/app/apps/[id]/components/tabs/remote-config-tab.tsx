@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Copy, Check, Power, ExternalLink } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { JsonCodeEditor } from "@/components/json-code-editor";
 import { useAppWorkspaceStore } from "../../app-workspace-store";
+import { RemoteConfigInspector } from "./remote-config/remote-config-inspector";
 
 export function RemoteConfigTab() {
   const { app, updateApp, copyToClipboard, copiedField } = useAppWorkspaceStore();
@@ -20,6 +21,15 @@ export function RemoteConfigTab() {
       setJsonText(JSON.stringify(app.remoteConfig, null, 2));
     }
   }, [app?.remoteConfig]);
+
+  const parsedConfig = useMemo(() => {
+    try {
+      const parsed = JSON.parse(jsonText);
+      return typeof parsed === "object" && parsed !== null ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }, [jsonText]);
 
   if (!app) return null;
 
@@ -55,8 +65,15 @@ export function RemoteConfigTab() {
         updateApp({ remoteConfig: parsed });
       }
     } catch {
-      // Allow user to continue editing while syntax is transiently invalid
+      // Allow transient syntax errors while editing
     }
+  };
+
+  const handleApplyPreset = (presetConfig: Record<string, unknown>) => {
+    const merged = { ...presetConfig, enabled: true };
+    const formatted = JSON.stringify(merged, null, 2);
+    setJsonText(formatted);
+    updateApp({ remoteConfig: merged });
   };
 
   // If remote config is disabled for this app, display opt-in banner
@@ -87,20 +104,20 @@ export function RemoteConfigTab() {
   }
 
   return (
-    <div className="space-y-5 min-w-0">
-      {/* 1. Status & Endpoint Control Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border shadow-2xs">
+    <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden flex flex-col">
+      {/* 1. Unified Top Status & Endpoint Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 bg-muted/40 border-b border-border">
         <div className="flex items-center gap-3">
-          <span className="relative flex h-3 w-3 shrink-0">
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-foreground">
-                Edge Remote Config đang hoạt động
+                Edge Remote Config
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
                 Postgres Live
               </span>
             </div>
@@ -145,22 +162,26 @@ export function RemoteConfigTab() {
         </button>
       </div>
 
-      {/* 2. Full Monaco JSON Editor with Real-Time Validation & Syntax Highlighting */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <h4 className="text-xs font-bold font-display uppercase tracking-wider text-muted-foreground">
-            Cấu hình JSON Thời gian thực (Runtime Payload)
-          </h4>
-          <span className="text-[11px] text-muted-foreground">
-            Tự động định dạng cú pháp JSON, kiểm tra lỗi và cập nhật trực tiếp vào cơ sở dữ liệu
-          </span>
+      {/* 2. Unified 2-Column Workbench Canvas: Editor + Inspector */}
+      <div className="flex flex-col lg:flex-row min-h-[460px]">
+        {/* Left Side: Monaco JSON Editor */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          <JsonCodeEditor
+            value={jsonText}
+            onChange={handleJsonChange}
+            borderless={true}
+            minHeight="460px"
+          />
         </div>
 
-        <JsonCodeEditor
-          value={jsonText}
-          onChange={handleJsonChange}
-          minHeight="380px"
-        />
+        {/* Right Side: Schema & Preset Inspector */}
+        <div className="w-full lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-muted/10 overflow-y-auto">
+          <RemoteConfigInspector
+            appId={app.id}
+            parsedConfig={parsedConfig}
+            onApplyPreset={handleApplyPreset}
+          />
+        </div>
       </div>
     </div>
   );

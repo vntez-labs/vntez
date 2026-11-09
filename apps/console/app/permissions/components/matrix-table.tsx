@@ -139,10 +139,10 @@ export function MatrixTable() {
                         type="button"
                         onClick={() => togglePermission(selectedRoleId, permKey)}
                         className={cn(
-                          "group relative inline-flex size-7.5 items-center justify-center rounded-lg transition-all cursor-pointer select-none",
+                          "group relative inline-flex size-8 items-center justify-center rounded-xl transition-all cursor-pointer select-none",
                           isChecked
-                            ? "bg-primary text-white hover:bg-primary/90 shadow-xs hover:scale-105 active:scale-95"
-                            : "bg-muted hover:bg-muted/80 text-muted-foreground/40 hover:text-muted-foreground"
+                            ? "bg-primary text-white hover:bg-primary/90 shadow-xs shadow-primary/25 ring-2 ring-primary/20 hover:scale-105 active:scale-95"
+                            : "bg-muted/40 hover:bg-muted text-transparent hover:text-muted-foreground border border-border/60 hover:border-primary/40 hover:scale-105"
                         )}
                         title={`${selectedRoleId} - ${permKey}`}
                         aria-label={`Toggle ${permKey}`}
@@ -150,7 +150,7 @@ export function MatrixTable() {
                         {isChecked ? (
                           <IconCheck className="h-4 w-4 stroke-[2.5] text-white" />
                         ) : (
-                          <IconPlus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <IconPlus className="h-3.5 w-3.5 stroke-[2] opacity-0 group-hover:opacity-100 transition-opacity" />
                         )}
                       </button>
                     </td>
