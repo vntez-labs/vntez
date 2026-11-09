@@ -15,6 +15,7 @@ export interface InitiatePKCEOptions {
   redirectUri: string;
   baseUrl?: string;
   returnTo?: string;
+  appId?: string | null;
 }
 
 export interface CallbackResult {
@@ -35,6 +36,7 @@ export async function initiatePKCEFlow({
   redirectUri,
   baseUrl = VNTEZ_DEFAULT_BASE_URL,
   returnTo,
+  appId,
 }: InitiatePKCEOptions): Promise<string> {
   const { codeVerifier, codeChallenge, state } = await generatePKCE();
   const cookieStore = await cookies();
@@ -66,6 +68,7 @@ export async function initiatePKCEFlow({
     redirectUri,
     state,
     codeChallenge,
+    appId: appId !== undefined ? appId : (clientId === 'vntez-console-app' ? null : undefined),
   });
 }
 
@@ -81,6 +84,7 @@ export async function handleOAuthCallback({
   clientSecret,
   redirectUri,
   baseUrl = VNTEZ_DEFAULT_BASE_URL,
+  appId,
 }: {
   code: string | null;
   state: string | null;
@@ -88,6 +92,7 @@ export async function handleOAuthCallback({
   clientSecret?: string;
   redirectUri: string;
   baseUrl?: string;
+  appId?: string | null;
 }): Promise<CallbackResult> {
   const cookieStore = await cookies();
 
@@ -128,7 +133,8 @@ export async function handleOAuthCallback({
     });
 
     // 4. Fetch user profile from /oauth/userinfo
-    const rawUser = await fetchUserInfo(tokenResponse.access_token, baseUrl);
+    const effectiveAppId = appId !== undefined ? appId : (clientId === 'vntez-console-app' ? null : undefined);
+    const rawUser = await fetchUserInfo(tokenResponse.access_token, baseUrl, effectiveAppId);
     const user: VntezUser = {
       ...rawUser,
       name: fixVietnameseEncoding(rawUser.name),

@@ -352,6 +352,16 @@
   - `apps/docs/src/content/docs/vntez-iam/rbac-matrix.mdx`: Đồng bộ 7 module tài nguyên thực tế và kiến trúc phân quyền Root vs Per-App.
   - `workers/docs/public/llms-full.txt` & `openapi.json`: Cập nhật schema UserInfo và tài liệu định dạng `llms.txt` cho AI.
 
+### 1.12. Truyền Tường Minh `app_id=null` cho Root Scope khi Chuyển Hướng Đăng Nhập OAuth PKCE
+- **Chuẩn Hóa Tham Số Xác Thực OAuth Root Scope**:
+  - Tại [`packages/auth/src/client.ts`](packages/auth/src/client.ts): Bổ sung `appId?: string | null` vào `AuthorizeUrlParams` và `buildAuthorizeUrl`. Khi `appId === null` hoặc khi `clientId === 'vntez-console-app'`, tự động gắn tham số `app_id=null` vào URL xác thực `/oauth/authorize`.
+  - Tại [`packages/auth/src/server.ts`](packages/auth/src/server.ts): Mở rộng `initiatePKCEFlow` và `handleOAuthCallback` tiếp nhận `appId?: string | null` (mặc định gán `null` cho Root Console).
+  - Tại [`apps/console/app/api/auth/login/route.ts`](apps/console/app/api/auth/login/route.ts) & [`apps/web/app/api/auth/login/route.ts`](apps/web/app/api/auth/login/route.ts): Gọi `initiatePKCEFlow({ ..., appId: null })` một cách tường minh để thông báo cho VNTEZ IAM IdP biết đây là phiên đăng nhập thuộc phạm vi Root Hệ thống.
+  - Tại [`apps/console/app/auth/callback/route.ts`](apps/console/app/auth/callback/route.ts) & [`apps/web/app/auth/callback/route.ts`](apps/web/app/auth/callback/route.ts): Gọi `handleOAuthCallback({ ..., appId: null })` truyền trực tiếp `app_id=null` tới `/oauth/userinfo`.
+- **Cập nhật Cổng Xác thực VNTEZ IAM (`workers/iam-web`)**:
+  - Tại `/oauth/authorize`: Tiếp nhận tham số `app_id` từ URL query, bảo lưu giá trị xuyên suốt luồng đăng nhập trung gian (`/login?redirect_url=...`) và gắn vào redirect URL trả về sau khi cấp authorization code.
+  - Tại `/oauth/userinfo`: Khử chuỗi `"null"`, `"undefined"`, `"root"` thành giá trị `null` chuẩn xác để truy vấn vai trò cấp Root (`iam_user_roles.app_id IS NULL`), trả về payload tinh gọn đúng theo từng ứng dụng được yêu cầu.
+
 - **Kiểm Thử Hoàn Hảo**:
   - `find apps packages ... wc -l >= 300`: Đạt chuẩn **0 dòng**.
   - `bun run typecheck`: 6/6 packages thành công (0 errors).

@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
       redirectUri,
       baseUrl,
       returnTo,
+      appId: null,
     });
 
     return NextResponse.redirect(authorizeUrl);

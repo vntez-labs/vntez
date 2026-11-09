@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
     clientSecret,
     redirectUri,
     baseUrl,
+    appId: null,
   });
 
   if (!result.success) {

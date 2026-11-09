@@ -19,6 +19,7 @@ export interface AuthorizeUrlParams {
   state: string;
   codeChallenge: string;
   scope?: string;
+  appId?: string | null;
 }
 
 export interface ExchangeTokenParams {
@@ -40,6 +41,7 @@ export function buildAuthorizeUrl({
   state,
   codeChallenge,
   scope = 'openid profile email',
+  appId,
 }: AuthorizeUrlParams): string {
   if (!clientId) {
     throw new Error('VNTEZ OAuth: clientId is required');
@@ -57,6 +59,11 @@ export function buildAuthorizeUrl({
   url.searchParams.set('code_challenge_method', 'S256');
   if (scope) {
     url.searchParams.set('scope', scope);
+  }
+  if (appId !== undefined) {
+    url.searchParams.set('app_id', appId === null ? 'null' : appId);
+  } else if (clientId === 'vntez-console-app' || clientId.includes('console')) {
+    url.searchParams.set('app_id', 'null');
   }
 
   return url.toString();
@@ -123,20 +130,29 @@ export async function exchangeToken({
  */
 export async function fetchUserInfo(
   accessToken: string,
-  baseUrl = VNTEZ_DEFAULT_BASE_URL
+  baseUrl = VNTEZ_DEFAULT_BASE_URL,
+  appId?: string | null
 ): Promise<VntezUser> {
   if (!accessToken) {
     throw new Error('Access token is required to fetch user info');
   }
 
-  const userinfoUrl = new URL('/oauth/userinfo', baseUrl).toString();
+  const userinfoUrl = new URL('/oauth/userinfo', baseUrl);
+  if (appId !== undefined) {
+    userinfoUrl.searchParams.set('app_id', appId === null ? 'null' : appId);
+  }
 
-  const response = await fetch(userinfoUrl, {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+    Accept: 'application/json',
+  };
+  if (appId !== undefined) {
+    headers['X-App-Id'] = appId === null ? 'null' : appId;
+  }
+
+  const response = await fetch(userinfoUrl.toString(), {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json',
-    },
+    headers,
     cache: 'no-store',
   });
 
