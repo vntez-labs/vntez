@@ -167,6 +167,7 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       id,
       name: newRoleName.trim(),
       description: newRoleDescription.trim() || "Vai trò tùy biến cấp Root",
+      app_id: null,
       is_system: false,
       permissions: [],
     };

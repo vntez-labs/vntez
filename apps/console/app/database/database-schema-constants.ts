@@ -72,8 +72,8 @@ export const TABLE_METADATA_MAP: Record<string, Partial<TableDisplayInfo>> = {
   iam_roles: {
     display: "iam_roles",
     tag: "IAM Roles",
-    description: "Danh sách vai trò người dùng trong hệ thống phân quyền IAM",
-    defaultColumns: ["id", "name", "description", "is_system", "updated_at"],
+    description: "Danh sách vai trò người dùng trong hệ thống phân quyền IAM (app_id null = Root)",
+    defaultColumns: ["id", "app_id", "name", "description", "updated_at"],
     primaryKey: "id",
   },
   iam_role_permissions: {
@@ -87,7 +87,7 @@ export const TABLE_METADATA_MAP: Record<string, Partial<TableDisplayInfo>> = {
     display: "iam_user_roles",
     tag: "User Roles",
     description: "Liên kết gán vai trò IAM cho từng tài khoản người dùng",
-    defaultColumns: ["id", "user_id", "role_id", "created_at"],
+    defaultColumns: ["id", "user_id", "role_id", "app_id", "created_at"],
     primaryKey: "id",
   },
   app_remote_configs: {

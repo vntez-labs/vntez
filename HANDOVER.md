@@ -333,6 +333,25 @@
   - Tích hợp `editorRef` và cơ chế `executeEdits` tại [`page.tsx`](apps/console/app/blog-posts/editor/page.tsx): Khi bấm các nút thêm nhanh H1, H2, Bold, Code trên thanh công cụ `MarkdownToolbar`, Monaco sẽ tự động chèn định dạng chuẩn xác tại vị trí con trỏ đang chọn.
   - Cung cấp trải nghiệm đồng nhất trên toàn hệ thống: Số dòng, tô màu cú pháp Markdown, phím tắt VS Code, giãn dòng 25px và bộ điều khiển phóng to cỡ chữ `[A- / A+]`.
 
+### 1.10. Chuẩn hóa DB Schema Phân Quyền Multi-Tenant & Phản hồi Roles Đầy Đủ
+- **Chuẩn Hóa Database Schema Postgres (`iam_roles` & `iam_user_roles`)**:
+  - Đã thêm cột `app_id TEXT REFERENCES public.apps(id) ON DELETE CASCADE` vào bảng `public.iam_roles`.
+  - Quy ước định danh kiến trúc chuẩn xác:
+    - **Root / System Roles (`app_id IS NULL`)**: `admin` (Super Admin), `developer`, `operator`, `viewer`.
+    - **App-Scoped Roles (`app_id = '<appId>'`)**: Các vai trò chuyên biệt cho từng ứng dụng vệ tinh (VD: `solotype:admin`, `solotype:member`, `gitvn:member`).
+  - Triệt tiêu cột thừa `is_system` khỏi `iam_roles`: Phân loại hoàn toàn dựa trên tiêu chí `app_id IS NULL` = Root System.
+  - Bổ sung `app_id` vào `public.iam_user_roles` và đánh index `idx_iam_roles_app_id`, `idx_iam_user_roles_app_id` cho truy vấn thời gian thực tốc độ cao.
+- **Mở rộng Trả về `roles` và `app_roles` trên Toàn bộ Cổng Xác thực**:
+  - Tại `GET /oauth/userinfo` (`workers/iam-web/src/app/oauth/userinfo/route.ts`):
+    - Trả về `role` (vai trò chính), `roles` (danh sách vai trò Root hệ thống), `app_roles` (danh sách vai trò theo từng app vệ tinh), và `permissions` (ma trận quyền thực tế).
+  - Tại `GET /api/auth/me` & `GET /api/users` (`apps/console`):
+    - Truy vấn trực tiếp `iam_user_roles` từ Supabase Postgres để gán chính xác `role`, `roles`, và `app_roles` cho người dùng.
+- **Cập nhật Tài liệu Kỹ thuật cho Con người (Human) & AI**:
+  - `apps/docs/src/content/docs/vntez-iam/userinfo.mdx` và `app_docs_pages` trong Supabase: Cập nhật mẫu response 200 OK và giải thích chi tiết ý nghĩa `role`, `roles`, `app_roles`, `permissions`.
+  - `apps/docs/src/content/docs/vntez-iam/ai-prompt.mdx` & `apps/web/app/docs/ai-prompt-data.ts`: Cập nhật Master AI Prompt hướng dẫn AI đọc đúng cấu trúc RBAC mới.
+  - `apps/docs/src/content/docs/vntez-iam/rbac-matrix.mdx`: Đồng bộ 7 module tài nguyên thực tế và kiến trúc phân quyền Root vs Per-App.
+  - `workers/docs/public/llms-full.txt` & `openapi.json`: Cập nhật schema UserInfo và tài liệu định dạng `llms.txt` cho AI.
+
 - **Kiểm Thử Hoàn Hảo**:
   - `find apps packages ... wc -l >= 300`: Đạt chuẩn **0 dòng**.
   - `bun run typecheck`: 6/6 packages thành công (0 errors).

@@ -14,10 +14,22 @@ import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
 
 ## Cấu trúc Ma trận Quyền (Resource-Action Model)
 
-Hệ thống phân quyền VNTEZ IAM mô hình hóa thẩm quyền dựa trên cặp **`resource:action`**:
-- **Resources:** `users`, `files`, `messages`, `clients`, `roles`.
-- **Actions:** `create`, `read:self`, `read:all`, `update:self`, `update:all`, `delete:self`, `delete:all`.
-- **Wildcard Super-admin:** `*:*` hoặc `users:*`.
+Hệ thống phân quyền VNTEZ IAM mô hình hóa thẩm quyền dựa trên mô hình phân tầng **Root vs Per-App**:
+* **Root / System Roles (`app_id IS NULL`)**: `admin` (Super Admin `*:*`), `developer`, `operator`, `viewer`.
+* **Per-App Roles (`app_id = '<appId>'`)**: Các vai trò định danh theo từng ứng dụng vệ tinh (VD: `solotype:admin`, `gitvn:member`) lưu trong bảng Postgres `public.iam_roles`.
+
+### 7 Module Tài nguyên Thực tế (Core System Resources):
+1. **`apps`**: Quản lý ứng dụng & chứng thực OAuth 2.0 (Client ID, Secret, Redirect URIs).
+2. **`users`**: Tài khoản người dùng, định danh SSO và gán vai trò RBAC (`iam_user_roles`).
+3. **`database`**: Quản trị cơ sở dữ liệu Postgres, DDL schema và trình thực thi SQL runner.
+4. **`blog`**: Quản trị bài viết kỹ thuật và bình luận.
+5. **`storage`**: Quản lý lưu trữ đám mây Cloudflare R2 bucket.
+6. **`telebot`**: Telegram Bot Webhook và danh sách người đăng ký nhận thông báo.
+7. **`settings`**: Cài đặt bảo mật và biến môi trường toàn cục.
+
+### Các hành động chuẩn (Actions):
+* `create`, `read:self`, `read:all`, `update:self`, `update:all`, `delete:self`, `delete:all`.
+* Wildcard toàn quyền: `*:*`.
 
 ## Mẫu gọi API Kiểm tra Quyền
 

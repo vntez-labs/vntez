@@ -22,7 +22,18 @@ Cổng xác thực định danh VNTEZ IAM Gateway:
 3. Endpoint Lấy Thông Tin Người Dùng & Phân Quyền (GET):
    URL: https://vntez-iam.vercel.app/oauth/userinfo
    Header: Authorization: Bearer <access_token>
-   Response: { sub, email, name, avatar, roles: ["admin" | "developer" | "operator" | "viewer"], permissions: string[] }
+   Optional Header: X-App-Id: <app_id> (hoặc query ?app_id=<app_id>)
+   Response JSON:
+   {
+     sub: string,
+     email: string,
+     name: string,
+     avatar: string | null,
+     app_id: string | null, // ID của app đang yêu cầu (vd: "solotype" hoặc null nếu là Root Console)
+     role: string, // Vai trò trong app này (vd: "admin", "member", "viewer")
+     roles: string[], // Danh sách vai trò của user trong app này
+     permissions: string[] // Quyền hạn tương ứng trong app này (vd: ["lessons:create", ...] hoặc ["*:*"])
+   }
 
 4. OpenID Connect Discovery:
    URL: https://vntez-iam.vercel.app/.well-known/openid-configuration
@@ -31,4 +42,4 @@ Cổng xác thực định danh VNTEZ IAM Gateway:
 Bước 1: Sinh 'code_verifier' ngẫu nhiên (43-128 ký tự) và băm SHA-256 để sinh 'code_challenge'. Sinh 'state' ngẫu nhiên (32 ký tự).
 Bước 2: Chuyển hướng trình duyệt tới https://vntez-iam.vercel.app/oauth/authorize kèm các tham số trên.
 Bước 3: Tại callback URL, kiểm tra 'state' khớp với session/cookie, sau đó gửi POST tới https://vntez-iam.vercel.app/oauth/token kèm 'code' và 'code_verifier'.
-Bước 4: Gửi GET tới https://vntez-iam.vercel.app/oauth/userinfo với Bearer token để lấy thông tin hồ sơ, danh sách vai trò (roles) và ma trận quyền hạn (permissions) để cấp quyền truy cập tính năng cho ứng dụng.`;
+Bước 4: Gửi GET tới https://vntez-iam.vercel.app/oauth/userinfo với Bearer token để lấy thông tin hồ sơ, danh sách vai trò toàn cục (roles), vai trò theo app (app_roles) và ma trận quyền hạn (permissions) để cấp quyền truy cập tính năng cho ứng dụng.`;

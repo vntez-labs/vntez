@@ -9,6 +9,7 @@ export interface VntezUser {
   name: string;
   avatar?: string;
   phone?: string;
+  app_id?: string | null;
   role?: string;
   roles?: string[];
   permissions?: string[];

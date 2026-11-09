@@ -18,29 +18,46 @@ export async function GET() {
     );
   }
 
-  // 1. Fetch real role & metadata from Supabase Auth
+  // 1. Fetch real role & metadata from Supabase Auth & iam_user_roles
   let realRole = (user.role as string) || "viewer";
   let realName = user.name;
   let realAvatar = user.avatar;
   let realPhone = user.phone;
+  let realRoles: string[] = [];
 
   try {
     const supabase = getSupabaseAdminClient();
-    const { data: authData } = await supabase.auth.admin.getUserById(user.sub);
-    const u = authData?.user;
+    const [authRes, rolesRes] = await Promise.all([
+      supabase.auth.admin.getUserById(user.sub),
+      supabase.from("iam_user_roles").select("role_id, app_id").eq("user_id", user.sub).is("app_id", null),
+    ]);
+
+    const u = authRes.data?.user;
     if (u) {
       const meta = u.user_metadata || {};
-      const appMeta = u.app_metadata || {};
-      realRole = (meta.role || appMeta.role || (u.email === "hnamhocit@gmail.com" ? "admin" : "member")).toLowerCase();
       realName = meta.full_name || meta.name || realName;
       realAvatar = meta.avatar_url || meta.picture || realAvatar;
       realPhone = u.phone || realPhone;
+    }
+
+    if (rolesRes.data && rolesRes.data.length > 0) {
+      realRoles = rolesRes.data.map((r: { role_id: string }) => r.role_id);
+    }
+
+    if (realRoles.length > 0 && realRoles[0]) {
+      realRole = realRoles[0];
     } else if (user.email === "hnamhocit@gmail.com") {
       realRole = "admin";
+      realRoles = ["admin"];
+    } else {
+      realRoles = [realRole];
     }
   } catch (err) {
     console.warn("Could not fetch user metadata from Supabase Auth admin:", err);
-    if (user.email === "hnamhocit@gmail.com") realRole = "admin";
+    if (user.email === "hnamhocit@gmail.com") {
+      realRole = "admin";
+      realRoles = ["admin"];
+    }
   }
 
   // 2. Compute 100% real permissions based on role
@@ -51,8 +68,9 @@ export async function GET() {
     name: realName,
     avatar: realAvatar,
     phone: realPhone,
+    app_id: null,
     role: realRole,
-    roles: [realRole],
+    roles: realRoles,
     permissions,
   };
 

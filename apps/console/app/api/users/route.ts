@@ -11,6 +11,7 @@ export interface SupabaseAuthUser {
   phone: string;
   providers: string[];
   role: string;
+  roles?: string[];
   status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
@@ -31,15 +32,27 @@ export async function GET() {
   try {
     const supabaseClient = getSupabaseAdminClient();
 
-    // Fetch live users directly from Supabase Auth Admin
-    const { data: authData, error: authError } =
-      await supabaseClient.auth.admin.listUsers();
+    // Fetch live users directly from Supabase Auth Admin and RBAC roles
+    const [authRes, rolesRes] = await Promise.all([
+      supabaseClient.auth.admin.listUsers(),
+      supabaseClient.from("iam_user_roles").select("user_id, role_id").is("app_id", null),
+    ]);
 
-    if (authError) {
-      throw authError;
+    if (authRes.error) {
+      throw authRes.error;
     }
 
-    const authUsers = authData?.users || [];
+    const authUsers = authRes.data?.users || [];
+    const rolesMap = new Map<string, string[]>();
+
+    if (rolesRes.data) {
+      rolesRes.data.forEach((r: { user_id: string; role_id: string }) => {
+        const list = rolesMap.get(r.user_id) || [];
+        list.push(r.role_id);
+        rolesMap.set(r.user_id, list);
+      });
+    }
+
     const users: SupabaseAuthUser[] = [];
 
     for (const u of authUsers) {
@@ -61,19 +74,21 @@ export async function GET() {
 
       const isCurrent = u.id === user.sub || u.email === user.email;
 
-      const userRole =
+      const userRoles = rolesMap.get(u.id) || [];
+      const primaryRole =
+        userRoles[0] ||
         u.user_metadata?.role ||
         u.app_metadata?.role ||
-        (isCurrent ? "Admin" : "Viewer");
+        (isCurrent ? "admin" : "viewer");
 
       const displayRole =
-        String(userRole).toLowerCase().includes("admin")
+        String(primaryRole).toLowerCase().includes("admin")
           ? "Quản trị viên (Super Admin)"
-          : String(userRole).toLowerCase().includes("dev")
+          : String(primaryRole).toLowerCase().includes("dev")
             ? "Lập trình viên (Developer)"
-            : String(userRole).toLowerCase().includes("oper")
+            : String(primaryRole).toLowerCase().includes("oper")
               ? "Vận hành (Operator)"
-              : "Người dùng ủy quyền (Member)";
+              : "Người xem (Viewer)";
 
       const isBanned = Boolean(u.banned_until && new Date(u.banned_until) > new Date());
       const accountStatus: "active" | "inactive" =
@@ -87,6 +102,7 @@ export async function GET() {
         phone: u.phone || "-",
         providers,
         role: displayRole,
+        roles: userRoles.length > 0 ? userRoles : [primaryRole],
         status: accountStatus,
         createdAt: u.created_at,
         updatedAt: u.updated_at || u.created_at || new Date().toISOString(),
@@ -98,8 +114,7 @@ export async function GET() {
     }
 
     // If current session user is not found in auth.users (e.g. external token), include them at the top
-    const hasCurrent = users.some((u) => u.isCurrentUser);
-    if (!hasCurrent && user) {
+    if (!users.some((u) => u.isCurrentUser) && user) {
       users.unshift({
         id: user.sub,
         name: fixVietnameseEncoding(user.name || "Nam Nguyễn"),
@@ -108,18 +123,14 @@ export async function GET() {
         phone: "-",
         providers: ["vntez-sso"],
         role: "Quản trị viên (Super Admin)",
+        roles: ["admin"],
         status: "active",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         confirmedAt: new Date().toISOString(),
         lastSignInAt: new Date().toISOString(),
         isCurrentUser: true,
-        rawUser: {
-          sub: user.sub,
-          email: user.email,
-          name: user.name,
-          provider: "vntez_id_sso",
-        },
+        rawUser: { sub: user.sub, email: user.email, name: user.name, provider: "vntez_id_sso" },
       });
     }
 

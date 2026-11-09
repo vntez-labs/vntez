@@ -137,11 +137,14 @@ export const vntezIdUserinfoSection: DocSection = {
       json: JSON.stringify(
         {
           sub: "usr_9812401",
-          name: "Nguyễn Văn Dev",
+          name: "Hoàng Nam",
           email: "dev@vntez.cloud",
           email_verified: true,
           picture: "https://iam.vntez.cloud/avatars/usr_9812401.png",
-          roles: ["developer", "admin"],
+          app_id: "solotype",
+          role: "admin",
+          roles: ["admin"],
+          permissions: ["lessons:create", "lessons:read:all"],
         },
         null,
         2,

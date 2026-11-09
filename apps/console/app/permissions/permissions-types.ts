@@ -22,7 +22,8 @@ export interface RoleDefinition {
   id: string;
   name: string;
   description: string;
-  is_system: boolean;
+  app_id?: string | null; // null = Root / System Role
+  is_system?: boolean;
   permissions: string[];
 }
 

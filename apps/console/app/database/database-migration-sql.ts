@@ -26,12 +26,14 @@ $$;
 -- 2. BẢNG PHÂN QUYỀN IAM ROLES & RBAC MATRIX
 CREATE TABLE IF NOT EXISTS public.iam_roles (
   id TEXT PRIMARY KEY,
+  app_id TEXT REFERENCES public.apps(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT DEFAULT '',
-  is_system BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_iam_roles_app_id ON public.iam_roles(app_id);
 
 CREATE TABLE IF NOT EXISTS public.iam_role_permissions (
   id BIGSERIAL PRIMARY KEY,
@@ -45,9 +47,12 @@ CREATE TABLE IF NOT EXISTS public.iam_user_roles (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role_id TEXT NOT NULL REFERENCES public.iam_roles(id) ON DELETE CASCADE,
+  app_id TEXT REFERENCES public.apps(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE (user_id, role_id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_iam_user_roles_app_id ON public.iam_user_roles(app_id);
 
 -- 3. BẢNG TELEBOT SUBSCRIBERS (Quản lý Webhook & Người đăng ký Bot Telegram)
 CREATE TABLE IF NOT EXISTS public.telebot_subscribers (
@@ -108,13 +113,14 @@ CREATE TABLE IF NOT EXISTS public.blog_comments (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. SEED DỮ LIỆU CÁC ROLES THẬT CỦA HỆ THỐNG
-INSERT INTO public.iam_roles (id, name, description, is_system) VALUES
-  ('admin', 'Quản trị viên (Super Admin)', 'Toàn quyền kiểm soát mọi tài nguyên trên toàn hệ sinh thái', true),
-  ('developer', 'Lập trình viên (Developer)', 'Toàn quyền với Storage R2, TeleBot, Database và Apps; chỉ sửa hồ sơ cá nhân', true),
-  ('operator', 'Điều hành viên (Operator)', 'Vận hành Blog, TeleBot broadcast và xem thông tin tài khoản người dùng', true),
-  ('viewer', 'Người xem (Viewer)', 'Chỉ được xem thông tin công khai (Read-only)', true)
+-- 6. SEED DỮ LIỆU CÁC ROLES THẬT CỦA HỆ THỐNG (app_id IS NULL = Root/System)
+INSERT INTO public.iam_roles (id, app_id, name, description) VALUES
+  ('admin', NULL, 'Quản trị viên (Super Admin)', 'Toàn quyền kiểm soát mọi tài nguyên trên toàn hệ sinh thái'),
+  ('developer', NULL, 'Lập trình viên (Developer)', 'Toàn quyền với Storage R2, TeleBot, Database và Apps; chỉ sửa hồ sơ cá nhân'),
+  ('operator', NULL, 'Điều hành viên (Operator)', 'Vận hành Blog, TeleBot broadcast và xem thông tin tài khoản người dùng'),
+  ('viewer', NULL, 'Người xem (Viewer)', 'Chỉ được xem thông tin công khai (Read-only)')
 ON CONFLICT (id) DO UPDATE SET
+  app_id = EXCLUDED.app_id,
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   updated_at = NOW();
@@ -134,8 +140,8 @@ INSERT INTO public.iam_role_permissions (role_id, permission) VALUES
 ON CONFLICT (role_id, permission) DO NOTHING;
 
 -- Tự động gán quyền Super Admin cho tài khoản hnamhocit@gmail.com
-INSERT INTO public.iam_user_roles (user_id, role_id)
-SELECT id, 'admin' FROM auth.users WHERE email = 'hnamhocit@gmail.com'
+INSERT INTO public.iam_user_roles (user_id, role_id, app_id)
+SELECT id, 'admin', NULL FROM auth.users WHERE email = 'hnamhocit@gmail.com'
 ON CONFLICT (user_id, role_id) DO NOTHING;`;
 
 export const PHASE_2_RLS_POLICIES_SQL = `-- ==============================================================================

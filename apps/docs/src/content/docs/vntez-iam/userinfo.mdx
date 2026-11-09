@@ -14,7 +14,9 @@ import { TabbedCodeBlock } from "../../../components/islands/TabbedCodeBlock";
 
 ## Mô tả Endpoint
 
-Endpoint trả về thông tin danh tính chuẩn hóa của người dùng đã đăng nhập, bao gồm định danh duy nhất (`sub`), email, họ tên, ảnh đại diện và vai trò hệ thống.
+Endpoint trả về thông tin danh tính chuẩn hóa của người dùng đã đăng nhập kèm **vai trò và quyền hạn được phân vùng độc lập theo ứng dụng (`app_id`)**. 
+
+Hệ thống bảo đảm nguyên tắc tối thiểu hóa đặc quyền (Principle of Least Privilege): Chỉ trả về vai trò và quyền hạn thuộc đúng ứng dụng đang gửi yêu cầu, không trả về vai trò của các ứng dụng khác.
 
 ## Mẫu gọi API
 
@@ -25,12 +27,12 @@ Endpoint trả về thông tin danh tính chuẩn hóa của người dùng đã
     {
       label: "cURL",
       lang: "bash",
-      code: "curl -X GET https://iam.vntez.cloud/oauth/userinfo \\\n  -H \"Authorization: Bearer vntez_at_98120391283019283\"",
+      code: "curl -X GET 'https://iam.vntez.cloud/oauth/userinfo?app_id=solotype' \\\n  -H \"Authorization: Bearer vntez_at_98120391283019283\"",
     },
     {
       label: "TypeScript",
       lang: "typescript",
-      code: "import { fetchUserInfo } from '@workspace/auth/client';\n\nconst user = await fetchUserInfo(accessToken);",
+      code: "import { fetchUserInfo } from '@workspace/auth/client';\n\n// Token mang client_id hoặc truyền header X-App-Id / query ?app_id\nconst user = await fetchUserInfo(accessToken);",
     },
   ]}
 />
@@ -41,10 +43,19 @@ Endpoint trả về thông tin danh tính chuẩn hóa của người dùng đã
 {
   "sub": "f71976bd-8001-4f39-8b12-d54cd09957a2",
   "email": "hnamhocit@gmail.com",
-  "name": "Nam Nguyễn",
+  "name": "Hoàng Nam",
   "avatar": "https://lh3.googleusercontent.com/a/ACg8oc...",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8oc...",
+  "email_verified": true,
+  "app_id": "solotype",
   "role": "admin",
   "roles": ["admin"],
-  "email_verified": true
+  "permissions": ["lessons:create", "lessons:read:all"]
 }
 ```
+
+### Ý nghĩa các trường phân quyền theo App Scope:
+* **`app_id`** *(string | null)*: Mã định danh ứng dụng đang nhận yêu cầu (`"solotype"`, `"gitvn"`, hoặc `null` nếu là Root Console).
+* **`role`** *(string)*: Vai trò chính của người dùng trong phạm vi ứng dụng này (ví dụ: `admin`, `member`, `viewer`).
+* **`roles`** *(string[])*: Danh sách vai trò áp dụng cho ứng dụng này.
+* **`permissions`** *(string[])*: Danh sách quyền hạn thực tế cấp cho vai trò trên ứng dụng này.

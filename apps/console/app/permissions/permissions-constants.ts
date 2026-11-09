@@ -62,6 +62,7 @@ export const ROOT_DEFAULT_ROLES: RoleDefinition[] = [
     id: "admin",
     name: "Quản trị viên (Super Admin)",
     description: "Toàn quyền kiểm soát mọi tài nguyên trên toàn hệ sinh thái VNTEZ",
+    app_id: null,
     is_system: true,
     permissions: ["*:*"],
   },
@@ -69,6 +70,7 @@ export const ROOT_DEFAULT_ROLES: RoleDefinition[] = [
     id: "developer",
     name: "Lập trình viên (Developer)",
     description: "Toàn quyền với Storage R2, TeleBot, Database và Apps; chỉ sửa hồ sơ cá nhân",
+    app_id: null,
     is_system: true,
     permissions: [],
   },
@@ -76,6 +78,7 @@ export const ROOT_DEFAULT_ROLES: RoleDefinition[] = [
     id: "operator",
     name: "Điều hành viên (Operator)",
     description: "Vận hành nội dung Blog, TeleBot broadcast và xem thông tin tài khoản người dùng",
+    app_id: null,
     is_system: true,
     permissions: [],
   },
@@ -83,6 +86,7 @@ export const ROOT_DEFAULT_ROLES: RoleDefinition[] = [
     id: "viewer",
     name: "Người xem (Viewer)",
     description: "Chỉ được xem thông tin công khai (Read-only) trên các phân hệ cơ bản",
+    app_id: null,
     is_system: true,
     permissions: [],
   },
@@ -123,9 +127,9 @@ export const INITIAL_ROLE_PERMISSIONS: Record<string, string[]> = {
 };
 
 export const DEFAULT_APP_ROLES: RoleDefinition[] = [
-  { id: "admin", name: "Quản trị viên App", description: "Toàn quyền quản trị app này", is_system: true, permissions: [] },
-  { id: "member", name: "Thành viên App", description: "Người dùng tiêu chuẩn", is_system: true, permissions: [] },
-  { id: "viewer", name: "Người xem App", description: "Chỉ đọc tài nguyên app", is_system: true, permissions: [] },
+  { id: "admin", name: "Quản trị viên App", description: "Toàn quyền quản trị app này", app_id: null, is_system: true, permissions: [] },
+  { id: "member", name: "Thành viên App", description: "Người dùng tiêu chuẩn", app_id: null, is_system: true, permissions: [] },
+  { id: "viewer", name: "Người xem App", description: "Chỉ đọc tài nguyên app", app_id: null, is_system: true, permissions: [] },
 ];
 
 export function parseAppScopeConfig(app: any, appId: string) {
@@ -138,6 +142,7 @@ export function parseAppScopeConfig(app: any, appId: string) {
         id: r.id,
         name: r.name,
         description: r.description || `Vai trò của app ${appId}`,
+        app_id: appId,
         is_system: Boolean(r.isSystem),
         permissions: [],
       }))
