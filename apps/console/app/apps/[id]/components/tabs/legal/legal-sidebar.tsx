@@ -21,7 +21,7 @@ export function LegalSidebar({
   onOpenCreateModal,
 }: LegalSidebarProps) {
   return (
-    <div className="w-full lg:w-72 xl:w-80 shrink-0 bg-muted/20 flex flex-col divide-y divide-border">
+    <div className="w-full lg:w-48 xl:w-56 shrink-0 bg-muted/20 flex flex-col divide-y divide-border">
       {/* Sidebar Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-muted/40">
         <div className="flex items-center gap-2">

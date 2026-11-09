@@ -9,6 +9,21 @@ interface TrafficTrendChartProps {
   stats: DashboardStats | null;
 }
 
+const VI_WEEKDAYS = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+
+function getWeekdayDisplay(day: DayTrend) {
+  if (day.label) {
+    const firstPart = day.label.split(",")[0]?.trim();
+    if (firstPart && VI_WEEKDAYS.includes(firstPart)) return firstPart;
+  }
+  const parts = day.date.split("-").map(Number);
+  if (parts.length >= 3 && parts[0] && parts[1] && parts[2]) {
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    return VI_WEEKDAYS[d.getDay()] || "CN";
+  }
+  return "CN";
+}
+
 export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
   const [hoveredDay, setHoveredDay] = useState<DayTrend | null>(null);
 
@@ -70,11 +85,11 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
                 >
                   {/* Tooltip / Label on Hover */}
                   <div
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded bg-foreground text-background whitespace-nowrap transition-opacity ${
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded bg-foreground text-background whitespace-nowrap transition-opacity shadow-sm ${
                       isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                     }`}
                   >
-                    {day.total} req ({day.success} ok)
+                    {day.total} req ({day.success} ok) • {day.label}
                   </div>
 
                   {/* Visual Bar */}
@@ -97,7 +112,7 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
                       isHovered ? "text-primary font-bold" : "text-muted-foreground"
                     }`}
                   >
-                    {day.label.split(" ")[0]}
+                    {getWeekdayDisplay(day)}
                   </span>
                 </div>
               );

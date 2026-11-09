@@ -25,7 +25,7 @@ export function DocsSidebar({
   onSearchChange: (q: string) => void
 }) {
   return (
-    <aside className="w-full xl:w-72 shrink-0 border-b xl:border-b-0 xl:border-r border-black/[0.06] dark:border-white/[0.06] p-4 lg:p-5 flex flex-col xl:sticky xl:top-16 xl:h-[calc(100vh-64px)]">
+    <aside className="w-full xl:w-56 2xl:w-60 shrink-0 border-b xl:border-b-0 xl:border-r border-black/[0.06] dark:border-white/[0.06] p-3.5 lg:p-4 flex flex-col xl:sticky xl:top-16 xl:h-[calc(100vh-64px)]">
       {/* Top Scrollable Content (App Switcher, Search, Navigation) */}
       <div className="flex-1 min-h-0 space-y-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pr-0.5">
         {/* App Switcher */}

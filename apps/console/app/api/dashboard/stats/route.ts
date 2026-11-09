@@ -72,16 +72,13 @@ export async function GET() {
     const requestsThisWeek = codesThisWeek.length;
 
     // Exact 7-Day chronological trend series from real oauth_codes
+    const VI_DAYS = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
     const sevenDayTrend = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().slice(0, 10);
-      const dayLabel = d.toLocaleDateString("vi-VN", {
-        weekday: "short",
-        day: "2-digit",
-        month: "2-digit",
-      });
+      const dayLabel = `${VI_DAYS[d.getDay()]}, ${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}`;
 
       const dayCodes = codes.filter(
         (c: any) => c.created_at && c.created_at.slice(0, 10) === dateStr

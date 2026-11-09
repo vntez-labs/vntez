@@ -78,8 +78,8 @@ export function DocsTab() {
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-border min-h-[720px] w-full min-w-0">
-      {/* 1. Docked Left Sidebar: Pages Tree */}
-      <div className="w-full lg:w-72 xl:w-80 shrink-0 bg-muted/20 flex flex-col divide-y divide-border">
+      {/* 1. Docked Left Sidebar: Pages Tree (Compact width to maximize editor workspace) */}
+      <div className="w-full lg:w-48 xl:w-56 shrink-0 bg-muted/20 flex flex-col divide-y divide-border">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-muted/40">
           <div className="flex items-center gap-2">

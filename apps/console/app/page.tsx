@@ -8,8 +8,6 @@ import type { DashboardStats } from "@/components/dashboard/dashboard-types";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardKpis } from "@/components/dashboard/dashboard-kpis";
 import { TrafficTrendChart } from "@/components/dashboard/traffic-trend-chart";
-import { EcosystemAppsStatus } from "@/components/dashboard/ecosystem-apps-status";
-import { GlobalPermissionsMatrixCard } from "@/components/dashboard/global-permissions-matrix-card";
 import { RecentActivityCard } from "@/components/dashboard/recent-activity-card";
 
 export default function DashboardPage() {
@@ -41,8 +39,6 @@ function DashboardContent() {
       <DashboardHeader stats={stats} />
       <DashboardKpis stats={stats} />
       <TrafficTrendChart stats={stats} />
-      <GlobalPermissionsMatrixCard />
-      <EcosystemAppsStatus stats={stats} />
       <RecentActivityCard stats={stats} />
     </div>
   );
