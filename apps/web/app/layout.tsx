@@ -9,6 +9,7 @@ import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { ScrollToTop } from "@/components/landing/scroll-to-top"
 import { TopProgressBar } from "@workspace/ui/components/top-progress-bar"
+import { Toaster } from "@workspace/ui/components/toaster"
 
 // Primary Font for Body & UI: 100% Vietnamese support, pristine baseline and diacritics
 const beVietnamPro = Be_Vietnam_Pro({
@@ -202,6 +203,7 @@ export default async function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AuthProvider initialUser={user} initialToken={accessToken}>
             <TopProgressBar />
+            <Toaster />
             <div className="min-h-screen flex flex-col bg-background text-foreground antialiased font-sans transition-colors duration-200">
               <Header />
               <div className="flex-1">

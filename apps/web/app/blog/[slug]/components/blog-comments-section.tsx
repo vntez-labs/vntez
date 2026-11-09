@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IconMessageCircle, IconSend } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import { useAuthStore } from "@workspace/auth/store";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { buildCommentTree } from "@workspace/ui/lib/content-types";
@@ -29,8 +31,11 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
 
   // Refresh latest comments on client mount
   useEffect(() => {
-    fetch(`/api/blog/comments?slug=${encodeURIComponent(slug)}`)
-      .then((res) => res.json())
+    api
+      .get<{ success: boolean; comments: BlogComment[] }>(
+        `/api/blog/comments?slug=${encodeURIComponent(slug)}`,
+        { silent: true }
+      )
       .then((data) => {
         if (data.success && Array.isArray(data.comments)) {
           setComments(data.comments);
@@ -54,25 +59,22 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
     setIsSubmitting(true);
     setError(null);
     try {
-      const res = await fetch("/api/blog/comments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          author: effectiveAuthor,
-          content,
-          avatar: user?.avatar,
-        }),
+      const data = await api.post<{ success: boolean; comment: BlogComment }>("/api/blog/comments", {
+        slug,
+        author: effectiveAuthor,
+        content,
+        avatar: user?.avatar,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gửi bình luận thất bại");
 
       if (data.comment) {
         setComments((prev) => [data.comment, ...prev]);
         setContent("");
+        toast.success("Bình luận của bạn đã được đăng thành công!");
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Gửi bình luận thất bại");
+      const msg = err instanceof Error ? err.message : "Gửi bình luận thất bại";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -86,28 +88,24 @@ export function BlogCommentsSection({ slug, initialComments }: BlogCommentsSecti
     avatar?: string
   ): Promise<boolean> => {
     try {
-      const res = await fetch("/api/blog/comments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          author: replyAuthor,
-          content: replyContent,
-          parentId,
-          replyToAuthor,
-          avatar,
-        }),
+      const data = await api.post<{ success: boolean; comment: BlogComment }>("/api/blog/comments", {
+        slug,
+        author: replyAuthor,
+        content: replyContent,
+        parentId,
+        replyToAuthor,
+        avatar,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gửi phản hồi thất bại");
 
       if (data.comment) {
         setComments((prev) => [...prev, data.comment]);
+        toast.success("Phản hồi đã được đăng!");
         return true;
       }
       return false;
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Gửi phản hồi thất bại");
+      const msg = err instanceof Error ? err.message : "Gửi phản hồi thất bại";
+      toast.error(msg);
       return false;
     }
   };

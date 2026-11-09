@@ -9,7 +9,7 @@ import {
   IconLayoutColumns,
   IconEye,
 } from "@tabler/icons-react";
-import { AutoResizeTextarea } from "@workspace/ui/components/auto-resize-textarea";
+import { MarkdownCodeEditor } from "@/components/markdown-code-editor";
 import { useAppWorkspaceStore } from "../../app-workspace-store";
 import { MdxLivePreview } from "../shared/mdx-live-preview";
 import { CreateLegalDocModal } from "./create-legal-doc-modal";
@@ -185,36 +185,26 @@ export function LegalTab() {
 
         {/* Content Pane */}
         <div
-          className={`grid gap-4 ${
+          className={`grid gap-5 min-w-0 max-w-full ${
             viewMode === "split"
-              ? "grid-cols-1 lg:grid-cols-2"
-              : viewMode === "edit"
-                ? "grid-cols-1"
-                : "grid-cols-1"
+              ? "grid-cols-1 xl:grid-cols-2"
+              : "grid-cols-1"
           }`}
         >
           {(viewMode === "edit" || viewMode === "split") && (
-            <div className="p-5 rounded-2xl bg-white dark:bg-card border border-border/80 shadow-xs space-y-3 focus-within:border-primary/50 transition-all">
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono pb-2 border-b border-border/40">
-                <span className="text-foreground/70 font-sans font-medium">
-                  Bản thảo Văn bản Pháp lý
-                </span>
-                <span>{currentDoc.content?.length || 0} ký tự</span>
-              </div>
-              <AutoResizeTextarea
-                minRows={16}
-                value={currentDoc.content}
-                onChange={(e) =>
-                  handleUpdateCurrentDoc({ content: e.target.value })
-                }
-                placeholder="# Tiêu đề chính sách / điều khoản&#10;&#10;Nhập nội dung văn bản pháp lý tại đây..."
-                className="text-xs sm:text-sm font-mono leading-relaxed bg-transparent border-0 p-0 text-foreground placeholder:text-muted-foreground/35 outline-none focus:ring-0"
+            <div className="min-w-0 max-w-full overflow-hidden">
+              <MarkdownCodeEditor
+                value={currentDoc.content || ""}
+                onChange={(val) => handleUpdateCurrentDoc({ content: val })}
+                minHeight="560px"
               />
             </div>
           )}
 
           {(viewMode === "preview" || viewMode === "split") && (
-            <MdxLivePreview content={currentDoc.content} />
+            <div className="min-w-0 max-w-full overflow-hidden">
+              <MdxLivePreview content={currentDoc.content} />
+            </div>
           )}
         </div>
       </div>

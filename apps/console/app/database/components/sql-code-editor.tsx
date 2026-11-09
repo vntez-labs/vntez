@@ -1,208 +1,187 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import Prism from "prismjs";
-import "prismjs/components/prism-sql";
-import { Table, Key, Sparkles, Hash } from "lucide-react";
-import { getSqlSuggestions, type SqlSuggestion } from "./sql-autocomplete";
+import React, { useRef, useEffect } from "react";
+import Editor, { type OnMount } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
+import { Trash2, Terminal } from "lucide-react";
+import type { TableMeta } from "../types";
+import { SQL_KEYWORDS, getTableDisplayInfo } from "../database-schema-constants";
 
 interface SqlCodeEditorProps {
   value: string;
   onChange: (val: string) => void;
   onExecute: () => void;
-  customTables?: Record<string, string[]>;
+  tables?: TableMeta[];
+  height?: string;
 }
 
 export function SqlCodeEditor({
   value,
   onChange,
   onExecute,
-  customTables,
+  tables = [],
+  height = "280px",
 }: SqlCodeEditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const preRef = useRef<HTMLPreElement>(null);
+  const { resolvedTheme } = useTheme();
+  const editorRef = useRef<any>(null);
+  const providerRef = useRef<any>(null);
+  const onExecuteRef = useRef(onExecute);
+  onExecuteRef.current = onExecute;
 
-  const [suggestions, setSuggestions] = useState<SqlSuggestion[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  useEffect(() => {
+    return () => {
+      providerRef.current?.dispose();
+    };
+  }, []);
 
-  // Sync scrolling between textarea and pre layer
-  const handleScroll = () => {
-    if (textareaRef.current && preRef.current) {
-      preRef.current.scrollTop = textareaRef.current.scrollTop;
-      preRef.current.scrollLeft = textareaRef.current.scrollLeft;
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
+
+    // Bind Ctrl+Enter or Cmd+Enter to execute query
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      onExecuteRef.current();
+    });
+
+    // Dispose prior completion provider if mounted multiple times
+    if (providerRef.current) {
+      providerRef.current.dispose();
     }
+
+    // Register SQL IntelliSense completion provider with database context
+    providerRef.current = monaco.languages.registerCompletionItemProvider("sql", {
+      provideCompletionItems: (model: any, position: any) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions: any[] = [];
+
+        // 1. Database Tables Context with centralized metadata
+        tables.forEach((t) => {
+          const info = getTableDisplayInfo(t.name);
+          suggestions.push({
+            label: t.name,
+            kind: monaco.languages.CompletionItemKind.Class,
+            insertText: t.name,
+            detail: `Bảng [${info.tag}] (${t.rowCount} dòng)`,
+            documentation: `${info.description}\n\nCác cột: ${t.columns.map((c) => c.name).join(", ")}`,
+            range,
+          });
+
+          // 2. Table.Column Context
+          t.columns.forEach((c) => {
+            suggestions.push({
+              label: `${t.name}.${c.name}`,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: `${t.name}.${c.name}`,
+              detail: `${c.format || c.type} ${c.isPrimaryKey ? "(PK)" : ""}`,
+              documentation: `Cột thuộc bảng ${t.name} (${c.type})`,
+              range,
+            });
+
+            suggestions.push({
+              label: c.name,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: c.name,
+              detail: `${t.name}.${c.name} (${c.type})`,
+              range,
+            });
+          });
+        });
+
+        // 3. Centralized SQL Keywords
+        SQL_KEYWORDS.forEach((kw) => {
+          suggestions.push({
+            label: kw,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: kw + " ",
+            range,
+          });
+        });
+
+        // Deduplicate suggestions
+        const uniqueMap = new Map<string, any>();
+        suggestions.forEach((s) => {
+          if (!uniqueMap.has(s.label)) {
+            uniqueMap.set(s.label, s);
+          }
+        });
+
+        return { suggestions: Array.from(uniqueMap.values()) };
+      },
+    });
   };
 
-  // Syntax highlighting
-  const highlightedCode = useMemo(() => {
-    try {
-      const grammar = Prism.languages.sql;
-      if (!grammar) return value;
-      return Prism.highlight(value || " ", grammar, "sql");
-    } catch {
-      return value;
-    }
-  }, [value]);
-
-  // Extract current typing word for autocomplete
-  const updateAutocomplete = (text: string, cursorPos: number) => {
-    const textBeforeCursor = text.slice(0, cursorPos);
-    const match = textBeforeCursor.match(/([a-zA-Z0-9_*]+)$/);
-    if (match && match[1] && match[1].length >= 1) {
-      const currentWord = match[1];
-      const list = getSqlSuggestions(currentWord, customTables);
-      if (list.length > 0) {
-        setSuggestions(list);
-        setSelectedIndex(0);
-        setShowAutocomplete(true);
-        return;
-      }
-    }
-    setShowAutocomplete(false);
-  };
-
-  const applySuggestion = (s: SqlSuggestion) => {
-    if (!textareaRef.current) return;
-    const pos = textareaRef.current.selectionStart;
-    const text = value;
-    const textBefore = text.slice(0, pos);
-    const textAfter = text.slice(pos);
-    const wordMatch = textBefore.match(/([a-zA-Z0-9_*]+)$/);
-
-    if (wordMatch && wordMatch[1]) {
-      const prefix = textBefore.slice(0, -wordMatch[1].length);
-      const newText = prefix + s.insertText + textAfter;
-      onChange(newText);
-      setShowAutocomplete(false);
-
-      setTimeout(() => {
-        if (textareaRef.current) {
-          const newPos = prefix.length + s.insertText.length;
-          textareaRef.current.selectionStart = newPos;
-          textareaRef.current.selectionEnd = newPos;
-          textareaRef.current.focus();
-        }
-      }, 10);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Ctrl + Enter or Cmd + Enter to execute query
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      e.preventDefault();
-      onExecute();
-      return;
-    }
-
-    if (showAutocomplete && suggestions.length > 0) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % suggestions.length);
-        return;
-      }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
-        return;
-      }
-      if (e.key === "Enter" || e.key === "Tab") {
-        e.preventDefault();
-        const selected = suggestions[selectedIndex];
-        if (selected) applySuggestion(selected);
-        return;
-      }
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setShowAutocomplete(false);
-        return;
-      }
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newVal = e.target.value;
-    onChange(newVal);
-    updateAutocomplete(newVal, e.target.selectionStart);
-  };
-
-  const getSuggestionIcon = (type: SqlSuggestion["type"]) => {
-    switch (type) {
-      case "table":
-        return <Table className="h-3 w-3 text-cyan-400" />;
-      case "column":
-        return <Key className="h-3 w-3 text-amber-400" />;
-      case "function":
-        return <Sparkles className="h-3 w-3 text-purple-400" />;
-      default:
-        return <Hash className="h-3 w-3 text-pink-400" />;
-    }
-  };
+  const monacoTheme = resolvedTheme === "dark" ? "vs-dark" : "light";
 
   return (
-    <div className="relative rounded-2xl border border-zinc-800 bg-[#090d16] shadow-inner overflow-hidden">
-      {/* Code Area with Synchronized Overlay */}
-      <div className="relative min-h-[160px] max-h-[300px] overflow-hidden">
-        {/* Syntax Highlighted Layer (Background) */}
-        <pre
-          ref={preRef}
-          aria-hidden="true"
-          className="prism-code language-sql absolute inset-0 m-0 p-4 font-mono text-xs leading-relaxed text-zinc-100 overflow-auto pointer-events-none whitespace-pre-wrap break-words select-none"
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
-        />
-
-        {/* Real Transparent Textarea (Foreground) */}
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={handleChange}
-          onScroll={handleScroll}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => updateAutocomplete(value, (e.target as any).selectionStart)}
-          spellCheck={false}
-          placeholder="Nhập câu lệnh SQL tại đây... (Ví dụ: SELECT * FROM apps LIMIT 10;)"
-          className="relative z-10 w-full min-h-[160px] max-h-[300px] p-4 font-mono text-xs leading-relaxed bg-transparent text-transparent caret-white outline-none resize-y whitespace-pre-wrap break-words selection:bg-primary/30"
-        />
+    <div className="rounded-2xl border border-border bg-[#1e1e1e] dark:bg-[#1e1e1e] shadow-inner overflow-hidden flex flex-col">
+      {/* Editor Top Bar */}
+      <div className="flex items-center justify-between px-3.5 py-2 border-b border-zinc-800 bg-zinc-900/90 text-[11px] font-mono text-zinc-400">
+        <div className="flex items-center gap-2">
+          <Terminal className="h-3.5 w-3.5 text-primary" />
+          <span className="font-semibold text-zinc-200">Monaco SQL Editor</span>
+          <span className="text-zinc-600">•</span>
+          <span className="text-zinc-500">Postgres Dialect</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-zinc-500 hidden sm:inline">
+            <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Ctrl</kbd> +{" "}
+            <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Enter</kbd> để chạy
+          </span>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="hover:text-zinc-200 p-1 rounded transition-colors cursor-pointer flex items-center gap-1 text-[11px]"
+            title="Xóa trắng câu truy vấn"
+          >
+            <Trash2 className="h-3 w-3" />
+            <span className="hidden sm:inline">Xóa</span>
+          </button>
+        </div>
       </div>
 
-      {/* Autocomplete Popup */}
-      {showAutocomplete && suggestions.length > 0 && (
-        <div className="absolute left-6 bottom-4 z-30 w-72 rounded-xl bg-zinc-900/95 backdrop-blur-md border border-zinc-700 shadow-2xl p-1 text-xs font-mono space-y-0.5 animate-in fade-in zoom-in-95 duration-100">
-          <div className="px-2 py-1 text-[10px] text-zinc-400 uppercase tracking-wider font-sans flex items-center justify-between border-b border-zinc-800">
-            <span>Gợi ý tự động ({suggestions.length})</span>
-            <span>Tab / ↵</span>
-          </div>
-          <div className="max-h-48 overflow-y-auto">
-            {suggestions.map((item, idx) => (
-              <button
-                key={`${item.label}-${idx}`}
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  applySuggestion(item);
-                }}
-                className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
-                  idx === selectedIndex
-                    ? "bg-primary text-white font-semibold"
-                    : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate">
-                  {getSuggestionIcon(item.type)}
-                  <span className="truncate">{item.label}</span>
-                </div>
-                <span
-                  className={`text-[10px] uppercase font-sans ${
-                    idx === selectedIndex ? "text-white/80" : "text-zinc-500"
-                  }`}
-                >
-                  {item.type}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Official Monaco VS Code Editor */}
+      <div style={{ height }} className="w-full relative">
+        <Editor
+          height="100%"
+          language="sql"
+          theme={monacoTheme}
+          value={value}
+          onChange={(newVal) => onChange(newVal || "")}
+          onMount={handleEditorDidMount}
+          loading={
+            <div className="h-full w-full bg-[#1e1e1e] flex items-center justify-center text-xs text-zinc-400 font-mono">
+              Đang khởi tạo Monaco VS Code Editor...
+            </div>
+          }
+          options={{
+            fontSize: 14,
+            fontFamily: "var(--font-mono, 'Fira Code', 'JetBrains Mono', Menlo, Consolas, monospace)",
+            fontLigatures: true,
+            lineNumbers: "on",
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            tabSize: 2,
+            wordWrap: "on",
+            padding: { top: 12, bottom: 12 },
+            renderLineHighlight: "all",
+            suggestOnTriggerCharacters: true,
+            quickSuggestions: { other: true, comments: false, strings: true },
+            overviewRulerLanes: 0,
+            hideCursorInOverviewRuler: true,
+            scrollbar: {
+              verticalScrollbarSize: 8,
+              horizontalScrollbarSize: 8,
+            },
+          }}
+        />
+      </div>
     </div>
   );
 }

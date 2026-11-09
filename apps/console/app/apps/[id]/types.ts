@@ -4,9 +4,3 @@ export type WorkspaceTab =
   | "docs"
   | "legal"
   | "remote-config";
-
-export interface TabConfig {
-  id: WorkspaceTab;
-  label: string;
-  badge?: string;
-}

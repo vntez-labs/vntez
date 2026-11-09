@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { TelegramSubscriber, WebhookStatus } from "./telebot-types";
 
 const TELEBOT_API_URL = process.env.NEXT_PUBLIC_TELEBOT_API_URL || "https://telebot.hnamhocit.workers.dev";
@@ -10,19 +12,24 @@ interface TelebotState {
   isLoading: boolean;
   searchQuery: string;
 
-  // Broadcast modal
+  // Modals
   isBroadcastOpen: boolean;
   broadcastText: string;
   isSendingBroadcast: boolean;
   broadcastResult: string | null;
+  isAddModalOpen: boolean;
 
   // Actions
   fetchData: () => Promise<void>;
+  fetchSubscribers: () => Promise<void>;
   setSearchQuery: (q: string) => void;
   openBroadcastModal: () => void;
   closeBroadcastModal: () => void;
+  openAddModal: () => void;
+  closeAddModal: () => void;
   setBroadcastText: (text: string) => void;
   sendBroadcast: () => Promise<void>;
+  deleteSubscriber: (chatId: number | string) => Promise<void>;
   toggleBlockSubscriber: (chatId: number | string) => void;
 }
 
@@ -37,22 +44,44 @@ export const useTelebotStore = create<TelebotState>((set, get) => ({
   broadcastText: "",
   isSendingBroadcast: false,
   broadcastResult: null,
+  isAddModalOpen: false,
+
+  fetchSubscribers: async () => {
+    try {
+      const res = await api.get<{ success: boolean; subscribers: TelegramSubscriber[] }>(
+        "/api/telebot/subscribers"
+      );
+      if (res.success && Array.isArray(res.subscribers)) {
+        set({ subscribers: res.subscribers });
+      }
+    } catch (err) {
+      console.warn("Lỗi tải danh sách subscribers:", err);
+    }
+  },
 
   fetchData: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch(`${TELEBOT_API_URL}/api/webhook`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.webhook_info) {
-          set({
-            webhook: data.webhook_info,
-            botInfo: data.bot || null,
-          });
-        }
-      }
-    } catch (err) {
-      console.warn("Telebot worker connection error:", err);
+      await Promise.all([
+        // 1. Fetch webhook status from Cloudflare worker
+        api
+          .get<{
+            webhook_info?: WebhookStatus;
+            bot?: { id?: number; username?: string; first_name?: string };
+          }>(`${TELEBOT_API_URL}/api/webhook`)
+          .then((data) => {
+            if (data.webhook_info) {
+              set({
+                webhook: data.webhook_info,
+                botInfo: data.bot || null,
+              });
+            }
+          })
+          .catch((err) => console.warn("Telebot worker connection error:", err)),
+
+        // 2. Fetch subscribers from database API
+        get().fetchSubscribers(),
+      ]);
     } finally {
       set({ isLoading: false });
     }
@@ -61,6 +90,8 @@ export const useTelebotStore = create<TelebotState>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   openBroadcastModal: () => set({ isBroadcastOpen: true, broadcastText: "", broadcastResult: null }),
   closeBroadcastModal: () => set({ isBroadcastOpen: false }),
+  openAddModal: () => set({ isAddModalOpen: true }),
+  closeAddModal: () => set({ isAddModalOpen: false }),
   setBroadcastText: (broadcastText) => set({ broadcastText }),
 
   sendBroadcast: async () => {
@@ -74,27 +105,34 @@ export const useTelebotStore = create<TelebotState>((set, get) => ({
       .map((s) => s.chat_id);
 
     try {
-      const res = await fetch(`${TELEBOT_API_URL}/api/broadcast`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_ids: activeChatIds.length > 0 ? activeChatIds : [9114027704],
-          text: broadcastText,
-        }),
+      await api.post(`${TELEBOT_API_URL}/api/broadcast`, {
+        chat_ids: activeChatIds.length > 0 ? activeChatIds : [9114027704],
+        text: broadcastText,
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gửi broadcast thất bại");
 
       set({
         isSendingBroadcast: false,
         broadcastResult: `Đã gửi thành công thông báo qua Telegram!`,
       });
+      toast.success("Đã gửi thành công thông báo qua Telegram!");
     } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Lỗi khi gửi thông báo";
       set({
         isSendingBroadcast: false,
-        broadcastResult: err instanceof Error ? err.message : "Lỗi khi gửi thông báo",
+        broadcastResult: msg,
       });
+      toast.error(msg);
+    }
+  },
+
+  deleteSubscriber: async (chatId) => {
+    try {
+      await api.delete(`/api/telebot/subscribers?chat_id=${chatId}`);
+      toast.success("Đã xóa subscriber khỏi cơ sở dữ liệu");
+      await get().fetchSubscribers();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Không thể xóa subscriber";
+      toast.error(msg);
     }
   },
 

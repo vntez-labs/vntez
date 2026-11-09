@@ -9,8 +9,6 @@ import { FloatingQuickActions } from "@/components/floating-quick-actions";
 import { ConsoleSidebar, NAV_ITEMS } from "@/components/console-sidebar";
 import { getDocsBaseUrl } from "@/lib/portal-url";
 
-export { NAV_ITEMS };
-
 export function ConsoleShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();

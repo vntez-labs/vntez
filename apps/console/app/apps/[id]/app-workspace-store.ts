@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { toast } from "@workspace/ui/components/toaster";
+import { api } from "@workspace/ui/lib/api-client";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 import type { WorkspaceTab } from "./types";
 
@@ -37,11 +39,9 @@ export const useAppWorkspaceStore = create<WorkspaceState>((set, get) => ({
   fetchApp: async (id: string) => {
     set({ isLoading: true, errorMessage: null });
     try {
-      const res = await fetch(`/api/apps/${encodeURIComponent(id)}`);
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể tải dữ liệu ứng dụng");
-      }
+      const data = await api.get<{ success: boolean; app: AppItem }>(
+        `/api/apps/${encodeURIComponent(id)}`
+      );
       set({ app: data.app, isDirty: false });
     } catch (err: unknown) {
       set({ errorMessage: err instanceof Error ? err.message : String(err) });
@@ -69,19 +69,17 @@ export const useAppWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
     set({ isRotatingSecret: true, errorMessage: null });
     try {
-      const res = await fetch(`/api/apps/${encodeURIComponent(app.id)}/rotate-secret`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể cấp mới secret");
-      }
+      const data = await api.post<{ success: boolean; clientSecret: string }>(
+        `/api/apps/${encodeURIComponent(app.id)}/rotate-secret`
+      );
       set({
         app: { ...app, clientSecret: data.clientSecret },
         successMessage: "Đã cấp mới Client Secret thành công",
       });
+      toast.success("Đã cấp mới Client Secret thành công");
     } catch (err: unknown) {
-      set({ errorMessage: err instanceof Error ? err.message : String(err) });
+      const msg = err instanceof Error ? err.message : String(err);
+      set({ errorMessage: msg });
     } finally {
       set({ isRotatingSecret: false });
     }
@@ -93,23 +91,20 @@ export const useAppWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
     set({ isSaving: true, errorMessage: null, successMessage: null });
     try {
-      const res = await fetch(`/api/apps/${encodeURIComponent(app.id)}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(app),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Lưu thay đổi thất bại");
-      }
+      const data = await api.put<{ success: boolean; app: AppItem }>(
+        `/api/apps/${encodeURIComponent(app.id)}`,
+        app
+      );
       set({
         app: data.app,
         isDirty: false,
         successMessage: "Đã lưu toàn bộ cấu hình ứng dụng thành công",
       });
+      toast.success("Đã lưu toàn bộ cấu hình ứng dụng thành công");
       return true;
     } catch (err: unknown) {
-      set({ errorMessage: err instanceof Error ? err.message : String(err) });
+      const msg = err instanceof Error ? err.message : String(err);
+      set({ errorMessage: msg });
       return false;
     } finally {
       set({ isSaving: false });
@@ -119,6 +114,7 @@ export const useAppWorkspaceStore = create<WorkspaceState>((set, get) => ({
   copyToClipboard: (text: string, fieldId: string) => {
     navigator.clipboard.writeText(text);
     set({ copiedField: fieldId });
+    toast.success("Đã sao chép vào bộ nhớ tạm");
     setTimeout(() => {
       if (get().copiedField === fieldId) {
         set({ copiedField: null });

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
 import { AutoResizeTextarea } from "@workspace/ui/components/auto-resize-textarea";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 import { AppsEditorHeader } from "./components/apps-editor-header";
 import { AppsEditorFields } from "./components/apps-editor-fields";
@@ -50,8 +52,7 @@ function AppsEditorContent() {
     if (!editId) return;
     async function loadTargetApp() {
       try {
-        const res = await fetch("/api/apps");
-        const data = await res.json();
+        const data = await api.get<{ success: boolean; apps: AppItem[] }>("/api/apps");
         if (data.success && Array.isArray(data.apps)) {
           const found = data.apps.find((a: AppItem) => a.id === editId);
           if (found) {
@@ -95,18 +96,16 @@ function AppsEditorContent() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      if (avatarUrl) {
-        formData.append("oldUrl", avatarUrl);
-      }
-      if (id) {
-        formData.append("appId", id);
-      }
-      const res = await fetch("/api/apps/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload thất bại");
+      if (avatarUrl) formData.append("oldUrl", avatarUrl);
+      if (id) formData.append("appId", id);
+
+      const data = await api.upload<{ url: string }>("/api/apps/upload", formData);
       setAvatarUrl(data.url);
+      toast.success("Tải ảnh đại diện thành công!");
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Upload thất bại");
+      const msg = err instanceof Error ? err.message : "Upload thất bại";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }
@@ -115,9 +114,7 @@ function AppsEditorContent() {
   const handleRemoveAvatar = async () => {
     if (avatarUrl) {
       try {
-        await fetch(`/api/apps/upload?url=${encodeURIComponent(avatarUrl)}`, {
-          method: "DELETE",
-        });
+        await api.delete(`/api/apps/upload?url=${encodeURIComponent(avatarUrl)}`);
       } catch (err) {
         console.warn("Failed to delete avatar from R2:", err);
       }
@@ -147,17 +144,17 @@ function AppsEditorContent() {
         avatarUrl: avatarUrl.trim() || null,
       };
 
-      const method = editId ? "PUT" : "POST";
-      const res = await fetch("/api/apps", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Lưu ứng dụng thất bại");
+      if (editId) {
+        await api.put("/api/apps", payload);
+      } else {
+        await api.post("/api/apps", payload);
+      }
+      toast.success(editId ? "Cập nhật ứng dụng thành công!" : "Tạo ứng dụng thành công!");
       router.push("/apps");
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Lỗi khi lưu ứng dụng");
+      const msg = err instanceof Error ? err.message : "Lỗi khi lưu ứng dụng";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSaving(false);
     }

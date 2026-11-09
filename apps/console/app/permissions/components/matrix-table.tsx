@@ -123,10 +123,10 @@ export function MatrixTable() {
           <tbody className="divide-y divide-border/40">
             {resources.map((res) => (
               <tr key={res} className="hover:bg-muted/30 transition-colors">
-                <td className="py-2.5 px-3 font-medium text-foreground">
+                <td className="py-2.5 px-3 font-medium text-foreground whitespace-nowrap">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-primary/70" />
-                    <span className="font-mono font-semibold text-xs">{res}</span>
+                    <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                    <span className="font-mono font-semibold text-xs text-foreground">{res}</span>
                   </div>
                 </td>
                 {actions.map((act) => {

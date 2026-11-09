@@ -4,6 +4,8 @@ import React, { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 import { BlogEditorHeader, type EditorViewMode } from "./components/blog-editor-header";
 import { PaperBlogMeta } from "./components/paper-blog-meta";
@@ -65,8 +67,7 @@ function BlogEditorContent() {
     if (!editSlug) return;
     async function loadTargetPost() {
       try {
-        const res = await fetch("/api/blog");
-        const data = await res.json();
+        const data = await api.get<{ success: boolean; posts: BlogPostItem[] }>("/api/blog");
         if (data.success && Array.isArray(data.posts)) {
           const found = data.posts.find((p: BlogPostItem) => p.slug === editSlug);
           if (found) {
@@ -121,12 +122,13 @@ function BlogEditorContent() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/blog/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload thất bại");
+      const data = await api.upload<{ url: string }>("/api/blog/upload", formData);
       setThumbnailUrl(data.url);
+      toast.success("Tải ảnh bìa bài viết thành công!");
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Upload thất bại");
+      const msg = err instanceof Error ? err.message : "Upload thất bại";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }
@@ -160,20 +162,23 @@ function BlogEditorContent() {
         updatedAt: new Date().toISOString(),
       };
 
-      const method = editSlug ? "PUT" : "POST";
-      const res = await fetch("/api/blog", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          originalSlug: editSlug || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Lưu bài viết thất bại");
+      const body = {
+        ...payload,
+        originalSlug: editSlug || undefined,
+      };
+
+      if (editSlug) {
+        await api.put("/api/blog", body);
+      } else {
+        await api.post("/api/blog", body);
+      }
+
+      toast.success(editSlug ? "Cập nhật bài viết thành công!" : "Tạo bài viết mới thành công!");
       router.push("/blog-posts");
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Lỗi khi lưu bài viết");
+      const msg = err instanceof Error ? err.message : "Lỗi khi lưu bài viết";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSaving(false);
     }

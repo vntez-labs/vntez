@@ -23,14 +23,13 @@ function SettingsContent() {
 
   return (
     <div className="space-y-8 max-w-4xl min-w-0 w-full">
-      <div>
-        <h1 className="text-xl font-bold font-display text-foreground flex items-center gap-2">
-          <Settings className="h-5 w-5 text-primary" />
+      <div className="flex items-center gap-3 pb-4 border-b border-border">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Settings className="h-5 w-5" />
+        </div>
+        <h1 className="text-xl font-bold font-display text-foreground">
           Thiết lập Hệ thống Console
         </h1>
-        <p className="text-xs text-muted-foreground mt-1">
-          Quản lý cấu hình hồ sơ cá nhân, phiên làm việc và bảo mật tài khoản
-        </p>
       </div>
 
       {/* Profile Update Card */}

@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { toast } from "@workspace/ui/components/toaster";
+import { api } from "@workspace/ui/lib/api-client";
 import type { SupabaseAuthUser } from "@/app/api/users/route";
 
 interface AddUserData {
@@ -87,17 +89,14 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   fetchUsers: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch("/api/users");
-      if (res.ok) {
-        const data = await res.json();
-        const users: SupabaseAuthUser[] = data.users || [];
-        set({ users });
+      const data = await api.get<{ users: SupabaseAuthUser[] }>("/api/users");
+      const users: SupabaseAuthUser[] = data.users || [];
+      set({ users });
 
-        const { selectedUser } = get();
-        if (selectedUser) {
-          const updated = users.find((u) => u.id === selectedUser.id);
-          if (updated) set({ selectedUser: updated });
-        }
+      const { selectedUser } = get();
+      if (selectedUser) {
+        const updated = users.find((u) => u.id === selectedUser.id);
+        if (updated) set({ selectedUser: updated });
       }
     } catch (err) {
       console.error("Failed to fetch users:", err);
@@ -111,6 +110,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   handleCopy: (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     set({ copiedId: id });
+    toast.success("Đã sao chép vào bộ nhớ tạm");
     setTimeout(() => set({ copiedId: null }), 2000);
   },
 
@@ -135,21 +135,13 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     set({ isSubmitting: true, formError: null });
 
     try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(addFormData),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể tạo tài khoản");
-      }
-
+      await api.post("/api/users", addFormData);
       set({ isAddUserOpen: false, addFormData: initialAddFormData });
+      toast.success("Tạo người dùng mới thành công");
       await fetchUsers();
     } catch (err) {
-      set({ formError: err instanceof Error ? err.message : String(err) });
+      const msg = err instanceof Error ? err.message : String(err);
+      set({ formError: msg });
     } finally {
       set({ isSubmitting: false });
     }
@@ -187,26 +179,19 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     set({ isSubmitting: true, formError: null });
 
     try {
-      const res = await fetch("/api/users/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: editingUser.id,
-          name: editFormData.name.trim(),
-          role: editFormData.role,
-          status: editFormData.status,
-        }),
+      await api.post("/api/users/update", {
+        userId: editingUser.id,
+        name: editFormData.name.trim(),
+        role: editFormData.role,
+        status: editFormData.status,
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể cập nhật người dùng trên Supabase Auth");
-      }
-
       set({ editingUser: null });
+      toast.success("Cập nhật thông tin người dùng thành công");
       await fetchUsers();
     } catch (err) {
-      set({ formError: err instanceof Error ? err.message : String(err) });
+      const msg = err instanceof Error ? err.message : String(err);
+      set({ formError: msg });
     } finally {
       set({ isSubmitting: false });
     }
@@ -220,23 +205,17 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
     set({ isSubmitting: true });
     try {
-      const res = await fetch(
-        `/api/users?userId=${encodeURIComponent(deletingUser.id)}`,
-        { method: "DELETE" }
-      );
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể xóa người dùng");
-      }
+      await api.delete(`/api/users?userId=${encodeURIComponent(deletingUser.id)}`);
 
       if (selectedUser?.id === deletingUser.id) {
         set({ selectedUser: null });
       }
       set({ deletingUser: null });
+      toast.success("Đã xóa người dùng thành công");
       await fetchUsers();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Đã xảy ra lỗi khi xóa người dùng");
+      const msg = err instanceof Error ? err.message : "Đã xảy ra lỗi khi xóa người dùng";
+      toast.error(msg);
     } finally {
       set({ isSubmitting: false });
     }

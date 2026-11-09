@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getServerSession } from "@workspace/auth/server";
 import { getStoredApps } from "@/lib/storage-content";
 import {
@@ -8,9 +9,30 @@ import {
 import { generateAppClientId, generateAppSecret } from "@/lib/apps-repository";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 
+const createAppSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Tên ứng dụng không được để trống"),
+  description: z.string().min(1, "Mô tả không được để trống"),
+  category: z.string().optional(),
+  platforms: z.array(z.string()).optional(),
+  color: z.string().optional(),
+  ctaLink: z.string().optional(),
+  url: z.string().nullable().optional(),
+  avatarUrl: z.string().nullable().optional(),
+  illustrationKey: z.enum(["storage", "security", "offline", "supply-chain", "telemetry", "ecosystem", "iam", "sdk"]).optional(),
+  status: z.enum(["active", "draft"]).optional(),
+  clientId: z.string().optional(),
+  clientSecret: z.string().optional(),
+  redirectUris: z.array(z.string()).optional(),
+  isInternal: z.boolean().optional(),
+  releaseDate: z.string().optional(),
+});
+
 export async function GET() {
-  const apps = await getStoredApps();
-  const metaMap = await fetchAppMetadataMap();
+  const [apps, metaMap] = await Promise.all([
+    getStoredApps(),
+    fetchAppMetadataMap(),
+  ]);
 
   const enriched = apps.map((a) => {
     const meta = metaMap[a.id];
@@ -32,12 +54,18 @@ export async function POST(req: Request) {
   }
 
   try {
-    const body = await req.json();
-    const { name, category, description, platforms, color, ctaLink, url, avatarUrl, illustrationKey, status } = body;
+    const rawBody = await req.json();
+    const parsed = createAppSchema.safeParse(rawBody);
 
-    if (!name || !description) {
-      return NextResponse.json({ error: "Tên và mô tả là bắt buộc" }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || "Dữ liệu không hợp lệ" },
+        { status: 400 }
+      );
     }
+
+    const body = parsed.data;
+    const { name, category, description, platforms, color, ctaLink, url, avatarUrl, illustrationKey, status } = body;
 
     const id = body.id || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const clientId = body.clientId || generateAppClientId(id);
@@ -54,7 +82,7 @@ export async function POST(req: Request) {
       url: resolvedUrl,
       category: category?.trim() || "Tiện ích & Hệ sinh thái",
       releaseDate: body.releaseDate || new Date().toLocaleDateString("vi-VN", { month: "2-digit", year: "numeric" }),
-      platforms: Array.isArray(platforms) ? platforms : ["Web"],
+      platforms: platforms && platforms.length > 0 ? platforms : ["Web"],
       color: color || "#fb291a",
       ctaLink: resolvedUrl || ctaLink || `/docs/${id}`,
       avatarUrl: avatarUrl || null,
@@ -62,7 +90,7 @@ export async function POST(req: Request) {
       status: status === "draft" ? "draft" : "active",
       clientId,
       clientSecret,
-      redirectUris: Array.isArray(body.redirectUris) && body.redirectUris.length > 0
+      redirectUris: body.redirectUris && body.redirectUris.length > 0
         ? body.redirectUris
         : [`https://${id}.vntez.net/auth/callback`, "http://localhost:3000/auth/callback"],
       isInternal: body.isInternal !== undefined ? Boolean(body.isInternal) : true,

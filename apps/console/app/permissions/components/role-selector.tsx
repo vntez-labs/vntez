@@ -7,6 +7,7 @@ import {
   IconCheck,
   IconChevronDown,
   IconSearch,
+  IconLayersIntersect,
 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
@@ -19,6 +20,7 @@ export function RoleSelector() {
     setSelectedRoleId,
     rolePermissions,
     openCreateRoleModal,
+    openCreateResourceModal,
   } = usePermissionsStore();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +43,7 @@ export function RoleSelector() {
 
   const currentRole = roles.find((r) => r.id === selectedRoleId) || roles[0];
   const currentPerms = currentRole ? rolePermissions[currentRole.id] : null;
-  const currentCount = currentPerms?.has("*:*") ? 35 : currentPerms?.size || 0;
+  const currentCount = currentPerms?.has("*:*") ? 49 : currentPerms?.size || 0;
 
   const filteredRoles = roles.filter(
     (r) =>
@@ -51,15 +53,15 @@ export function RoleSelector() {
   );
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-card p-4 rounded-2xl shadow-xs">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-card p-4 rounded-2xl shadow-xs border border-border">
       <div className="space-y-0.5">
-        <h3 className="text-sm font-bold text-foreground">Vai trò trong Hệ thống</h3>
+        <h3 className="text-sm font-bold text-foreground">Vai trò Cấp Root Hệ thống</h3>
         <p className="text-xs text-muted-foreground">
-          Chọn vai trò từ danh sách để xem và tùy chỉnh ma trận quyền hạn chi tiết
+          Chọn vai trò từ danh sách để xem và tùy chỉnh ma trận quyền hạn Root toàn cục
         </p>
       </div>
 
-      <div className="flex items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-2">
         {/* Role Searchable Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -90,7 +92,6 @@ export function RoleSelector() {
           {/* Searchable Dropdown Popover */}
           {isOpen && (
             <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white dark:bg-[#0c121e] border border-zinc-200/80 dark:border-zinc-800 p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col">
-              {/* Search Bar */}
               <div className="relative mb-2">
                 <IconSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input
@@ -103,7 +104,6 @@ export function RoleSelector() {
                 />
               </div>
 
-              {/* Roles List */}
               <div className="max-h-56 overflow-y-auto space-y-0.5">
                 {filteredRoles.length === 0 ? (
                   <div className="p-3 text-center text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ export function RoleSelector() {
                   filteredRoles.map((r) => {
                     const isSelected = r.id === selectedRoleId;
                     const perms = rolePermissions[r.id];
-                    const permCount = perms?.has("*:*") ? 35 : perms?.size || 0;
+                    const permCount = perms?.has("*:*") ? 49 : perms?.size || 0;
                     return (
                       <button
                         key={r.id}
@@ -155,12 +155,24 @@ export function RoleSelector() {
           )}
         </div>
 
-        {/* Create Role Button */}
+        {/* Add Resource Button */}
         <Button
           variant="outline"
           size="sm"
+          onClick={openCreateResourceModal}
+          className="gap-1.5 text-xs rounded-xl bg-card border-border hover:bg-muted cursor-pointer h-9 px-3"
+          title="Thêm tài nguyên Root mới"
+        >
+          <IconLayersIntersect className="h-3.5 w-3.5 text-primary" />
+          <span>Thêm Resource</span>
+        </Button>
+
+        {/* Create Role Button */}
+        <Button
+          size="sm"
           onClick={openCreateRoleModal}
-          className="gap-1.5 text-xs rounded-xl bg-white dark:bg-card shadow-2xs border border-zinc-200/80 dark:border-zinc-800 cursor-pointer h-9 px-3"
+          className="gap-1.5 text-xs font-semibold rounded-xl cursor-pointer h-9 px-3.5 shadow-xs"
+          title="Tạo vai trò Root mới"
         >
           <IconPlus className="h-3.5 w-3.5" />
           <span>Tạo Role</span>

@@ -18,15 +18,9 @@ import {
 } from "lucide-react";
 import { useStorageStore } from "../storage-store";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { formatBytes } from "@workspace/ui/lib/formatters";
+import { toast } from "@workspace/ui/components/toaster";
 import type { R2FileItem } from "../storage-types";
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
 
 function getFileIcon(type: string) {
   if (type.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-emerald-500" />;
@@ -78,6 +72,7 @@ export function FilesTable() {
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(id);
+    toast.success("Đã sao chép liên kết vào bộ nhớ tạm");
     setTimeout(() => setCopiedKey(null), 2500);
   };
 
@@ -163,30 +158,30 @@ export function FilesTable() {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border text-xs">
             <tr>
-              <th className="px-5 py-3 font-medium">Tên file / Key</th>
-              <th className="px-4 py-3 font-medium">Định dạng</th>
-              <th className="px-4 py-3 font-medium">Kích thước</th>
-              <th className="px-4 py-3 font-medium">Thời gian</th>
-              <th className="px-5 py-3 text-right font-medium">Thao tác</th>
+              <th className="px-5 py-3.5 font-semibold">Tên file / Key</th>
+              <th className="px-4 py-3.5 font-semibold">Định dạng</th>
+              <th className="px-4 py-3.5 font-semibold">Kích thước</th>
+              <th className="px-4 py-3.5 font-semibold">Thời gian</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Thao tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, idx) => (
                 <tr key={idx}>
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <Skeleton className="h-6 w-6 rounded-md shrink-0" />
                       <Skeleton className="h-4 w-40 rounded" />
                     </div>
                   </td>
-                  <td className="px-4 py-3"><Skeleton className="h-4 w-20 rounded" /></td>
-                  <td className="px-4 py-3"><Skeleton className="h-4 w-16 rounded" /></td>
-                  <td className="px-4 py-3"><Skeleton className="h-4 w-28 rounded" /></td>
-                  <td className="px-5 py-3 text-right"><Skeleton className="h-7 w-20 rounded-lg ml-auto" /></td>
+                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-20 rounded" /></td>
+                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-16 rounded" /></td>
+                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-28 rounded" /></td>
+                  <td className="px-5 py-3.5 text-right"><Skeleton className="h-7 w-20 rounded-lg ml-auto" /></td>
                 </tr>
               ))
             ) : filteredFiles.length === 0 ? (
@@ -201,38 +196,38 @@ export function FilesTable() {
                   key={f.key}
                   className="group transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30"
                 >
-                  <td className="px-5 py-3 font-medium text-foreground">
+                  <td className="px-5 py-3.5 font-medium text-foreground">
                     <div className="flex items-center gap-2.5">
                       <div className="shrink-0">{getFileIcon(f.content_type)}</div>
-                      <span className="font-mono text-xs">{f.key}</span>
+                      <span className="font-mono text-sm">{f.key}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    <span className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <td className="px-4 py-3.5 text-muted-foreground">
+                    <span className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                       {f.content_type}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-mono text-muted-foreground">
+                  <td className="px-4 py-3.5 font-mono text-sm text-muted-foreground">
                     {formatBytes(f.size)}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground font-mono">
+                  <td className="px-4 py-3.5 text-muted-foreground font-mono text-xs">
                     {new Date(f.uploaded_at).toLocaleDateString("vi-VN", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-5 py-3 text-right">
+                  <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         title="Tạo Presigned Download URL"
                         onClick={() => getDownloadUrl(f.key)}
                         disabled={generatingKey === f.key}
-                        className="inline-flex items-center gap-1 rounded-lg bg-zinc-100/70 hover:bg-zinc-200/70 dark:bg-zinc-800/60 px-2 py-1 text-[11px] font-medium text-foreground transition-colors"
+                        className="inline-flex items-center gap-1 rounded-lg bg-zinc-100/70 hover:bg-zinc-200/70 dark:bg-zinc-800/60 px-2.5 py-1 text-xs font-medium text-foreground transition-colors cursor-pointer"
                       >
                         {generatingKey === f.key ? (
-                          <Loader2 className="h-3 w-3 animate-spin text-orange-500" />
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-orange-500" />
                         ) : (
-                          <Download className="h-3 w-3" />
+                          <Download className="h-3.5 w-3.5" />
                         )}
                         <span>Ký URL</span>
                       </button>

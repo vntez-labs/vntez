@@ -9,6 +9,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { formatDate } from "@workspace/ui/lib/formatters";
 import { useUsersStore } from "../users-store";
 import { JsonCodeView } from "./json-code-view";
 
@@ -43,22 +44,6 @@ export function UserDetailDrawer() {
   }, []);
 
   if (!selectedUser) return null;
-
-  const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "-";
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateStr;
-    }
-  };
 
   return (
     <div
@@ -200,19 +185,19 @@ export function UserDetailDrawer() {
             <div className="space-y-3 font-mono text-xs">
               <div className="flex justify-between py-2 border-b border-border/40">
                 <span className="text-muted-foreground font-sans">Created at:</span>
-                <span className="text-foreground">{formatDate(selectedUser.createdAt)}</span>
+                <span className="text-foreground">{formatDate(selectedUser.createdAt, true)}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-border/40">
                 <span className="text-muted-foreground font-sans">Updated at:</span>
-                <span className="text-foreground">{formatDate(selectedUser.updatedAt)}</span>
+                <span className="text-foreground">{formatDate(selectedUser.updatedAt, true)}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-border/40">
                 <span className="text-muted-foreground font-sans">Confirmed at:</span>
-                <span className="text-foreground">{formatDate(selectedUser.confirmedAt)}</span>
+                <span className="text-foreground">{formatDate(selectedUser.confirmedAt, true)}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-border/40">
                 <span className="text-muted-foreground font-sans">Last signed in:</span>
-                <span className="text-foreground">{formatDate(selectedUser.lastSignInAt)}</span>
+                <span className="text-foreground">{formatDate(selectedUser.lastSignInAt, true)}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-border/40">
                 <span className="text-muted-foreground font-sans">Số điện thoại:</span>

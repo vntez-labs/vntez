@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Edit2, Trash2, Key, Check, X } from "lucide-react";
+import { Edit2, Trash2, Key } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { TableMeta } from "../types";
+import { formatDatabaseCell, getColumnTypeBadge } from "./database-cell-formatter";
 
 interface DatabaseGridProps {
   tableMeta: TableMeta;
@@ -40,49 +41,15 @@ export function DatabaseGrid({
   const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   const isAllSelected = rows.length > 0 && rows.every((r) => selectedPks.has(String(r[pkField])));
 
-  const formatCellValue = (val: any) => {
-    if (val === null || val === undefined) {
-      return <span className="text-[11px] font-mono text-zinc-400 italic">NULL</span>;
-    }
-    if (typeof val === "boolean") {
-      return (
-        <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-            val ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-          }`}
-        >
-          {val ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-          {String(val)}
-        </span>
-      );
-    }
-    if (typeof val === "object") {
-      const isArr = Array.isArray(val);
-      return (
-        <span
-          className="inline-flex items-center px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[10px] font-mono text-zinc-600 dark:text-zinc-300 max-w-[140px] truncate"
-          title={JSON.stringify(val, null, 2)}
-        >
-          {isArr ? `[${val.length} items]` : "{...}"}
-        </span>
-      );
-    }
-    return (
-      <span className="font-mono text-xs text-foreground truncate block max-w-[200px]" title={String(val)}>
-        {String(val)}
-      </span>
-    );
-  };
-
   return (
-    <div className="flex-1 flex flex-col min-w-0 rounded-3xl bg-white dark:bg-[#0c121e] border border-zinc-200/70 dark:border-zinc-800/70 overflow-hidden shadow-xs">
+    <div className="flex-1 flex flex-col min-w-0 rounded-2xl bg-card border border-border overflow-hidden shadow-xs">
       {/* Scrollable Data Table Container */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[600px]">
-        <table className="w-full border-collapse text-left text-xs min-w-full">
+      <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[640px]">
+        <table className="w-full border-collapse text-left text-sm min-w-full">
           {/* Table Header */}
-          <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur-md border-b border-border">
+          <thead className="sticky top-0 z-10 bg-muted/90 backdrop-blur-md border-b border-border">
             <tr>
-              <th className="w-10 px-3 py-3 text-center">
+              <th className="w-12 px-3.5 py-3.5 text-center">
                 <Checkbox
                   checked={isAllSelected}
                   onCheckedChange={onToggleSelectAll}
@@ -90,45 +57,45 @@ export function DatabaseGrid({
                 />
               </th>
               {tableMeta.columns.map((col) => (
-                <th key={col.name} className="px-4 py-3 whitespace-nowrap font-medium text-muted-foreground">
-                  <div className="flex items-center gap-1.5 font-mono">
+                <th key={col.name} className="px-4 py-3.5 whitespace-nowrap font-medium text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
                     {col.isPrimaryKey && (
-                      <span title="Primary Key">
-                        <Key className="h-3 w-3 text-amber-500" />
+                      <span title="Khóa chính (Primary Key)">
+                        <Key className="h-3.5 w-3.5 text-amber-500" />
                       </span>
                     )}
-                    <span className="font-semibold text-foreground text-xs">{col.name}</span>
-                    <span className="text-[10px] text-muted-foreground/60">({col.format || col.type})</span>
+                    <span className="font-bold text-foreground text-sm tracking-tight">{col.name}</span>
+                    {getColumnTypeBadge(col)}
                   </div>
                 </th>
               ))}
-              <th className="w-24 px-4 py-3 text-right font-medium text-muted-foreground whitespace-nowrap">
+              <th className="w-24 px-4 py-3.5 text-right font-semibold text-muted-foreground whitespace-nowrap text-sm">
                 Thao tác
               </th>
             </tr>
           </thead>
 
           {/* Table Body */}
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
               Array.from({ length: 6 }).map((_, rIdx) => (
                 <tr key={rIdx}>
-                  <td className="px-3 py-3 text-center">
+                  <td className="px-3.5 py-3.5 text-center">
                     <Skeleton className="h-4 w-4 rounded mx-auto" />
                   </td>
                   {tableMeta.columns.map((col) => (
-                    <td key={col.name} className="px-4 py-3">
-                      <Skeleton className="h-4 w-24 rounded" />
+                    <td key={col.name} className="px-4 py-3.5">
+                      <Skeleton className="h-5 w-28 rounded" />
                     </td>
                   ))}
-                  <td className="px-4 py-3 text-right">
-                    <Skeleton className="h-7 w-7 rounded-lg ml-auto" />
+                  <td className="px-4 py-3.5 text-right">
+                    <Skeleton className="h-8 w-8 rounded-lg ml-auto" />
                   </td>
                 </tr>
               ))
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={tableMeta.columns.length + 2} className="py-20 text-center text-muted-foreground">
+                <td colSpan={tableMeta.columns.length + 2} className="py-20 text-center text-sm text-muted-foreground">
                   Bảng này hiện chưa có dòng dữ liệu nào.
                 </td>
               </tr>
@@ -143,39 +110,39 @@ export function DatabaseGrid({
                     className={`transition-colors ${
                       isSelected
                         ? "bg-primary/5 hover:bg-primary/10"
-                        : "hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40"
+                        : "hover:bg-muted/40"
                     }`}
                   >
-                    <td className="px-3 py-2.5 text-center">
+                    <td className="px-3.5 py-3.5 text-center">
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => onToggleSelectRow(pkValue)}
                       />
                     </td>
                     {tableMeta.columns.map((col) => (
-                      <td key={col.name} className="px-4 py-2.5 whitespace-nowrap max-w-[220px]">
-                        {formatCellValue(row[col.name])}
+                      <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
+                        {formatDatabaseCell(row[col.name], col.name, col.isPrimaryKey)}
                       </td>
                     ))}
-                    <td className="px-4 py-2.5 text-right whitespace-nowrap">
+                    <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onEditRow(row)}
-                          className="h-7 w-7 p-0 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-foreground cursor-pointer"
+                          className="h-8 w-8 p-0 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
                           title="Chỉnh sửa dòng"
                         >
-                          <Edit2 className="h-3.5 w-3.5" />
+                          <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onDeleteSingle(pkValue)}
-                          className="h-7 w-7 p-0 rounded-lg hover:bg-rose-50 text-rose-500 hover:text-rose-600 dark:hover:bg-rose-950/40 cursor-pointer"
+                          className="h-8 w-8 p-0 rounded-lg hover:bg-rose-500/10 text-rose-500 hover:text-rose-600 dark:hover:bg-rose-950/40 cursor-pointer"
                           title="Xóa dòng này"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -188,9 +155,9 @@ export function DatabaseGrid({
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-t border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 text-xs">
-        <span className="text-muted-foreground font-mono">
-          Hiển thị <strong>{rows.length}</strong> / <strong>{totalCount}</strong> dòng
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-t border-border bg-card text-sm">
+        <span className="text-muted-foreground font-medium">
+          Hiển thị <strong className="text-foreground font-bold">{rows.length}</strong> / <strong className="text-foreground font-bold">{totalCount}</strong> dòng
         </span>
         <div className="flex items-center gap-2">
           <Button
@@ -198,11 +165,11 @@ export function DatabaseGrid({
             size="sm"
             disabled={page <= 1 || isLoading}
             onClick={() => onPageChange(page - 1)}
-            className="h-8 px-3 rounded-xl cursor-pointer"
+            className="h-8.5 px-3.5 text-xs font-semibold rounded-xl cursor-pointer"
           >
             Trang trước
           </Button>
-          <span className="font-mono px-2 text-muted-foreground">
+          <span className="font-mono text-xs px-2 text-muted-foreground font-semibold">
             {page} / {totalPages}
           </span>
           <Button
@@ -210,7 +177,7 @@ export function DatabaseGrid({
             size="sm"
             disabled={page >= totalPages || isLoading}
             onClick={() => onPageChange(page + 1)}
-            className="h-8 px-3 rounded-xl cursor-pointer"
+            className="h-8.5 px-3.5 text-xs font-semibold rounded-xl cursor-pointer"
           >
             Trang sau
           </Button>

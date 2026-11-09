@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { toast } from "@workspace/ui/components/toaster";
+import { api } from "@workspace/ui/lib/api-client";
 import type { R2FileItem, StorageMetrics } from "./storage-types";
 
 const R2_FREE_LIMIT_BYTES = 10 * 1024 * 1024 * 1024; // 10 GB Free Tier
@@ -72,15 +74,12 @@ export const useStorageStore = create<StorageState>((set, get) => {
     fetchMetrics: async () => {
       set({ isLoading: true });
       try {
-        const res = await fetch("/api/storage");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && Array.isArray(data.files)) {
-            set({
-              files: data.files,
-              metrics: data.metrics || calcMetrics(data.files),
-            });
-          }
+        const data = await api.get<{ success: boolean; files: R2FileItem[]; metrics?: StorageMetrics }>("/api/storage");
+        if (data.success && Array.isArray(data.files)) {
+          set({
+            files: data.files,
+            metrics: data.metrics || calcMetrics(data.files),
+          });
         }
       } catch (err) {
         console.error("Failed to load live storage:", err);
@@ -102,15 +101,7 @@ export const useStorageStore = create<StorageState>((set, get) => {
 
         set({ uploadProgress: 50 });
 
-        const res = await fetch("/api/storage", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Upload thất bại");
-        }
+        const data = await api.upload<{ success: boolean; file: R2FileItem }>("/api/storage", formData);
 
         set({ uploadProgress: 100 });
 
@@ -121,6 +112,7 @@ export const useStorageStore = create<StorageState>((set, get) => {
           isUploading: false,
           uploadProgress: 0,
         });
+        toast.success(`Đã tải lên "${data.file.key.split("/").pop() || data.file.key}" thành công`);
 
         return true;
       } catch (err: unknown) {
@@ -132,31 +124,23 @@ export const useStorageStore = create<StorageState>((set, get) => {
 
     deleteFile: async (key: string) => {
       try {
-        const res = await fetch(`/api/storage?key=${encodeURIComponent(key)}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Xóa thất bại");
-        }
+        await api.delete(`/api/storage?key=${encodeURIComponent(key)}`);
 
         const remainingFiles = get().files.filter((f) => f.key !== key);
         set({ files: remainingFiles, metrics: calcMetrics(remainingFiles) });
-      } catch (err: unknown) {
-        alert(err instanceof Error ? err.message : "Xóa file thất bại");
+        toast.success(`Đã xóa tệp tin "${key.split("/").pop()}" thành công`);
+      } catch {
+        // toast.error is already triggered inside api-client
       }
     },
 
     getDownloadUrl: async (key: string) => {
       set({ generatingKey: key, generatedSignedUrl: null });
       try {
-        const res = await fetch(`/api/storage?key=${encodeURIComponent(key)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.downloadUrl) {
-            set({ generatedSignedUrl: data.downloadUrl, generatingKey: null });
-            return data.downloadUrl;
-          }
+        const data = await api.get<{ downloadUrl?: string }>(`/api/storage?key=${encodeURIComponent(key)}`);
+        if (data.downloadUrl) {
+          set({ generatedSignedUrl: data.downloadUrl, generatingKey: null });
+          return data.downloadUrl;
         }
       } catch (err) {
         console.error("Failed to generate presigned URL:", err);

@@ -53,7 +53,7 @@ export function generateAppSecret(): string {
   return `vsec_${crypto.randomBytes(24).toString("hex")}`;
 }
 
-export function buildDefaultRolePerms(appId: string): Record<string, string[]> {
+function buildDefaultRolePerms(appId: string): Record<string, string[]> {
   const allPerms: string[] = [];
   STANDARD_APP_RESOURCES.forEach((r) => {
     STANDARD_APP_ACTIONS.forEach((a) => {
@@ -87,6 +87,14 @@ export function buildDefaultRolePerms(appId: string): Record<string, string[]> {
   };
 }
 
+export const APP_DOMAIN_RESOURCES: Record<string, string[]> = {
+  solotype: ["typing_tests", "leaderboards", "custom_texts", "user_stats", "analytics"],
+  "vntez-iam": ["oauth_clients", "tokens", "identities", "audit_logs", "security_policies"],
+  "workers-hub": ["workers", "kv_namespaces", "r2_buckets", "d1_databases", "telemetry"],
+  "bonsai-reader": ["books", "annotations", "reading_sessions", "sync_state", "collections"],
+  gitvn: ["repositories", "branches", "commits", "kanban_boards", "wiki_pages"],
+};
+
 export function getDefaultMetadata(app: AppItem): AppMetadata {
   const clientId = app.clientId || generateAppClientId(app.id);
   const clientSecret = app.clientSecret || generateAppSecret();
@@ -96,7 +104,8 @@ export function getDefaultMetadata(app: AppItem): AppMetadata {
   ];
   const isInternal = app.isInternal !== undefined ? app.isInternal : true;
   const roles = app.roles && app.roles.length > 0 ? app.roles : DEFAULT_APP_ROLES;
-  const resources = app.resources && app.resources.length > 0 ? app.resources : STANDARD_APP_RESOURCES;
+  const fallbackResources = APP_DOMAIN_RESOURCES[app.id] || STANDARD_APP_RESOURCES;
+  const resources = app.resources && app.resources.length > 0 ? app.resources : fallbackResources;
   const rolePermissions = app.rolePermissions || buildDefaultRolePerms(app.id);
 
   const docsPages: AppDocPage[] = [

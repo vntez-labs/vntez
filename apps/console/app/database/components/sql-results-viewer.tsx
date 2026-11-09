@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Copy, AlertTriangle, Download, Clock, Database } from "lucide-react";
+import { Check, Copy, AlertTriangle, Download, Clock, Database, ExternalLink, Code } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import type { SqlQueryResult } from "@/lib/sql-executor";
 
@@ -31,15 +31,47 @@ export function SqlResultsViewer({ result, isLoading }: SqlResultsViewerProps) {
   }
 
   if (!result.success || result.error) {
+    const isDdlError = result.error?.includes("DDL") || result.error?.includes("exec_sql");
+
     return (
-      <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 space-y-2">
-        <div className="flex items-center gap-2 text-destructive font-semibold text-xs">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
-          <span>Lỗi thực thi câu truy vấn</span>
+      <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-destructive font-semibold text-xs">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>Lỗi thực thi câu truy vấn</span>
+          </div>
+
+          {isDdlError && (
+            <a
+              href="https://supabase.com/dashboard/project/stbswcnsitztbusqrdhi/sql/new"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-destructive text-white text-[11px] font-semibold hover:bg-destructive/90 transition-colors shadow-2xs cursor-pointer"
+            >
+              <span>Mở Supabase SQL Editor</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          )}
         </div>
-        <pre className="font-mono text-xs text-destructive/90 whitespace-pre-wrap break-words p-2 rounded-lg bg-destructive/10">
+
+        <pre className="font-mono text-xs text-destructive/90 whitespace-pre-wrap break-words p-2.5 rounded-xl bg-destructive/10">
           {result.error}
         </pre>
+
+        {isDdlError && (
+          <div className="p-3 rounded-xl bg-muted/60 border border-border/60 text-xs text-muted-foreground space-y-1.5">
+            <div className="flex items-center gap-1.5 font-semibold text-foreground">
+              <Code className="h-3.5 w-3.5 text-primary" />
+              <span>Mẹo kích hoạt quyền DDL trực tiếp cho Console:</span>
+            </div>
+            <p className="text-[11px] leading-relaxed">
+              Dán và chạy hàm sau trong Supabase Studio 1 lần duy nhất, sau đó bạn có thể chạy CREATE / ALTER TABLE trực tiếp tại Console này:
+            </p>
+            <pre className="font-mono text-[10px] bg-card p-2 rounded-lg border border-border overflow-x-auto text-foreground">
+              {`CREATE OR REPLACE FUNCTION public.exec_sql(sql text) RETURNS json LANGUAGE plpgsql SECURITY DEFINER AS $$ BEGIN EXECUTE sql; RETURN json_build_object('success', true); EXCEPTION WHEN OTHERS THEN RETURN json_build_object('success', false, 'error', SQLERRM); END; $$;`}
+            </pre>
+          </div>
+        )}
       </div>
     );
   }

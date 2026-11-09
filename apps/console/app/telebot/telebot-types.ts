@@ -1,5 +1,7 @@
 export interface TelegramSubscriber {
   chat_id: number | string;
+  email: string;
+  user_id?: string | null;
   username?: string;
   first_name?: string;
   last_name?: string;

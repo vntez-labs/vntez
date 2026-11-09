@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { IconHeart, IconEye, IconShare, IconCheck } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
+import { api } from "@workspace/ui/lib/api-client";
+import { useClipboard } from "@workspace/ui/hooks/use-clipboard";
 
 interface BlogInteractionsProps {
   slug: string;
@@ -14,7 +16,7 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
   const [likes, setLikes] = useState(initialLikes);
   const [views, setViews] = useState(initialViews);
   const [hasLiked, setHasLiked] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copy, copied } = useClipboard();
   const [isLiking, setIsLiking] = useState(false);
 
   // Restore liked state from localStorage & record live view
@@ -27,12 +29,8 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
     if (initialViews > 0) setViews((v) => Math.max(v, initialViews));
     if (initialLikes > 0) setLikes((l) => Math.max(l, initialLikes));
 
-    fetch("/api/blog/view", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    })
-      .then((res) => res.json())
+    api
+      .post<{ success: boolean; viewsCount?: number }>("/api/blog/view", { slug }, { silent: true })
       .then((data) => {
         if (data.success && typeof data.viewsCount === "number") {
           setViews(data.viewsCount);
@@ -61,12 +59,11 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
     }
 
     try {
-      const res = await fetch("/api/blog/like", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, action }),
-      });
-      const data = await res.json();
+      const data = await api.post<{ success: boolean; likesCount?: number }>(
+        "/api/blog/like",
+        { slug, action },
+        { silent: true }
+      );
       if (data.success && typeof data.likesCount === "number") {
         setLikes(data.likesCount);
       }
@@ -79,9 +76,7 @@ export function BlogInteractions({ slug, initialLikes, initialViews }: BlogInter
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      copy(window.location.href);
     }
   };
 

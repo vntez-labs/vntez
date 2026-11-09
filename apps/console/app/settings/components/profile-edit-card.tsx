@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useAuthStore } from "@workspace/auth/store";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { Button } from "@workspace/ui/components/button";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import { User, Check, Loader2, Phone, Mail, Camera } from "lucide-react";
 
 export function ProfileEditCard() {
@@ -37,16 +39,13 @@ export function ProfileEditCard() {
       if (avatar) formData.append("oldUrl", avatar);
       formData.append("appId", "user_profile");
 
-      const res = await fetch("/api/apps/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload ảnh thất bại");
-
+      const data = await api.upload<{ url: string }>("/api/apps/upload", formData);
       setAvatar(data.url);
+      toast.success("Tải ảnh đại diện thành công!");
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Upload ảnh thất bại");
+      const msg = err instanceof Error ? err.message : "Upload ảnh thất bại";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }
@@ -64,26 +63,22 @@ export function ProfileEditCard() {
     setSuccessMessage(null);
 
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          avatar: avatar.trim() || null,
-          phone: phone.trim() || null,
-        }),
+      const data = await api.patch<{ success: boolean; user: any }>("/api/auth/me", {
+        name: name.trim(),
+        avatar: avatar.trim() || null,
+        phone: phone.trim() || null,
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Lưu hồ sơ thất bại");
 
       if (data.user) {
         setUser(data.user);
         setSuccessMessage("Đã lưu thông tin hồ sơ thành công!");
+        toast.success("Đã lưu thông tin hồ sơ thành công!");
         setTimeout(() => setSuccessMessage(null), 3000);
       }
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Lỗi khi lưu hồ sơ");
+      const msg = err instanceof Error ? err.message : "Lỗi khi lưu hồ sơ";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSaving(false);
     }

@@ -18,6 +18,7 @@ interface PermissionsToolbarProps {
   rolePerms: Record<string, string[]>;
   onSelectRole: (roleId: string) => void;
   onOpenCreateRole: () => void;
+  onOpenCreateResource?: () => void;
   onGrantAll: () => void;
   onGrantReadOnly: () => void;
   onRevokeAll: () => void;
@@ -30,6 +31,7 @@ export function PermissionsToolbar({
   rolePerms,
   onSelectRole,
   onOpenCreateRole,
+  onOpenCreateResource,
   onGrantAll,
   onGrantReadOnly,
   onRevokeAll,
@@ -54,15 +56,30 @@ export function PermissionsToolbar({
           </p>
         </div>
 
-        <Button
-          type="button"
-          size="sm"
-          onClick={onOpenCreateRole}
-          className="h-8 px-3 text-xs font-semibold rounded-xl cursor-pointer shrink-0"
-        >
-          <IconPlus className="h-3.5 w-3.5 mr-1" />
-          Tạo vai trò mới
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          {onOpenCreateResource && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onOpenCreateResource}
+              className="h-8 px-3 text-xs font-semibold rounded-xl cursor-pointer"
+            >
+              <IconPlus className="h-3.5 w-3.5 mr-1 text-primary" />
+              Thêm resource
+            </Button>
+          )}
+
+          <Button
+            type="button"
+            size="sm"
+            onClick={onOpenCreateRole}
+            className="h-8 px-3 text-xs font-semibold rounded-xl cursor-pointer"
+          >
+            <IconPlus className="h-3.5 w-3.5 mr-1" />
+            Tạo vai trò mới
+          </Button>
+        </div>
       </div>
 
       {/* Roles Pill Tabs */}

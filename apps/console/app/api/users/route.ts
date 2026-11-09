@@ -240,14 +240,14 @@ export async function DELETE(req: Request) {
 
     const supabaseClient = getSupabaseAdminClient();
 
-    // 1. Delete associated codes in public.oauth_codes
-    await supabaseClient.from("oauth_codes").delete().eq("user_id", userId);
+    // Delete associated codes and user in Supabase Auth concurrently
+    const [, deleteUserRes] = await Promise.all([
+      supabaseClient.from("oauth_codes").delete().eq("user_id", userId),
+      supabaseClient.auth.admin.deleteUser(userId),
+    ]);
 
-    // 2. Delete the user from Supabase Auth
-    const { error } = await supabaseClient.auth.admin.deleteUser(userId);
-
-    if (error) {
-      throw error;
+    if (deleteUserRes.error) {
+      throw deleteUserRes.error;
     }
 
     return NextResponse.json({

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { ShieldCheck, Check, Copy, ExternalLink } from "lucide-react";
+import { ShieldCheck, ExternalLink } from "lucide-react";
 import { useAuthStore } from "@workspace/auth/store";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { buttonVariants } from "@workspace/ui/components/button";
+import { CopyButton } from "@workspace/ui/components/copy-button";
 import type { DashboardStats } from "./dashboard-types";
 
 interface DashboardHeaderProps {
@@ -14,19 +15,12 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ stats }: DashboardHeaderProps) {
   const { user } = useAuthStore();
-  const [copied, setCopied] = useState(false);
 
   const cleanName = fixVietnameseEncoding(user?.name);
   const displayName = cleanName ? cleanName.trim().split(/\s+/)[0] : "Nam";
 
   const projectUrl =
     stats?.database.url || "https://stbswcnsitztbusqrdhi.supabase.co";
-
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(projectUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
@@ -44,18 +38,7 @@ export function DashboardHeader({ stats }: DashboardHeaderProps) {
           </span>
           <span>•</span>
           <span className="font-mono text-xs">{projectUrl}</span>
-          <button
-            type="button"
-            onClick={handleCopyUrl}
-            className="inline-flex items-center gap-1 text-xs text-primary hover:underline cursor-pointer"
-          >
-            {copied ? (
-              <Check className="h-3 w-3 text-emerald-600" />
-            ) : (
-              <Copy className="h-3 w-3" />
-            )}
-            <span>{copied ? "Đã chép" : "Chép"}</span>
-          </button>
+          <CopyButton text={projectUrl} label="Chép" className="h-6 px-2 py-0 text-[11px]" />
         </div>
       </div>
 
@@ -66,7 +49,7 @@ export function DashboardHeader({ stats }: DashboardHeaderProps) {
             variant: "outline",
             size: "sm",
             className:
-              "gap-1.5 text-xs bg-white dark:bg-card border-0 text-foreground hover:bg-[#f6f3eb] h-9 shadow-xs",
+              "gap-1.5 text-xs bg-card border border-border text-foreground hover:bg-muted h-9 shadow-xs rounded-xl",
           })}
         >
           <ShieldCheck className="h-4 w-4 text-primary" />

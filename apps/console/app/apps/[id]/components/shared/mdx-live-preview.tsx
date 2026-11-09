@@ -1,6 +1,17 @@
 "use client";
 
 import React from "react";
+import {
+  extractFrontmatter,
+  parseTabbedCodeBlocks,
+  isAsciiDiagramLine,
+  type TabbedCodeBlockData,
+} from "./mdx-parser-utils";
+import {
+  CodeFenceBlock,
+  AsciiDiagramBlock,
+  InteractiveTabbedCodeBlock,
+} from "./mdx-preview-blocks";
 
 interface MdxLivePreviewProps {
   content: string;
@@ -9,99 +20,197 @@ interface MdxLivePreviewProps {
 export function MdxLivePreview({ content }: MdxLivePreviewProps) {
   if (!content || !content.trim()) {
     return (
-      <div className="h-full min-h-[300px] flex items-center justify-center p-8 text-center text-xs text-muted-foreground border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/30">
+      <div className="h-full min-h-[300px] flex items-center justify-center p-8 text-center text-xs text-muted-foreground border border-dashed border-border rounded-2xl bg-muted/30">
         Nội dung rỗng. Hãy nhập văn bản MDX ở bảng soạn thảo bên trái.
       </div>
     );
   }
 
-  // Parse lines for a clean, secure, zero-dependency Markdown/MDX preview
-  const lines = content.split("\n");
-  const renderedElements: React.ReactNode[] = [];
-  let inCodeBlock = false;
-  let codeBlockLang = "";
-  let codeBuffer: string[] = [];
+  const { frontmatter, cleanContent } = extractFrontmatter(content);
+  const { parsedBlocks, replacedContent } = parseTabbedCodeBlocks(cleanContent);
 
-  lines.forEach((line, index) => {
-    // Handle code fence
-    if (line.startsWith("```")) {
-      if (inCodeBlock) {
-        inCodeBlock = false;
-        renderedElements.push(
-          <div
-            key={`code-${index}`}
-            className="my-3 rounded-xl overflow-hidden bg-zinc-900 dark:bg-black/80 border border-zinc-800 text-xs font-mono"
-          >
-            {codeBlockLang && (
-              <div className="px-3.5 py-1.5 bg-zinc-800/80 text-[10px] text-zinc-400 font-semibold uppercase tracking-wider border-b border-zinc-800">
-                {codeBlockLang}
-              </div>
+  return (
+    <div className="p-5 sm:p-7 bg-card rounded-2xl border border-border shadow-2xs font-sans min-h-[450px] w-full max-w-full min-w-0 overflow-x-hidden space-y-5">
+      {/* 1. Header Banner from Frontmatter (if present) */}
+      {(frontmatter.title || frontmatter.badge || frontmatter.endpoint) && (
+        <div className="p-4 rounded-xl bg-muted/40 border border-border/80 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {frontmatter.badge && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                {frontmatter.badge}
+              </span>
             )}
-            <pre className="p-3.5 text-emerald-400 overflow-x-auto leading-relaxed">
-              <code>{codeBuffer.join("\n")}</code>
-            </pre>
+            {frontmatter.category && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/60">
+                {frontmatter.category}
+              </span>
+            )}
+            {frontmatter.method && frontmatter.endpoint && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                {frontmatter.method} {frontmatter.endpoint}
+              </span>
+            )}
           </div>
-        );
-        codeBuffer = [];
-        codeBlockLang = "";
-      } else {
-        inCodeBlock = true;
-        codeBlockLang = line.replace("```", "").trim();
-      }
-      return;
-    }
+          {frontmatter.title && (
+            <h1 className="text-lg sm:text-xl font-bold font-display text-foreground tracking-tight">
+              {frontmatter.title}
+            </h1>
+          )}
+          {frontmatter.description && (
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {frontmatter.description}
+            </p>
+          )}
+        </div>
+      )}
 
-    if (inCodeBlock) {
-      codeBuffer.push(line);
-      return;
-    }
+      {/* 2. Body Parser */}
+      <RenderMarkdownBody content={replacedContent} parsedBlocks={parsedBlocks} />
+    </div>
+  );
+}
 
+function RenderMarkdownBody({
+  content,
+  parsedBlocks,
+}: {
+  content: string;
+  parsedBlocks: Record<string, TabbedCodeBlockData>;
+}) {
+  const lines = content.split("\n");
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
     const trimmed = line.trim();
 
+    // A. Check for TabbedCodeBlock placeholder
+    if (trimmed.startsWith("__TABBED_CODE_BLOCK_") && trimmed.endsWith("__")) {
+      const blockData = parsedBlocks[trimmed];
+      if (blockData) {
+        elements.push(<InteractiveTabbedCodeBlock key={`tab-${i}`} data={blockData} />);
+      }
+      i++;
+      continue;
+    }
+
+    // B. Code fence ```lang ... ```
+    if (trimmed.startsWith("```")) {
+      const lang = trimmed.replace("```", "").trim();
+      const codeLines: string[] = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith("```")) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++; // skip closing ```
+      elements.push(
+        <CodeFenceBlock key={`code-${i}`} lang={lang} code={codeLines.join("\n")} />
+      );
+      continue;
+    }
+
+    // C. Detect ASCII diagram block
+    if (isAsciiDiagramLine(trimmed)) {
+      const asciiLines: string[] = [];
+      while (i < lines.length && (isAsciiDiagramLine(lines[i]) || lines[i].trim() === "")) {
+        asciiLines.push(lines[i]);
+        i++;
+      }
+      elements.push(
+        <AsciiDiagramBlock key={`ascii-${i}`} diagram={asciiLines.join("\n")} />
+      );
+      continue;
+    }
+
+    // D. Headers
     if (trimmed.startsWith("# ")) {
-      renderedElements.push(
-        <h1 key={index} className="text-xl sm:text-2xl font-bold font-display text-foreground mt-4 mb-2 tracking-tight">
+      elements.push(
+        <h1 key={i} className="text-lg sm:text-xl font-bold font-display text-foreground mt-5 mb-2 pb-1 border-b border-border/60 tracking-tight">
           {trimmed.substring(2)}
         </h1>
       );
-    } else if (trimmed.startsWith("## ")) {
-      renderedElements.push(
-        <h2 key={index} className="text-base sm:text-lg font-bold font-display text-foreground mt-4 mb-2 pb-1 border-b border-zinc-200/60 dark:border-zinc-800 tracking-tight">
+      i++;
+      continue;
+    }
+    if (trimmed.startsWith("## ")) {
+      elements.push(
+        <h2 key={i} className="text-base sm:text-lg font-bold font-display text-foreground mt-5 mb-2 pb-1 border-b border-border/40 tracking-tight">
           {trimmed.substring(3)}
         </h2>
       );
-    } else if (trimmed.startsWith("### ")) {
-      renderedElements.push(
-        <h3 key={index} className="text-sm font-bold font-display text-foreground mt-3 mb-1">
+      i++;
+      continue;
+    }
+    if (trimmed.startsWith("### ")) {
+      elements.push(
+        <h3 key={i} className="text-sm font-bold font-display text-foreground mt-4 mb-1">
           {trimmed.substring(4)}
         </h3>
       );
-    } else if (trimmed.startsWith("> ")) {
-      renderedElements.push(
-        <blockquote key={index} className="pl-3.5 py-1 my-2 border-l-2 border-primary/60 text-xs text-muted-foreground italic bg-primary/5 rounded-r-lg">
+      i++;
+      continue;
+    }
+
+    // E. Blockquote
+    if (trimmed.startsWith("> ")) {
+      elements.push(
+        <blockquote key={i} className="pl-3.5 py-1.5 my-2.5 border-l-2 border-primary/70 text-xs text-muted-foreground italic bg-primary/5 rounded-r-lg">
           {trimmed.substring(2)}
         </blockquote>
       );
-    } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-      renderedElements.push(
-        <li key={index} className="text-xs text-muted-foreground list-disc ml-5 my-0.5 leading-relaxed">
-          {trimmed.substring(2)}
+      i++;
+      continue;
+    }
+
+    // F. Bullet list
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      elements.push(
+        <li key={i} className="text-xs text-muted-foreground list-disc ml-5 my-0.5 leading-relaxed">
+          {renderInlineFormatting(trimmed.substring(2))}
         </li>
       );
-    } else if (trimmed.length === 0) {
-      renderedElements.push(<div key={index} className="h-2" />);
-    } else {
-      renderedElements.push(
-        <p key={index} className="text-xs text-muted-foreground leading-relaxed my-1">
-          {trimmed}
-        </p>
+      i++;
+      continue;
+    }
+
+    // G. Empty line
+    if (trimmed.length === 0) {
+      elements.push(<div key={i} className="h-1.5" />);
+      i++;
+      continue;
+    }
+
+    // H. Normal paragraph
+    elements.push(
+      <p key={i} className="text-xs text-muted-foreground leading-relaxed my-1">
+        {renderInlineFormatting(trimmed)}
+      </p>
+    );
+    i++;
+  }
+
+  return <div className="space-y-1">{elements}</div>;
+}
+
+function renderInlineFormatting(text: string): React.ReactNode {
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code key={idx} className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-[11px] text-foreground border border-border/60">
+          {part.slice(1, -1)}
+        </code>
       );
     }
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={idx} className="font-bold text-foreground">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
   });
-
-  return (
-    <div className="p-5 sm:p-6 bg-white dark:bg-card rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-2xs font-sans min-h-[400px]">
-      {renderedElements}
-    </div>
-  );
 }

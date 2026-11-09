@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useUsersStore } from "../users-store";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { formatDate } from "@workspace/ui/lib/formatters";
 import type { SupabaseAuthUser } from "@/app/api/users/route";
 
 function getRoleBadge(roleStr: string) {
@@ -58,22 +59,6 @@ export function UsersTable() {
     openEditUserModal,
     setDeletingUser,
   } = useUsersStore();
-
-  const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "Chưa đăng nhập";
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateStr;
-    }
-  };
 
   const filteredUsers = users.filter((u) => {
     const q = searchQuery.toLowerCase();
@@ -209,7 +194,7 @@ export function UsersTable() {
 
                     {/* Last login */}
                     <td className="py-3.5 px-5 text-muted-foreground font-mono text-xs whitespace-nowrap">
-                      {formatDate(item.lastSignInAt)}
+                      {formatDate(item.lastSignInAt, true)}
                     </td>
 
                     {/* Actions: Edit, View, Delete */}

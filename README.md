@@ -28,7 +28,7 @@ Hệ thống sử dụng **Turborepo** và **Bun** để quản lý workspace:
 ## 2. Tài liệu chi tiết từng ứng dụng
 Trước khi làm việc với bất kỳ ứng dụng nào, **hãy đọc file README tương ứng**:
 - **[`apps/web/README.md`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/web/README.md)**: Hướng dẫn cấu trúc `/docs` 3 cột, PrismJS syntax highlighter, xuất OpenAPI 3.1, và landing page.
-- **[`apps/console/README.md`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/README.md)**: Hướng dẫn quản trị Client, Deals, Users, Zustand stores, và luồng SSO PKCE.
+- **[`apps/console/README.md`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/README.md)**: Hướng dẫn quản trị Ứng dụng & OAuth, Database SQL Executor, Users, Storage R2, Telebot, Zustand stores, và luồng SSO PKCE.
 - **[`apps/id/web/README.md`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/id/web/README.md)**: Hướng dẫn môi trường Desktop OS Sandbox, hệ thống lưới 2D, Supabase SSR, và OAuth endpoints.
 - **[`packages/ui/README.md`](file:///home/hnamhocit/Workspace/frontend/vntez/packages/ui/README.md)**: Hướng dẫn sử dụng `TopProgressBar`, `ErrorBoundaryView`, `NotFoundView`, và `UnderConstructionView`.
 

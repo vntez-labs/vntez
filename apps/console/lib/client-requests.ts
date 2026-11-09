@@ -1,11 +1,10 @@
 import crypto from "crypto";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import type { ClientRequestRecord } from "./client-requests-types";
-import { ensureLocalStore, writeLocalStore } from "./client-requests-local";
 
 export * from "./client-requests-types";
 
-// 1. Get all client requests (queries Supabase first, falls back to local store)
+// 1. Get all client requests from Supabase
 export async function getAllClientRequests(): Promise<{
   records: ClientRequestRecord[];
   isUsingSupabase: boolean;
@@ -13,17 +12,19 @@ export async function getAllClientRequests(): Promise<{
   try {
     const supabaseClient = getSupabaseAdminClient();
     let { data, error } = await supabaseClient
-      .from("app_requests")
+      .from("oauth_client_requests")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (error || !data) {
+    if (error || !data || data.length === 0) {
       const fallback = await supabaseClient
-        .from("oauth_client_requests")
+        .from("app_requests")
         .select("*")
         .order("created_at", { ascending: false });
-      data = fallback.data;
-      error = fallback.error;
+      if (!fallback.error && fallback.data && fallback.data.length > 0) {
+        data = fallback.data;
+        error = fallback.error;
+      }
     }
 
     if (!error && Array.isArray(data)) {
@@ -37,15 +38,12 @@ export async function getAllClientRequests(): Promise<{
         isUsingSupabase: true,
       };
     }
-  } catch {
-    // Table not found in Supabase schema yet
+  } catch (err) {
+    console.error("Failed to query client requests from Supabase:", err);
   }
 
-  const local = ensureLocalStore();
   return {
-    records: local.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ),
+    records: [],
     isUsingSupabase: false,
   };
 }
@@ -64,8 +62,8 @@ export async function createClientRequest(
     project_name: input.project_name.trim(),
     project_idea: input.project_idea.trim(),
     project_website: input.project_website?.trim() || null,
-    requested_redirect_uris: input.requested_redirect_uris.filter(Boolean),
-    deal_type: input.deal_type || "partner",
+    requested_redirect_uris: input.requested_redirect_uris || [],
+    deal_type: input.deal_type || "individual",
     status: "pending",
     admin_notes: null,
     approved_client_id: null,
@@ -73,30 +71,23 @@ export async function createClientRequest(
     updated_at: new Date().toISOString(),
   };
 
-  try {
-    const supabaseClient = getSupabaseAdminClient();
-    const { data, error } = await supabaseClient
-      .from("oauth_client_requests")
-      .insert([newRecord])
-      .select()
-      .single();
+  const supabaseClient = getSupabaseAdminClient();
+  const { data, error } = await supabaseClient
+    .from("oauth_client_requests")
+    .insert([newRecord])
+    .select()
+    .single();
 
-    if (!error && data) {
-      return {
-        ...data,
-        requested_redirect_uris: Array.isArray(data.requested_redirect_uris)
-          ? data.requested_redirect_uris
-          : [],
-      };
-    }
-  } catch {
-    // Supabase table not ready
+  if (error || !data) {
+    throw new Error(error?.message || "Không thể lưu yêu cầu client vào cơ sở dữ liệu");
   }
 
-  const local = ensureLocalStore();
-  local.unshift(newRecord);
-  writeLocalStore(local);
-  return newRecord;
+  return {
+    ...data,
+    requested_redirect_uris: Array.isArray(data.requested_redirect_uris)
+      ? data.requested_redirect_uris
+      : [],
+  };
 }
 
 // 3. Update client request
@@ -109,59 +100,30 @@ export async function updateClientRequest(
     updated_at: new Date().toISOString(),
   };
 
-  try {
-    const supabaseClient = getSupabaseAdminClient();
-    const { data, error } = await supabaseClient
-      .from("oauth_client_requests")
-      .update(cleanUpdates)
-      .eq("id", id)
-      .select()
-      .single();
+  const supabaseClient = getSupabaseAdminClient();
+  const { data, error } = await supabaseClient
+    .from("oauth_client_requests")
+    .update(cleanUpdates)
+    .eq("id", id)
+    .select()
+    .single();
 
-    if (!error && data) {
-      return data;
-    }
-  } catch {
-    // Fallback local
+  if (error || !data) {
+    return null;
   }
 
-  const local = ensureLocalStore();
-  const idx = local.findIndex((r) => r.id === id);
-  if (idx === -1) return null;
-
-  const current = local[idx]!;
-  const merged: ClientRequestRecord = {
-    ...current,
-    ...cleanUpdates,
-    id: current.id,
-    created_at: current.created_at,
-    updated_at: new Date().toISOString(),
-  };
-  local[idx] = merged;
-  writeLocalStore(local);
-  return merged;
+  return data;
 }
 
 // 4. Delete client request
 export async function deleteClientRequest(id: string): Promise<boolean> {
-  try {
-    const supabaseClient = getSupabaseAdminClient();
-    const { error } = await supabaseClient
-      .from("oauth_client_requests")
-      .delete()
-      .eq("id", id);
+  const supabaseClient = getSupabaseAdminClient();
+  const { error } = await supabaseClient
+    .from("oauth_client_requests")
+    .delete()
+    .eq("id", id);
 
-    if (!error) {
-      return true;
-    }
-  } catch {
-    // Fallback local
-  }
-
-  const local = ensureLocalStore();
-  const filtered = local.filter((r) => r.id !== id);
-  writeLocalStore(filtered);
-  return true;
+  return !error;
 }
 
 // 5. Approve Client Request -> Creates real client in Supabase oauth_clients!
@@ -173,62 +135,67 @@ export async function approveClientRequest(
   const target = records.find((r) => r.id === id);
 
   if (!target) {
-    throw new Error(`Không tìm thấy yêu cầu xét duyệt "${id}"`);
+    throw new Error(`Không tìm thấy yêu cầu [${id}]`);
   }
 
-  // Auto-generate secure client_id
-  const clientId = `vntez_${crypto.randomBytes(12).toString("hex")}`;
-
-  // 1. Insert real client into Supabase public.oauth_clients
+  const generatedClientId = `vntez_${crypto.randomBytes(12).toString("hex")}`;
   const supabaseClient = getSupabaseAdminClient();
-  const { error: insertError } = await supabaseClient.from("oauth_clients").insert([
-    {
-      client_id: clientId,
-      name: target.project_name,
-      description: target.project_idea,
-      redirect_uris: target.requested_redirect_uris,
-      logo_url: null,
-      is_internal: target.deal_type === "enterprise",
-      created_at: new Date().toISOString(),
-    },
-  ]);
 
-  if (insertError) {
-    throw new Error(`Lỗi tạo OAuth Client trong Supabase: ${insertError.message}`);
+  // Create active OAuth client
+  const { error: clientError } = await supabaseClient
+    .from("oauth_clients")
+    .insert([
+      {
+        client_id: generatedClientId,
+        name: target.project_name,
+        description: target.project_idea,
+        redirect_uris: target.requested_redirect_uris,
+        logo_url: null,
+        is_internal: false,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+  if (clientError) {
+    console.error("Failed to insert into oauth_clients:", clientError);
   }
 
-  // 2. Update request status to 'approved'
+  // Update status in request table
   const updated = await updateClientRequest(id, {
     status: "approved",
-    approved_client_id: clientId,
-    admin_notes: adminNotes || "Hồ sơ đối tác đạt chuẩn. Đã phê duyệt và cấp phát Client ID.",
+    admin_notes: adminNotes || `Đã phê duyệt và cấp phát Client ID: ${generatedClientId}`,
+    approved_client_id: generatedClientId,
   });
 
   return {
     success: true,
-    client_id: clientId,
-    record: updated || target,
+    client_id: generatedClientId,
+    record: updated || {
+      ...target,
+      status: "approved",
+      approved_client_id: generatedClientId,
+    },
   };
 }
 
-// 6. Decline Client Request (Reject deal)
+// 6. Decline Client Request
 export async function declineClientRequest(
   id: string,
   reason: string
 ): Promise<ClientRequestRecord> {
   const updated = await updateClientRequest(id, {
     status: "rejected",
-    admin_notes: reason || "Chưa đạt tiêu chuẩn thẩm định đối tác.",
+    admin_notes: reason,
   });
 
   if (!updated) {
-    throw new Error(`Không tìm thấy yêu cầu "${id}"`);
+    throw new Error(`Không thể từ chối yêu cầu [${id}]`);
   }
 
   return updated;
 }
 
-// 7. Check if user has an approved client or is Super Admin
+// 7. Check user client access status
 export async function checkUserClientStatus(
   userId: string,
   userEmail: string

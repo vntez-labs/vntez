@@ -6,6 +6,7 @@ import { AuthProvider } from "@workspace/auth/provider";
 import { getServerSession } from "@workspace/auth/server";
 import { cn } from "@workspace/ui/lib/utils";
 import { TopProgressBar } from "@workspace/ui/components/top-progress-bar";
+import { Toaster } from "@workspace/ui/components/toaster";
 
 const beVietnamPro = Be_Vietnam_Pro({
   weight: ["300", "400", "500", "600", "700"],
@@ -119,6 +120,7 @@ export default async function RootLayout({
       >
         <ThemeProvider>
           <TopProgressBar />
+          <Toaster />
           <AuthProvider initialUser={user} initialToken={accessToken}>
             {children}
           </AuthProvider>

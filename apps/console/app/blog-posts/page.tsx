@@ -4,8 +4,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
-import { Search, Newspaper, Eye, Heart, MessageSquare } from "lucide-react";
+import { Search, Newspaper, Eye, Heart, MessageSquare, Plus } from "lucide-react";
+import { Button } from "@workspace/ui/components/button";
 import { CardSkeleton } from "@workspace/ui/components/skeleton";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 import { BlogCard } from "./components/blog-card";
 
@@ -29,13 +32,13 @@ function BlogManagementContent() {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/blog");
-      const data = await res.json();
+      const data = await api.get<{ success: boolean; posts: BlogPostItem[] }>("/api/blog");
       if (data.success && Array.isArray(data.posts)) {
         setPosts(data.posts);
       }
     } catch (err) {
       console.error("Failed to load blog posts:", err);
+      toast.error("Không thể tải danh sách bài viết");
     } finally {
       setIsLoading(false);
     }
@@ -91,104 +94,113 @@ function BlogManagementContent() {
     if (!confirm(`Bạn có chắc chắn muốn xóa bài viết [${slug}]?`)) return;
 
     try {
-      const res = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Xóa bài viết thất bại");
+      await api.delete(`/api/blog?slug=${encodeURIComponent(slug)}`);
       setPosts((prev) => prev.filter((p) => p.slug !== slug));
-    } catch (err: any) {
-      alert(err.message);
+      toast.success(`Đã xóa bài viết [${slug}] thành công!`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Xóa bài viết thất bại";
+      toast.error(msg);
     }
   };
 
   return (
-    <div className="space-y-8 min-w-0 w-full max-w-full">
-      {/* Header with human-centric spacing and typography hierarchy */}
-      <div className="pb-6 border-b border-border">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
-            <span className="font-semibold text-foreground">vntez Engineering Blog</span>
-            <span className="text-muted-foreground/30">•</span>
-            <span className="text-primary font-semibold">{posts.length} Bài viết</span>
+    <div className="space-y-6 min-w-0 w-full max-w-full">
+      {/* Top Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Newspaper className="h-5 w-5" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display leading-tight">
-            Quản trị Bài viết & Blog
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
-            Soạn thảo bằng Markdown Editor trực quan, xem trước live, theo dõi lượt xem, lượt tim và quản lý bình luận.
-          </p>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-bold font-display text-foreground">
+              Quản trị Bài viết & Blog
+            </h1>
+            <span className="bg-primary/10 text-primary text-xs font-mono font-semibold px-2 py-0.5 rounded-full">
+              {posts.length} bài
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 shrink-0">
+          <Button
+            size="sm"
+            onClick={handleCreate}
+            className="gap-1.5 text-xs shadow-xs cursor-pointer font-semibold bg-primary hover:bg-primary-hover text-white h-9 rounded-xl"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Viết bài mới</span>
+          </Button>
         </div>
       </div>
 
-      {/* Summary Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-xs text-muted-foreground font-medium">Tổng bài viết</span>
-            <div className="text-2xl font-bold font-display text-foreground">{stats.total}</div>
+      {/* Summary Stats Row - Compact & High-density */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-2xs flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-muted-foreground font-medium">Tổng bài viết</span>
+            <div className="text-xl font-bold font-display text-foreground">{stats.total}</div>
           </div>
-          <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
-            <Newspaper className="h-5 w-5" />
+          <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+            <Newspaper className="h-4 w-4" />
           </div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-xs text-muted-foreground font-medium">Tổng lượt xem</span>
-            <div className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-2xs flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-muted-foreground font-medium">Tổng lượt xem</span>
+            <div className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
               {stats.views.toLocaleString()}
             </div>
           </div>
-          <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 shrink-0">
-            <Eye className="h-5 w-5" />
+          <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 shrink-0">
+            <Eye className="h-4 w-4" />
           </div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-xs text-muted-foreground font-medium">Tổng lượt tim</span>
-            <div className="text-2xl font-bold font-mono text-rose-500">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-2xs flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-muted-foreground font-medium">Tổng lượt tim</span>
+            <div className="text-xl font-bold font-mono text-rose-500">
               {stats.likes.toLocaleString()}
             </div>
           </div>
-          <div className="p-3 rounded-xl bg-rose-500/10 text-rose-500 shrink-0">
-            <Heart className="h-5 w-5" />
+          <div className="p-2 rounded-lg bg-rose-500/10 text-rose-500 shrink-0">
+            <Heart className="h-4 w-4" />
           </div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-xs text-muted-foreground font-medium">Tổng bình luận</span>
-            <div className="text-2xl font-bold font-mono text-amber-500">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-2xs flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-muted-foreground font-medium">Tổng bình luận</span>
+            <div className="text-xl font-bold font-mono text-amber-500">
               {stats.comments.toLocaleString()}
             </div>
           </div>
-          <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
-            <MessageSquare className="h-5 w-5" />
+          <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 shrink-0">
+            <MessageSquare className="h-4 w-4" />
           </div>
         </div>
       </div>
 
-      {/* Search and Category Filter without nested card wrappers */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+      {/* Search and Category Filter */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Tìm theo tiêu đề, slug, tóm tắt..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-card text-foreground border border-input shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="w-full h-9 pl-9 pr-4 text-xs rounded-xl bg-card text-foreground border border-input shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
 
         {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-card/80 border border-border shadow-2xs">
+        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-card border border-border shadow-2xs">
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-all ${
+            className={`px-3 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all ${
               selectedCategory === "all"
                 ? "bg-primary text-white shadow-xs font-semibold"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
             Tất cả ({posts.length})
@@ -198,10 +210,10 @@ function BlogManagementContent() {
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all ${
                 selectedCategory === cat
                   ? "bg-primary text-white shadow-xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               {cat}

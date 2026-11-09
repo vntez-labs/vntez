@@ -96,10 +96,17 @@ export async function PATCH(req: NextRequest) {
     }
 
     const supabase = getSupabaseAdminClient() as any;
+    // Exclude primary key from update payload to prevent postgres PK mutation errors
+    const { [pkField]: _ignored, ...updatePayload } = data;
+    const matchVal =
+      !isNaN(Number(pkValue)) && (pkField === "chat_id" || typeof pkValue === "number")
+        ? Number(pkValue)
+        : pkValue;
+
     const { data: updated, error } = await supabase
       .from(table)
-      .update(data)
-      .match({ [pkField]: pkValue })
+      .update(updatePayload)
+      .match({ [pkField]: matchVal })
       .select();
 
     if (error) throw error;
@@ -123,11 +130,17 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Missing delete parameters" }, { status: 400 });
     }
 
+    const validPks = pks.filter((p: any) => p !== undefined && p !== null && String(p).trim() !== "");
+    if (validPks.length === 0) {
+      return NextResponse.json({ error: "Danh sách khóa chính xóa không hợp lệ" }, { status: 400 });
+    }
+
+    const formattedPks = pkField === "chat_id" ? validPks.map(Number) : validPks;
     const supabase = getSupabaseAdminClient() as any;
-    const { error } = await supabase.from(table).delete().in(pkField, pks);
+    const { error } = await supabase.from(table).delete().in(pkField, formattedPks);
     if (error) throw error;
 
-    return NextResponse.json({ success: true, count: pks.length });
+    return NextResponse.json({ success: true, count: validPks.length });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Error deleting rows";
     return NextResponse.json({ error: msg }, { status: 500 });

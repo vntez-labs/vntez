@@ -1,4 +1,12 @@
-export type StandardResource = "users" | "files" | "messages" | "clients" | "roles" | string;
+export type StandardResource =
+  | "apps"
+  | "users"
+  | "database"
+  | "blog"
+  | "storage"
+  | "telebot"
+  | "settings"
+  | string;
 
 export type StandardAction =
   | "create"
@@ -18,18 +26,17 @@ export interface RoleDefinition {
   permissions: string[];
 }
 
+export interface AppScopeItem {
+  id: string | null; // null represents Root / Global
+  name: string;
+  category?: string;
+  color?: string;
+}
+
 export interface PermissionMatrixResponse {
   success: boolean;
   standard_resources: string[];
   standard_actions: string[];
   built_in_roles: Record<string, string[]>;
   all_roles?: RoleDefinition[];
-}
-
-export interface EvaluationResult {
-  allowed: boolean;
-  reason?: string;
-  user_id: string;
-  permission: string;
-  matched_roles?: string[];
 }

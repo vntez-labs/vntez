@@ -19,18 +19,13 @@ export default function StoragePage() {
     <ConsoleShell>
       <div className="space-y-5">
         {/* Page Title */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pb-4 border-b border-border">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">
             <HardDrive className="h-5 w-5" />
           </div>
-          <div>
-            <h1 className="text-xl font-bold font-display text-foreground">
-              R2 Storage & Uploads
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Hệ thống lưu trữ đám mây Edge S3 NVMe và tải lên tệp tin tĩnh
-            </p>
-          </div>
+          <h1 className="text-xl font-bold font-display text-foreground">
+            R2 Storage & Uploads
+          </h1>
         </div>
 
         {/* Storage Meter Quota Gauge */}

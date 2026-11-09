@@ -3,11 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
+import { api } from "@workspace/ui/lib/api-client";
 import type { DashboardStats } from "@/components/dashboard/dashboard-types";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { WorkersServicesOverview } from "@/components/dashboard/workers-services-overview";
-import { RecentCodesTable } from "@/components/dashboard/recent-codes-table";
-import { RegisteredClientsCard } from "@/components/dashboard/registered-clients-card";
+import { DashboardKpis } from "@/components/dashboard/dashboard-kpis";
+import { TrafficTrendChart } from "@/components/dashboard/traffic-trend-chart";
+import { EcosystemAppsStatus } from "@/components/dashboard/ecosystem-apps-status";
+import { GlobalPermissionsMatrixCard } from "@/components/dashboard/global-permissions-matrix-card";
+import { RecentActivityCard } from "@/components/dashboard/recent-activity-card";
 
 export default function DashboardPage() {
   return (
@@ -23,8 +26,8 @@ function DashboardContent() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard/stats")
-      .then((res) => res.json())
+    api
+      .get<DashboardStats & { success: boolean }>("/api/dashboard/stats")
       .then((data) => {
         if (data.success) {
           setStats(data);
@@ -36,9 +39,11 @@ function DashboardContent() {
   return (
     <div className="space-y-6 max-w-7xl min-w-0 w-full max-w-full">
       <DashboardHeader stats={stats} />
-      <WorkersServicesOverview />
-      <RecentCodesTable stats={stats} />
-      <RegisteredClientsCard stats={stats} />
+      <DashboardKpis stats={stats} />
+      <TrafficTrendChart stats={stats} />
+      <GlobalPermissionsMatrixCard />
+      <EcosystemAppsStatus stats={stats} />
+      <RecentActivityCard stats={stats} />
     </div>
   );
 }

@@ -4,8 +4,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@workspace/auth/guard";
 import { ConsoleShell } from "@/components/console-shell";
-import { Search, Layers } from "lucide-react";
+import { Search, Layers, Plus } from "lucide-react";
+import { Button } from "@workspace/ui/components/button";
 import { CardSkeleton } from "@workspace/ui/components/skeleton";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { AppItem } from "@workspace/ui/lib/content-types";
 import { AppCard } from "./components/app-card";
 
@@ -28,13 +31,13 @@ function AppsManagementContent() {
   const fetchApps = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/apps");
-      const data = await res.json();
+      const data = await api.get<{ success: boolean; apps: AppItem[] }>("/api/apps");
       if (data.success && Array.isArray(data.apps)) {
         setApps(data.apps);
       }
     } catch (err) {
       console.error("Failed to load apps:", err);
+      toast.error("Không thể tải danh sách ứng dụng");
     } finally {
       setIsLoading(false);
     }
@@ -68,50 +71,53 @@ function AppsManagementContent() {
     if (!confirm(`Bạn có chắc chắn muốn xóa app [${id}]?`)) return;
 
     try {
-      const res = await fetch(`/api/apps?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Xóa thất bại");
+      await api.delete(`/api/apps?id=${encodeURIComponent(id)}`);
       setApps((prev) => prev.filter((a) => a.id !== id));
-    } catch (err: any) {
-      alert(err.message);
+      toast.success(`Đã xóa app [${id}] thành công`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Xóa thất bại";
+      toast.error(msg);
     }
   };
 
   return (
-    <div className="space-y-8 min-w-0 w-full max-w-full">
-      {/* Header with human-centric spacing and typography hierarchy */}
-      <div className="pb-6 border-b border-border">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
-            <span className="font-semibold text-foreground">Hệ sinh thái VNTEZ</span>
-            <span className="text-muted-foreground/30">•</span>
-            <span className="text-primary font-semibold">{apps.length} Ứng dụng</span>
+    <div className="space-y-6 min-w-0 w-full max-w-full">
+      {/* Top Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Layers className="h-5 w-5" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display leading-tight">
-            Quản lý Ứng dụng & Sản phẩm
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
-            Đăng ký, upload avatar, cấu hình nền tảng hỗ trợ và hiển thị dữ liệu trực tiếp trên trang Sản phẩm.
-          </p>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-bold font-display text-foreground">
+              Quản lý Ứng dụng & Sản phẩm
+            </h1>
+            <span className="bg-primary/10 text-primary text-xs font-mono font-semibold px-2 py-0.5 rounded-full">
+              {apps.length} ứng dụng
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Tìm theo tên, ID, mô tả..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-card text-foreground border border-input shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          />
-        </div>
-        <div className="text-xs font-mono text-muted-foreground">
-          Hiển thị <strong>{filteredApps.length}</strong> / {apps.length} ứng dụng
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Tìm theo tên, ID, mô tả..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-9 pl-8 pr-3 text-xs bg-card text-foreground border border-input shadow-2xs rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-muted-foreground/60 transition-all"
+            />
+          </div>
+
+          <Button
+            size="sm"
+            onClick={handleCreate}
+            className="gap-1.5 text-xs shadow-xs cursor-pointer font-semibold bg-primary hover:bg-primary-hover text-white h-9 rounded-xl shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Thêm Ứng dụng</span>
+          </Button>
         </div>
       </div>
 

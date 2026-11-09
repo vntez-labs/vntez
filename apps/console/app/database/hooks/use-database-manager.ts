@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { api } from "@workspace/ui/lib/api-client";
+import { toast } from "@workspace/ui/components/toaster";
 import type { TableMeta } from "../types";
 
 export function useDatabaseManager() {
@@ -16,28 +18,31 @@ export function useDatabaseManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoadingRows, setIsLoadingRows] = useState(false);
 
+  // In-memory cache for table rows: key = `${tableName}:${page}:${limit}:${search}`
+  const rowsCache = useRef<Record<string, { rows: Record<string, any>[]; totalCount: number }>>({});
+
   // Multi-select & Batch Actions
   const [selectedPks, setSelectedPks] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // 1. Fetch tables
+  // 1. Fetch tables list (ONLY on mount or explicit user refresh)
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const res = await fetch("/api/database/tables");
-      const data = await res.json();
+      const data = await api.get<{ success: boolean; tables: TableMeta[] }>("/api/database/tables");
       if (data.success && Array.isArray(data.tables)) {
         setTables(data.tables);
-        if (data.tables.length > 0 && !selectedTableName) {
-          setSelectedTableName(data.tables[0].name);
-        }
+        setSelectedTableName((prev) => {
+          if (prev && data.tables.some((t) => t.name === prev)) return prev;
+          return data.tables[0]?.name || "";
+        });
       }
     } catch (err) {
       console.error("Failed to fetch tables:", err);
     } finally {
       setIsLoadingTables(false);
     }
-  }, [selectedTableName]);
+  }, []);
 
   useEffect(() => {
     fetchTables();
@@ -45,11 +50,22 @@ export function useDatabaseManager() {
 
   const currentTableMeta = tables.find((t) => t.name === selectedTableName) || null;
 
-  // 2. Fetch rows
-  const fetchRows = useCallback(async () => {
+  // 2. Fetch rows with in-memory caching to eliminate redundant loading
+  const fetchRows = useCallback(async (bypassCache = false) => {
     if (!selectedTableName) return;
-    setIsLoadingRows(true);
     setSelectedPks(new Set());
+
+    const cacheKey = `${selectedTableName}:${page}:${limit}:${searchQuery}`;
+
+    // Instant render from cache if available
+    if (!bypassCache && rowsCache.current[cacheKey]) {
+      const cached = rowsCache.current[cacheKey];
+      setRows(cached.rows);
+      setTotalCount(cached.totalCount);
+      return;
+    }
+
+    setIsLoadingRows(true);
     try {
       const params = new URLSearchParams({
         table: selectedTableName,
@@ -57,11 +73,16 @@ export function useDatabaseManager() {
         limit: String(limit),
         search: searchQuery,
       });
-      const res = await fetch(`/api/database/rows?${params.toString()}`);
-      const data = await res.json();
+      const data = await api.get<{ success: boolean; rows: Record<string, any>[]; totalCount: number }>(
+        `/api/database/rows?${params.toString()}`
+      );
       if (data.success && Array.isArray(data.rows)) {
         setRows(data.rows);
         setTotalCount(data.totalCount || 0);
+        rowsCache.current[cacheKey] = {
+          rows: data.rows,
+          totalCount: data.totalCount || 0,
+        };
       }
     } catch (err) {
       console.error("Failed to fetch rows:", err);
@@ -73,6 +94,19 @@ export function useDatabaseManager() {
   useEffect(() => {
     fetchRows();
   }, [fetchRows]);
+
+  // Invalidate cache for a specific table or all tables
+  const invalidateTableCache = useCallback((tableName?: string) => {
+    if (!tableName) {
+      rowsCache.current = {};
+      return;
+    }
+    Object.keys(rowsCache.current).forEach((k) => {
+      if (k.startsWith(`${tableName}:`)) {
+        delete rowsCache.current[k];
+      }
+    });
+  }, []);
 
   // 3. Selection Handlers
   const handleToggleSelectRow = (pkVal: string) => {
@@ -111,22 +145,23 @@ export function useDatabaseManager() {
 
     setIsDeleting(true);
     try {
-      const res = await fetch("/api/database/rows", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          table: selectedTableName,
-          pkField: currentTableMeta.primaryKey,
-          pks: Array.from(selectedPks),
-        }),
+      await api.delete("/api/database/rows", {
+        table: selectedTableName,
+        pkField: currentTableMeta.primaryKey,
+        pks: Array.from(selectedPks),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Xóa thất bại");
+      toast.success(`Đã xóa ${count} bản ghi thành công!`);
       setSelectedPks(new Set());
-      await fetchRows();
-      await fetchTables();
+      invalidateTableCache(selectedTableName);
+
+      // Optimistic rowCount update
+      setTables((prev) =>
+        prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: Math.max(0, t.rowCount - count) } : t))
+      );
+      await fetchRows(true);
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Lỗi khi xóa nhiều dòng");
+      const msg = err instanceof Error ? err.message : "Lỗi khi xóa nhiều dòng";
+      toast.error(msg);
     } finally {
       setIsDeleting(false);
     }
@@ -138,21 +173,21 @@ export function useDatabaseManager() {
     if (!confirm(`Xóa bản ghi có khóa chính: ${pkVal}?`)) return;
 
     try {
-      const res = await fetch("/api/database/rows", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          table: selectedTableName,
-          pkField: currentTableMeta.primaryKey,
-          pks: [pkVal],
-        }),
+      await api.delete("/api/database/rows", {
+        table: selectedTableName,
+        pkField: currentTableMeta.primaryKey,
+        pks: [pkVal],
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Xóa thất bại");
-      await fetchRows();
-      await fetchTables();
+      toast.success(`Đã xóa bản ghi [${pkVal}]!`);
+      invalidateTableCache(selectedTableName);
+
+      setTables((prev) =>
+        prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: Math.max(0, t.rowCount - 1) } : t))
+      );
+      await fetchRows(true);
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Lỗi khi xóa dòng");
+      const msg = err instanceof Error ? err.message : "Lỗi khi xóa dòng";
+      toast.error(msg);
     }
   };
 
@@ -165,26 +200,36 @@ export function useDatabaseManager() {
     const pk = currentTableMeta.primaryKey;
     const isEdit = Boolean(editingRow);
 
-    const res = await fetch("/api/database/rows", {
-      method: isEdit ? "PATCH" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        isEdit
-          ? {
-              table: selectedTableName,
-              pkField: pk,
-              pkValue: editingRow?.[pk],
-              data: formData,
-            }
-          : { table: selectedTableName, data: formData }
-      ),
-    });
+    const body = isEdit
+      ? {
+          table: selectedTableName,
+          pkField: pk,
+          pkValue: editingRow?.[pk],
+          data: formData,
+        }
+      : { table: selectedTableName, data: formData };
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Lưu thất bại");
-    await fetchRows();
-    await fetchTables();
-    return true;
+    try {
+      if (isEdit) {
+        await api.patch("/api/database/rows", body);
+      } else {
+        await api.post("/api/database/rows", body);
+      }
+      toast.success(isEdit ? "Cập nhật bản ghi thành công!" : "Tạo bản ghi mới thành công!");
+      invalidateTableCache(selectedTableName);
+
+      if (!isEdit) {
+        setTables((prev) =>
+          prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: t.rowCount + 1 } : t))
+        );
+      }
+      await fetchRows(true);
+      return true;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Lưu thất bại";
+      toast.error(msg);
+      return false;
+    }
   };
 
   return {

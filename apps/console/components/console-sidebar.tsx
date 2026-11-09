@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { api } from "@workspace/ui/lib/api-client";
 import {
   IconTerminal2,
   IconLayoutDashboard,
@@ -105,17 +106,15 @@ export function ConsoleSidebar() {
   // Fetch live apps list for sidebar
   useEffect(() => {
     let mounted = true;
-    fetch("/api/apps")
-      .then((res) => res.json())
+    api
+      .get<{ success: boolean; apps: Array<{ id: string; name: string; avatarUrl?: string | null; color?: string }> }>(
+        "/api/apps",
+        { silent: true }
+      )
       .then((data) => {
-        if (
-          mounted &&
-          data.success &&
-          Array.isArray(data.apps) &&
-          data.apps.length > 0
-        ) {
+        if (mounted && data.success && Array.isArray(data.apps) && data.apps.length > 0) {
           setSidebarApps(
-            data.apps.map((a: any) => ({
+            data.apps.map((a) => ({
               id: a.id,
               name: a.name,
               avatarUrl: a.avatarUrl,

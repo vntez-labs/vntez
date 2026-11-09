@@ -1,22 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@workspace/auth/server";
 import { getSupabaseAdminClient, SUPABASE_URL } from "@/lib/supabase";
+import type { TableMeta, ColumnMeta } from "@/app/database/types";
+import { TABLE_METADATA_MAP } from "@/app/database/database-schema-constants";
 
-export interface ColumnMeta {
-  name: string;
-  type: string;
-  format?: string;
-  isPrimaryKey: boolean;
-  required: boolean;
-  defaultVal?: string;
-}
-
-export interface TableMeta {
-  name: string;
-  primaryKey: string;
-  rowCount: number;
-  columns: ColumnMeta[];
-}
+export type { TableMeta, ColumnMeta };
 
 export async function GET() {
   const { user } = await getServerSession();
@@ -44,56 +32,81 @@ export async function GET() {
 
     const spec = await res.json();
     const supabase = getSupabaseAdminClient();
-    const tables: TableMeta[] = [];
+    const definitions = Object.entries<any>(spec.definitions || {});
 
-    for (const [tableName, def] of Object.entries<any>(spec.definitions || {})) {
-      const properties = def.properties || {};
-      const requiredCols: string[] = def.required || [];
+    // Query exact row counts and build metadata concurrently with Promise.all
+    const tables: TableMeta[] = await Promise.all(
+      definitions.map(async ([tableName, def]) => {
+        const properties = def.properties || {};
+        const requiredCols: string[] = def.required || [];
+        const propKeys = Object.keys(properties);
 
-      let primaryKey = "id";
-      const columns: ColumnMeta[] = [];
-
-      for (const [colName, prop] of Object.entries<any>(properties)) {
-        const isPk = Boolean(prop.description && prop.description.includes("<pk/>"));
-        if (isPk) {
-          primaryKey = colName;
+        // 1. Detect primary key from OpenAPI spec, centralized metadata or common column names
+        let discoveredPk: string | null = null;
+        for (const [colName, prop] of Object.entries<any>(properties)) {
+          if (
+            prop.description &&
+            (prop.description.includes("<pk/>") || prop.description.toLowerCase().includes("primary key"))
+          ) {
+            discoveredPk = colName;
+            break;
+          }
         }
 
-        columns.push({
-          name: colName,
-          type: prop.type || "string",
-          format: prop.format,
-          isPrimaryKey: isPk,
-          required: requiredCols.includes(colName),
-          defaultVal: prop.default,
-        });
-      }
+        const knownPk = TABLE_METADATA_MAP[tableName]?.primaryKey;
+        const primaryKey =
+          discoveredPk ||
+          (knownPk && propKeys.includes(knownPk) ? knownPk : null) ||
+          (propKeys.includes("id") ? "id" : null) ||
+          (propKeys.includes("slug") ? "slug" : null) ||
+          (propKeys.includes("chat_id") ? "chat_id" : null) ||
+          (propKeys.includes("code") ? "code" : null) ||
+          (propKeys.includes("client_id") ? "client_id" : null) ||
+          propKeys[0] ||
+          "id";
 
-      // Query exact row count
-      let rowCount = 0;
-      try {
-        const { count, error } = await supabase
-          .from(tableName)
-          .select("*", { count: "exact", head: true });
-        if (!error && typeof count === "number") {
-          rowCount = count;
+        const columns: ColumnMeta[] = [];
+        for (const [colName, prop] of Object.entries<any>(properties)) {
+          const isPk = colName === primaryKey;
+          columns.push({
+            name: colName,
+            type: prop.type || "string",
+            format: prop.format,
+            isPrimaryKey: isPk,
+            required: requiredCols.includes(colName),
+            defaultVal: prop.default,
+          });
         }
-      } catch {
-        rowCount = 0;
-      }
 
-      tables.push({
-        name: tableName,
-        primaryKey,
-        rowCount,
-        columns,
-      });
-    }
+        // Query row count concurrently for each table
+        let rowCount = 0;
+        try {
+          const { count, error } = await supabase
+            .from(tableName)
+            .select("*", { count: "exact", head: true });
+          if (!error && typeof count === "number") {
+            rowCount = count;
+          }
+        } catch {
+          rowCount = 0;
+        }
 
-    // Sort tables alphabetically
-    tables.sort((a, b) => a.name.localeCompare(b.name));
+        return {
+          name: tableName,
+          primaryKey,
+          rowCount,
+          columns,
+        };
+      })
+    );
 
-    return NextResponse.json({ success: true, tables });
+    // Deduplicate tables by table name and sort alphabetically
+    const uniqueTables = Array.from(
+      new Map(tables.map((t) => [t.name, t])).values()
+    );
+    uniqueTables.sort((a, b) => a.name.localeCompare(b.name));
+
+    return NextResponse.json({ success: true, tables: uniqueTables });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Error listing database tables";
     return NextResponse.json({ error: msg }, { status: 500 });

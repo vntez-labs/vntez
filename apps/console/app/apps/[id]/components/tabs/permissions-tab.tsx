@@ -10,12 +10,14 @@ import {
 import { PermissionsToolbar } from "./permissions/permissions-toolbar";
 import { PermissionsMatrixGrid } from "./permissions/permissions-matrix-grid";
 import { CreateAppRoleModal } from "./create-app-role-modal";
+import { CreateAppResourceModal } from "./create-app-resource-modal";
 import type { AppRole } from "@workspace/ui/lib/content-types";
 
 export function PermissionsTab() {
   const { app, updateApp } = useAppWorkspaceStore();
   const [selectedRoleId, setSelectedRoleId] = useState("admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
 
   if (!app) return null;
 
@@ -77,9 +79,16 @@ export function PermissionsTab() {
 
   const handleAddRole = (newRole: AppRole) => {
     const updatedRoles = [...roles, newRole];
-    const updatedPerms = { ...rolePerms, [newRole.id]: [`${app.id}:users:read:self`] };
+    const defaultResource = resources[0] || "users";
+    const updatedPerms = { ...rolePerms, [newRole.id]: [`${app.id}:${defaultResource}:read:self`] };
     updateApp({ roles: updatedRoles, rolePermissions: updatedPerms });
     setSelectedRoleId(newRole.id);
+  };
+
+  const handleAddResource = (newRes: string) => {
+    if (!resources.includes(newRes)) {
+      updateApp({ resources: [...resources, newRes] });
+    }
   };
 
   return (
@@ -91,6 +100,7 @@ export function PermissionsTab() {
         rolePerms={rolePerms}
         onSelectRole={setSelectedRoleId}
         onOpenCreateRole={() => setIsModalOpen(true)}
+        onOpenCreateResource={() => setIsResourceModalOpen(true)}
         onGrantAll={handleGrantAllRole}
         onGrantReadOnly={handleGrantReadOnly}
         onRevokeAll={handleRevokeAllRole}
@@ -108,6 +118,12 @@ export function PermissionsTab() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddRole={handleAddRole}
+      />
+
+      <CreateAppResourceModal
+        isOpen={isResourceModalOpen}
+        onClose={() => setIsResourceModalOpen(false)}
+        onAddResource={handleAddResource}
       />
     </div>
   );
