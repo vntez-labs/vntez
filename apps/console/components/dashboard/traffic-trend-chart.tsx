@@ -49,7 +49,7 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left: 7-Day Request Volume Bar Chart */}
-      <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-5">
+      <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-5 overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-border/70">
           <div>
             <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-2">
@@ -70,7 +70,7 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
 
         {/* Bar Visualization */}
         <div className="pt-2">
-          <div className="flex items-end justify-between gap-2 sm:gap-4 h-44 px-2">
+          <div className="flex items-end justify-between h-44 px-2 w-full">
             {sevenDayTrend.map((day) => {
               const heightPct =
                 day.total === 0 ? 8 : Math.max(Math.round((day.total / maxReq) * 100), 18);
@@ -81,36 +81,25 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
                   key={day.date}
                   onMouseEnter={() => setHoveredDay(day)}
                   onMouseLeave={() => setHoveredDay(null)}
-                  className="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer"
+                  className="shirnk-0 flex flex-col items-center gap-2 w-16 h-full justify-end group cursor-pointer"
                 >
-                  {/* Tooltip / Label on Hover */}
-                  <div
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded bg-foreground text-background whitespace-nowrap transition-opacity shadow-sm ${
-                      isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                    }`}
-                  >
-                    {day.total} req ({day.success} ok) • {day.label}
-                  </div>
-
                   {/* Visual Bar */}
                   <div className="w-full max-w-[42px] bg-muted/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 relative">
                     <div
                       style={{ height: `${heightPct}%` }}
-                      className={`w-full rounded-t-lg transition-all duration-300 ${
-                        day.total === 0
-                          ? "bg-muted-foreground/20"
-                          : isHovered
+                      className={`w-full rounded-t-lg transition-all duration-300 ${day.total === 0
+                        ? "bg-muted-foreground/20"
+                        : isHovered
                           ? "bg-primary shadow-xs"
                           : "bg-primary/85 group-hover:bg-primary"
-                      }`}
+                        }`}
                     />
                   </div>
 
                   {/* Day Label */}
                   <span
-                    className={`text-[11px] font-medium transition-colors ${
-                      isHovered ? "text-primary font-bold" : "text-muted-foreground"
-                    }`}
+                    className={`text-[11px] font-medium transition-colors ${isHovered ? "text-primary font-bold" : "text-muted-foreground"
+                      }`}
                   >
                     {getWeekdayDisplay(day)}
                   </span>

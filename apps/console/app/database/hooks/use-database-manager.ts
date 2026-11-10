@@ -25,100 +25,50 @@ export function useDatabaseManager() {
   const [selectedPks, setSelectedPks] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // 1. Fetch tables list (ONLY on mount or explicit user refresh)
+  // 1. Fetch tables list
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const response = await api.get<{ 
-        success: boolean;
-        tables?: TableMeta[];
-        warning?: string;
-        error?: string;
-      }>("/api/database/tables");
-
-      console.log('Tables API response:', response);
-      
-      if (!response) {
-        throw new Error("No response from server");
-      }
-
-      if (response.error) {
-        throw new Error(response.error.message || "API request failed");
-      }
+      const response = await api.get<any>("/api/database/tables");
+      console.log("Tables API response:", response);
 
       if (!response) {
-        console.error('No response from server');
         throw new Error("Không nhận được phản hồi từ máy chủ");
       }
 
-      // Handle case where response.data is missing
-      if (!response.data) {
-        console.error('Response missing data:', response);
-        throw new Error("Dữ liệu phản hồi không hợp lệ");
+      // Xử lý linh hoạt: hỗ trợ cả trường hợp api trả về trực tiếp hoặc bọc qua .data
+      const payload = response.data !== undefined ? response.data : response;
+
+      if (payload.error) {
+        const errorMsg = typeof payload.error === "string" ? payload.error : payload.error.message;
+        throw new Error(errorMsg || "Yêu cầu dữ liệu bảng thất bại");
       }
 
-      // Handle successful response with tables data
-      if (response.data.success && Array.isArray(response.data.tables)) {
-        return response.data.tables;
-      }
+      const rawTables: TableMeta[] = payload.tables || [];
 
-      // Handle case where we have tables data but success=false
-      if (Array.isArray(response.data.tables)) {
-        console.warn('Using tables data despite error:', response.data.error);
-        return response.data.tables;
-      }
-
-      // Handle error response
-      const errorMessage = response.data.error || "Yêu cầu dữ liệu bảng thất bại";
-      
-      if (response.data.error?.includes("permission denied")) {
-        throw new Error("Từ chối truy cập - kiểm tra quyền cơ sở dữ liệu");
-      }
-
-      // If we get here, we have no tables data to work with
-      throw new Error(errorMessage);
-      
-      if (tables.length > 0) {
-        setTables(tables);
+      if (Array.isArray(rawTables) && rawTables.length > 0) {
+        setTables(rawTables);
         setSelectedTableName((prev) => {
-          // Preserve selection if still valid
-          if (prev && tables.some((t) => t.name === prev)) return prev;
-          // Default to first table with rows if available
-          const tableWithRows = tables.find(t => t.rowCount > 0);
-          return tableWithRows?.name || tables[0]?.name || "";
+          if (prev && rawTables.some((t) => t.name === prev)) return prev;
+          const tableWithRows = rawTables.find((t) => t.rowCount > 0);
+          return tableWithRows?.name || rawTables[0]?.name || "";
         });
       } else {
-        // Handle empty tables case
         setTables([]);
         setSelectedTableName("");
-        console.warn("No tables returned from server");
       }
-
     } catch (err: unknown) {
       console.error("Failed to fetch tables:", err);
-      
-      let errorMessage = "Không thể tải danh sách bảng dữ liệu";
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else if (typeof err === "string") {
-        errorMessage = err;
-      }
+      const errorMessage = err instanceof Error ? err.message : "Không thể tải danh sách bảng dữ liệu";
 
-      // Show toast only if it's a real error, not empty response
-      if (!errorMessage.includes("Không nhận được")) {
-        toast.error({
-          title: "Lỗi cơ sở dữ liệu",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      toast.error({
+        title: "Lỗi cơ sở dữ liệu",
+        description: errorMessage,
+        variant: "destructive",
+      });
 
-      // Set empty state but don't break the UI
       setTables([]);
       setSelectedTableName("");
-      
-      // Return empty array to prevent unhandled promise rejection
-      return [];
     } finally {
       setIsLoadingTables(false);
     }
@@ -130,52 +80,55 @@ export function useDatabaseManager() {
 
   const currentTableMeta = tables.find((t) => t.name === selectedTableName) || null;
 
-  // 2. Fetch rows with in-memory caching to eliminate redundant loading
-  const fetchRows = useCallback(async (bypassCache = false) => {
-    if (!selectedTableName) return;
-    setSelectedPks(new Set());
+  // 2. Fetch rows with in-memory caching
+  const fetchRows = useCallback(
+    async (bypassCache = false) => {
+      if (!selectedTableName) return;
+      setSelectedPks(new Set());
 
-    const cacheKey = `${selectedTableName}:${page}:${limit}:${searchQuery}`;
+      const cacheKey = `${selectedTableName}:${page}:${limit}:${searchQuery}`;
 
-    // Instant render from cache if available
-    if (!bypassCache && rowsCache.current[cacheKey]) {
-      const cached = rowsCache.current[cacheKey];
-      setRows(cached.rows);
-      setTotalCount(cached.totalCount);
-      return;
-    }
-
-    setIsLoadingRows(true);
-    try {
-      const params = new URLSearchParams({
-        table: selectedTableName,
-        page: String(page),
-        limit: String(limit),
-        search: searchQuery,
-      });
-      const data = await api.get<{ success: boolean; rows: Record<string, any>[]; totalCount: number }>(
-        `/api/database/rows?${params.toString()}`
-      );
-      if (data.success && Array.isArray(data.rows)) {
-        setRows(data.rows);
-        setTotalCount(data.totalCount || 0);
-        rowsCache.current[cacheKey] = {
-          rows: data.rows,
-          totalCount: data.totalCount || 0,
-        };
+      if (!bypassCache && rowsCache.current[cacheKey]) {
+        const cached = rowsCache.current[cacheKey];
+        setRows(cached.rows);
+        setTotalCount(cached.totalCount);
+        return;
       }
-    } catch (err) {
-      console.error("Failed to fetch rows:", err);
-    } finally {
-      setIsLoadingRows(false);
-    }
-  }, [selectedTableName, page, limit, searchQuery]);
+
+      setIsLoadingRows(true);
+      try {
+        const params = new URLSearchParams({
+          table: selectedTableName,
+          page: String(page),
+          limit: String(limit),
+          search: searchQuery,
+        });
+
+        const res = await api.get<any>(`/api/database/rows?${params.toString()}`);
+        const data = res.data !== undefined ? res.data : res;
+
+        if (data.success && Array.isArray(data.rows)) {
+          setRows(data.rows);
+          setTotalCount(data.totalCount || 0);
+          rowsCache.current[cacheKey] = {
+            rows: data.rows,
+            totalCount: data.totalCount || 0,
+          };
+        }
+      } catch (err) {
+        console.error("Failed to fetch rows:", err);
+      } finally {
+        setIsLoadingRows(false);
+      }
+    },
+    [selectedTableName, page, limit, searchQuery]
+  );
 
   useEffect(() => {
     fetchRows();
   }, [fetchRows]);
 
-  // Invalidate cache for a specific table or all tables
+  // Invalidate cache
   const invalidateTableCache = useCallback((tableName?: string) => {
     if (!tableName) {
       rowsCache.current = {};
@@ -234,7 +187,6 @@ export function useDatabaseManager() {
       setSelectedPks(new Set());
       invalidateTableCache(selectedTableName);
 
-      // Optimistic rowCount update
       setTables((prev) =>
         prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: Math.max(0, t.rowCount - count) } : t))
       );
@@ -282,11 +234,11 @@ export function useDatabaseManager() {
 
     const body = isEdit
       ? {
-          table: selectedTableName,
-          pkField: pk,
-          pkValue: editingRow?.[pk],
-          data: formData,
-        }
+        table: selectedTableName,
+        pkField: pk,
+        pkValue: editingRow?.[pk],
+        data: formData,
+      }
       : { table: selectedTableName, data: formData };
 
     try {
