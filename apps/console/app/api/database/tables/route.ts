@@ -105,11 +105,13 @@ export async function GET() {
       }, { status: 404 });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      tables: enhancedTables,
-      count: enhancedTables.length,
-      totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
+      data: {
+        tables: enhancedTables,
+        count: enhancedTables.length,
+        totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
+      }
     });
   } catch (err: unknown) {
     console.error("Database tables listing error:", err);

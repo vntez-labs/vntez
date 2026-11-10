@@ -29,53 +29,69 @@ export function useDatabaseManager() {
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const { data, error } = await api.get<{ 
+      const response = await api.get<{ 
         success: boolean;
-        tables: TableMeta[];
+        tables?: TableMeta[];
         warning?: string;
         error?: string;
       }>("/api/database/tables");
 
-      console.log('Tables API response:', { data, error });
+      console.log('Tables API response:', response);
       
-      if (error) {
-        throw new Error(error.message || "Failed to fetch tables");
+      if (!response) {
+        throw new Error("No response from server");
       }
 
-      if (!data) {
-        throw new Error("No data received from tables API");
+      if (response.error) {
+        throw new Error(response.error.message || "API request failed");
       }
 
-      if (!data.success) {
-        throw new Error(data.error || "Failed to fetch tables");
+      if (!response.data) {
+        throw new Error("Missing data in response");
       }
 
-      if (data.warning) {
-        console.warn(data.warning);
+      if (!response.data.success) {
+        throw new Error(response.data.error || "Server returned unsuccessful response");
       }
 
-      if (!Array.isArray(data.tables)) {
+      if (!Array.isArray(response.data.tables)) {
         throw new Error("Invalid tables data format");
       }
 
-      setTables(data.tables);
+      if (response.data.warning) {
+        console.warn(response.data.warning);
+      }
+
+      const { tables = [] } = response.data;
+
+      setTables(tables);
       setSelectedTableName((prev) => {
         // Preserve selection if still valid
-        if (prev && data.tables.some((t) => t.name === prev)) return prev;
+        if (prev && tables.some((t) => t.name === prev)) return prev;
         // Default to first table with rows if available
-        const tableWithRows = data.tables.find(t => t.rowCount > 0);
-        return tableWithRows?.name || data.tables[0]?.name || "";
+        const tableWithRows = tables.find(t => t.rowCount > 0);
+        return tableWithRows?.name || tables[0]?.name || "";
       });
 
     } catch (err: unknown) {
       console.error("Failed to fetch tables:", err);
-      const errorMessage = err instanceof Error ? err.message : "Failed to load database tables";
+      let errorMessage = "Failed to load database tables";
       
-      // Show more detailed error in development
-      toast.error(process.env.NODE_ENV === "development" ? 
-        `Database Error: ${errorMessage}` : 
-        "Could not load database tables. Please try again."
-      );
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      }
+
+      toast.error({
+        title: "Database Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
+      // Set empty state
+      setTables([]);
+      setSelectedTableName("");
     } finally {
       setIsLoadingTables(false);
     }
