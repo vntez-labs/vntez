@@ -125,8 +125,13 @@ export async function GET() {
     // Database tables listing error
     const error = err instanceof Error ? err : new Error("Unknown error");
     
+    // Declare variables at the top level
+    let fallbackTablesData: any[] = [];
+    let columnsData: any[] = [];
+    let pkData: any[] = [];
+    
     // Return basic table list even if metadata fails
-    const fallbackTablesData = tablesData || [];
+    fallbackTablesData = tablesData || [];
     if (fallbackTablesData.length > 0) {
       const basicTables = fallbackTablesData.map((t: {table_name: string}) => ({
         name: t.table_name,
