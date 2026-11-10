@@ -15,51 +15,29 @@ export async function GET() {
     const supabase = getSupabaseAdminClient();
     console.log('Supabase client initialized:', !!supabase);
 
-    // Test simple query first
-    const testQuery = await supabase
-      .from('pg_catalog.pg_tables')
+    // 1. Get list of tables from public schema
+    const { data: tablesData, error: tablesError } = await supabase
+      .from('pg_tables')
       .select('tablename')
-      .eq('schemaname', 'public')
-      .limit(1);
+      .eq('schemaname', 'public');
     
-    console.log('Test query result:', testQuery);
-    
-    if (testQuery.error) {
-      console.error('Basic query failed:', testQuery.error);
-      throw new Error(`Basic query failed: ${testQuery.error.message}`);
-    }
+    if (tablesError) throw tablesError;
 
-    // 1. Get list of tables using RPC
-    console.log('Attempting to call get_public_tables RPC');
-    const rpcResult = await supabase
-      .rpc('get_public_tables');
-    
-    console.log('RPC call result:', rpcResult);
-    
-    if (rpcResult.error) {
-      console.error('RPC call failed:', rpcResult.error);
-      throw new Error(`RPC failed: ${rpcResult.error.message}`);
-    }
-
-    const tablesData = rpcResult.data;
-
-    // 2. Get column metadata from information_schema
+    // 2. Get column metadata using a direct query
     const { data: columnsData, error: columnsError } = await supabase
-      .from('information_schema.columns')
-      .select('table_name, column_name, data_type, is_nullable, column_default')
-      .eq('table_schema', 'public');
+      .rpc('get_columns_metadata');
+    
     if (columnsError) throw columnsError;
 
-    // 3. Get primary keys from information_schema
+    // 3. Get primary keys using a direct query
     const { data: pkData, error: pkError } = await supabase
-      .from('information_schema.key_column_usage')
-      .select('table_name, column_name')
-      .eq('constraint_name', 'primary');
+      .rpc('get_primary_keys');
+    
     if (pkError) throw pkError;
 
     // 4. Build enhanced table metadata
     const enhancedTables: TableMeta[] = tablesData.map(table => {
-      const tableName = table.table_name;
+      const tableName = table.tablename;
       const tableColumns = columnsData
         .filter(c => c.table_name === tableName)
         .map(col => ({
@@ -68,7 +46,7 @@ export async function GET() {
           isPrimaryKey: pkData.some(pk => 
             pk.table_name === tableName && pk.column_name === col.column_name
           ),
-          required: col.is_nullable === 'NO',
+          required: !col.is_nullable,
           defaultVal: col.column_default
         } as ColumnMeta));
 
