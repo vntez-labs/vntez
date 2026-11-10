@@ -15,24 +15,31 @@ export async function GET() {
     const supabase = getSupabaseAdminClient();
     console.log('Supabase client initialized:', !!supabase);
 
-    // 1. Get list of tables from public schema
+    // 1. Get list of tables using a custom RPC function
     const { data: tablesData, error: tablesError } = await supabase
-      .from('pg_tables')
-      .select('tablename')
-      .eq('schemaname', 'public');
+      .rpc('get_public_tables_list');
     
-    if (tablesError) throw tablesError;
+    console.log('Tables query result:', { data: tablesData, error: tablesError });
+    if (tablesError) {
+      console.error('Tables query failed:', tablesError);
+      throw tablesError;
+    }
 
-    // 2. Get all metadata in one RPC call
+    // 2. Get table metadata using RPC
     const { data: metadata, error: metadataError } = await supabase
-      .rpc('get_table_metadata');
+      .rpc('get_table_metadata_with_counts');
     
-    if (metadataError) throw metadataError;
+    console.log('Metadata query result:', { data: metadata, error: metadataError });
+    if (metadataError) {
+      console.error('Metadata query failed:', metadataError);
+      throw metadataError;
+    }
 
     const columnsData = metadata?.columns || [];
     const pkData = metadata?.primary_keys || [];
+    const tableCounts = metadata?.table_counts || [];
 
-    // 4. Build enhanced table metadata
+    // 4. Build enhanced table metadata with counts
     const enhancedTables: TableMeta[] = tablesData.map(table => {
       const tableName = table.table_name;
       const tableColumns = columnsData
@@ -48,7 +55,7 @@ export async function GET() {
         } as ColumnMeta));
 
       const primaryKey = pkData.find((pk: any) => pk.table_name === tableName)?.column_name || 'id';
-      const rowCount = 0; // We'll get this separately
+      const rowCount = tableCounts.find((tc: any) => tc.table_name === tableName)?.row_count || 0;
 
       return {
         name: tableName,
@@ -57,18 +64,6 @@ export async function GET() {
         columns: tableColumns
       };
     });
-
-    // 5. Get row counts for each table
-    for (const table of enhancedTables) {
-      try {
-        const { count } = await supabase
-          .from(table.name)
-          .select('*', { count: 'exact', head: true });
-        table.rowCount = count || 0;
-      } catch {
-        table.rowCount = 0;
-      }
-    }
 
     return NextResponse.json({ 
       success: true, 
