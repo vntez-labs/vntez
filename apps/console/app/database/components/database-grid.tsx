@@ -100,19 +100,22 @@ export function DatabaseGrid({
                 </td>
               </tr>
             ) : (
-              rows.map((row) => {
-                const pkValue = String(row[pkField]);
-                const isSelected = selectedPks.has(pkValue);
+              rows
+                .filter(row => row && row[pkField] !== undefined) // Filter out invalid rows
+                .map((row) => {
+                  const pkValue = String(row[pkField]);
+                  const isSelected = selectedPks.has(pkValue);
 
-                return (
-                  <tr
-                    key={pkValue}
-                    className={`transition-colors ${
-                      isSelected
-                        ? "bg-primary/5 hover:bg-primary/10"
-                        : "hover:bg-muted/40"
-                    }`}
-                  >
+                  return (
+                    <tr
+                      key={pkValue}
+                      className={`transition-colors ${
+                        isSelected
+                          ? "bg-primary/5 hover:bg-primary/10"
+                          : "hover:bg-muted/40"
+                      }`}
+                      data-row-id={pkValue} // Add data attribute for debugging
+                    >
                     <td className="px-3.5 py-3.5 text-center">
                       <Checkbox
                         checked={isSelected}
@@ -121,11 +124,18 @@ export function DatabaseGrid({
                     </td>
                     {tableMeta.columns.map((col) => {
                       const cellValue = row[col.name];
+                      // Ensure we have a valid cell value before rendering
+                      if (cellValue === null || cellValue === undefined || cellValue === '') {
+                        return (
+                          <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
+                            <span className="text-muted-foreground italic">null</span>
+                          </td>
+                        );
+                      }
+                      // Only render if we have valid data
                       return (
                         <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
-                          {cellValue === null || cellValue === undefined 
-                            ? <span className="text-muted-foreground italic">null</span>
-                            : formatDatabaseCell(cellValue, col.name, col.isPrimaryKey)}
+                          {formatDatabaseCell(cellValue, col.name, col.isPrimaryKey)}
                         </td>
                       );
                     })}
