@@ -14,42 +14,45 @@ export async function GET() {
   try {
     const supabase = getSupabaseAdminClient();
 
-    // 1. Get list of tables from pg_catalog (more reliable than information_schema)
+    // 1. Get list of tables using information_schema (more reliable with Supabase permissions)
     const { data: tablesData, error: tablesError } = await supabase
-      .from('pg_catalog.pg_tables')
-      .select('tablename')
-      .eq('schemaname', 'public');
+      .from('information_schema.tables')
+      .select('table_name')
+      .eq('table_schema', 'public')
+      .eq('table_type', 'BASE TABLE');
     if (tablesError) throw tablesError;
 
-    // 2. Get column metadata from pg_catalog
+    // 2. Get column metadata from information_schema
     const { data: columnsData, error: columnsError } = await supabase
-      .from('pg_catalog.pg_table_def')
-      .select('tablename, columnname, type, notnull, default_value')
-      .eq('schemaname', 'public');
+      .from('information_schema.columns')
+      .select('table_name, column_name, data_type, is_nullable, column_default')
+      .eq('table_schema', 'public');
     if (columnsError) throw columnsError;
 
-    // 3. Get primary keys from pg_catalog
+    // 3. Get primary keys from information_schema
     const { data: pkData, error: pkError } = await supabase
-      .rpc('get_primary_keys');
+      .from('information_schema.key_column_usage')
+      .select('table_name, column_name')
+      .eq('constraint_name', 'primary');
     if (pkError) throw pkError;
 
     // 4. Build enhanced table metadata
     const enhancedTables: TableMeta[] = tablesData.map(table => {
-      const tableName = table.tablename;
+      const tableName = table.table_name;
       const tableColumns = columnsData
-        .filter(c => c.tablename === tableName)
+        .filter(c => c.table_name === tableName)
         .map(col => ({
-          name: col.columnname,
-          type: col.type,
+          name: col.column_name,
+          type: col.data_type,
           isPrimaryKey: pkData.some(pk => 
-            pk.table_name === tableName && pk.column_name === col.columnname
+            pk.table_name === tableName && pk.column_name === col.column_name
           ),
-          required: col.notnull,
-          defaultVal: col.default_value
+          required: col.is_nullable === 'NO',
+          defaultVal: col.column_default
         } as ColumnMeta));
 
       const primaryKey = pkData.find(pk => pk.table_name === tableName)?.column_name || 'id';
-      const rowCount = 0; // We'll get this separately since pg_catalog doesn't have counts
+      const rowCount = 0; // We'll get this separately
 
       return {
         name: tableName,
