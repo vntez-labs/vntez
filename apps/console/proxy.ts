@@ -26,7 +26,9 @@ export function proxy(request: NextRequest) {
   const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   const token = request.cookies.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
   const session = request.cookies.get(COOKIE_NAMES.USER_SESSION)?.value;
+  console.log('Auth check:', { pathname, token: !!token, session: !!session });
   const isAuthenticated = Boolean(token || session);
+  console.log('Is authenticated:', isAuthenticated);
 
   // 2. If user is already authenticated and visits /login -> redirect to dashboard
   if (isAuthenticated && pathname === "/login") {

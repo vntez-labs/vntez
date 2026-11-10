@@ -13,14 +13,17 @@ export async function GET() {
 
   try {
     const supabase = getSupabaseAdminClient();
+    console.log('Supabase client initialized:', !!supabase);
 
-    // 1. Get list of tables using information_schema (more reliable with Supabase permissions)
+    // 1. Get list of tables using pg_tables (more reliable)
     const { data: tablesData, error: tablesError } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .eq('table_schema', 'public')
-      .eq('table_type', 'BASE TABLE');
-    if (tablesError) throw tablesError;
+      .rpc('get_public_tables');
+    
+    console.log('Tables query result:', { data: tablesData, error: tablesError });
+    if (tablesError) {
+      console.error('Tables query failed:', tablesError);
+      throw tablesError;
+    }
 
     // 2. Get column metadata from information_schema
     const { data: columnsData, error: columnsError } = await supabase

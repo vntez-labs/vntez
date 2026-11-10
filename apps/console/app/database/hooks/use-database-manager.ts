@@ -29,15 +29,23 @@ export function useDatabaseManager() {
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const { data, error } = await api.get<{ 
+      const response = await api.get<{ 
         success: boolean; 
         tables: TableMeta[];
         error?: string;
       }>("/api/database/tables");
 
-      if (error || !data?.success) {
-        throw new Error(error || "Failed to fetch tables");
+      console.log('Tables API response:', response);
+      
+      if (!response) {
+        throw new Error("No response from tables API");
       }
+
+      if (response.error || !response.data?.success) {
+        throw new Error(response.error || "Failed to fetch tables");
+      }
+
+      const { data } = response;
 
       if (!Array.isArray(data.tables)) {
         throw new Error("Invalid tables data format");
