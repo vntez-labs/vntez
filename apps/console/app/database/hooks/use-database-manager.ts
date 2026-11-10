@@ -58,7 +58,13 @@ export function useDatabaseManager() {
       }
 
       // Handle successful response with tables data
-      if (response.data.success && response.data.tables) {
+      if (response.data.success && Array.isArray(response.data.tables)) {
+        return response.data.tables;
+      }
+
+      // Handle case where we have tables data but success=false
+      if (Array.isArray(response.data.tables)) {
+        console.warn('Using tables data despite error:', response.data.error);
         return response.data.tables;
       }
 
@@ -69,25 +75,8 @@ export function useDatabaseManager() {
         throw new Error("Từ chối truy cập - kiểm tra quyền cơ sở dữ liệu");
       }
 
-      // Try to return basic tables if we have them
-      if (response.data.tables) {
-        console.warn('Using fallback tables data due to error:', errorMessage);
-        return response.data.tables;
-      }
-
+      // If we get here, we have no tables data to work with
       throw new Error(errorMessage);
-
-      // Handle missing or invalid tables data
-      if (!response.data.tables || !Array.isArray(response.data.tables)) {
-        console.warn("Invalid tables data format:", response.data.tables);
-        return []; // Return empty array instead of throwing error
-      }
-
-      if (response.data.warning) {
-        console.warn("Database tables warning:", response.data.warning);
-      }
-
-      const tables = response.data.tables || [];
       
       if (tables.length > 0) {
         setTables(tables);
