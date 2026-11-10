@@ -14,48 +14,62 @@ export async function GET() {
   try {
     const supabase = getSupabaseAdminClient();
 
-    // 1. Get list of tables with row counts
-    const { data: tables, error: tablesError } = await supabase
-      .rpc('get_tables_with_counts');
+    // 1. Get list of tables from pg_catalog (more reliable than information_schema)
+    const { data: tablesData, error: tablesError } = await supabase
+      .from('pg_catalog.pg_tables')
+      .select('tablename')
+      .eq('schemaname', 'public');
     if (tablesError) throw tablesError;
 
-    // 2. Get column metadata from information_schema
+    // 2. Get column metadata from pg_catalog
     const { data: columnsData, error: columnsError } = await supabase
-      .from('information_schema.columns')
-      .select('table_name, column_name, data_type, is_nullable, column_default')
-      .eq('table_schema', 'public');
+      .from('pg_catalog.pg_table_def')
+      .select('tablename, columnname, type, notnull, default_value')
+      .eq('schemaname', 'public');
     if (columnsError) throw columnsError;
 
-    // 3. Get primary keys
+    // 3. Get primary keys from pg_catalog
     const { data: pkData, error: pkError } = await supabase
-      .from('information_schema.key_column_usage')
-      .select('table_name, column_name')
-      .eq('constraint_name', 'primary');
+      .rpc('get_primary_keys');
     if (pkError) throw pkError;
 
     // 4. Build enhanced table metadata
-    const enhancedTables: TableMeta[] = tables.map(table => {
+    const enhancedTables: TableMeta[] = tablesData.map(table => {
+      const tableName = table.tablename;
       const tableColumns = columnsData
-        .filter(c => c.table_name === table.name)
+        .filter(c => c.tablename === tableName)
         .map(col => ({
-          name: col.column_name,
-          type: col.data_type,
+          name: col.columnname,
+          type: col.type,
           isPrimaryKey: pkData.some(pk => 
-            pk.table_name === table.name && pk.column_name === col.column_name
+            pk.table_name === tableName && pk.column_name === col.columnname
           ),
-          required: col.is_nullable === 'NO',
-          defaultVal: col.column_default
+          required: col.notnull,
+          defaultVal: col.default_value
         } as ColumnMeta));
 
-      const primaryKey = pkData.find(pk => pk.table_name === table.name)?.column_name || 'id';
+      const primaryKey = pkData.find(pk => pk.table_name === tableName)?.column_name || 'id';
+      const rowCount = 0; // We'll get this separately since pg_catalog doesn't have counts
 
       return {
-        name: table.name,
+        name: tableName,
         primaryKey,
-        rowCount: table.row_count || 0,
+        rowCount,
         columns: tableColumns
       };
     });
+
+    // 5. Get row counts for each table
+    for (const table of enhancedTables) {
+      try {
+        const { count } = await supabase
+          .from(table.name)
+          .select('*', { count: 'exact', head: true });
+        table.rowCount = count || 0;
+      } catch {
+        table.rowCount = 0;
+      }
+    }
 
     return NextResponse.json({ 
       success: true, 
