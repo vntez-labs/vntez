@@ -5,6 +5,7 @@ export interface ColumnMeta {
   required: boolean;
   defaultVal?: string | null;
   description?: string;
+  format?: string;
 }
 
 export interface TableMeta {

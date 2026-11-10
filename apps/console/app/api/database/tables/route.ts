@@ -41,14 +41,14 @@ export async function GET() {
       } else {
         console.warn('Metadata function not available, using fallback');
         // Fallback to basic table info without column details
-        columnsData = tablesData.map(t => ({
+        columnsData = tablesData.map((t: {table_name: string}) => ({
           table_name: t.table_name,
           column_name: 'id',
           data_type: 'text',
           is_nullable: false,
           column_default: null
         }));
-        pkData = tablesData.map(t => ({
+        pkData = tablesData.map((t: {table_name: string}) => ({
           table_name: t.table_name,
           column_name: 'id'
         }));
@@ -59,7 +59,7 @@ export async function GET() {
     }
 
     // 4. Build enhanced table metadata with counts
-    const enhancedTables: TableMeta[] = tablesData.map(table => {
+    const enhancedTables: TableMeta[] = tablesData.map((table: {table_name: string}) => {
       const tableName = table.table_name;
       
       // Get columns for this table
@@ -136,7 +136,7 @@ export async function GET() {
     
     // Return basic table list even if metadata fails
     if (tablesData?.length > 0) {
-      const basicTables = tablesData.map(t => ({
+      const basicTables = tablesData.map((t: {table_name: string}) => ({
         name: t.table_name,
         primaryKey: 'id',
         rowCount: 0,

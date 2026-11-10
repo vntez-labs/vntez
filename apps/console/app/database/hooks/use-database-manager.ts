@@ -61,11 +61,7 @@ export function useDatabaseManager() {
       console.error("Failed to fetch tables:", err);
       const errorMessage = err instanceof Error ? err.message : "Không thể tải danh sách bảng dữ liệu";
 
-      toast.error({
-        title: "Lỗi cơ sở dữ liệu",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
 
       setTables([]);
       setSelectedTableName("");
