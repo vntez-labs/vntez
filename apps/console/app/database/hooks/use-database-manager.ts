@@ -46,16 +46,25 @@ export function useDatabaseManager() {
         throw new Error(response.error.message || "API request failed");
       }
 
-      if (!response.data) {
-        throw new Error("Server returned empty response");
+      if (!response || !response.data) {
+        console.error('Empty response from server:', response);
+        throw new Error("Không nhận được dữ liệu từ máy chủ");
       }
 
       if (!response.data.success) {
-        // Check for specific error cases
+        const errorMessage = response.data.error || "Yêu cầu dữ liệu bảng thất bại";
+        
         if (response.data.error?.includes("permission denied")) {
-          throw new Error("Permission denied - check database access");
+          throw new Error("Từ chối truy cập - kiểm tra quyền cơ sở dữ liệu");
         }
-        throw new Error(response.data.error || "Database tables request failed");
+
+        // Try to return basic tables if we have them
+        if (response.data.tables) {
+          console.warn('Using fallback tables data due to error:', errorMessage);
+          return response.data.tables;
+        }
+
+        throw new Error(errorMessage);
       }
 
       // Handle missing or invalid tables data
@@ -88,8 +97,8 @@ export function useDatabaseManager() {
 
     } catch (err: unknown) {
       console.error("Failed to fetch tables:", err);
-      let errorMessage = "Failed to load database tables";
       
+      let errorMessage = "Không thể tải danh sách bảng dữ liệu";
       if (err instanceof Error) {
         errorMessage = err.message;
       } else if (typeof err === "string") {
@@ -97,14 +106,17 @@ export function useDatabaseManager() {
       }
 
       toast.error({
-        title: "Database Error",
+        title: "Lỗi cơ sở dữ liệu",
         description: errorMessage,
         variant: "destructive",
       });
 
-      // Set empty state
+      // Set empty state but don't break the UI
       setTables([]);
       setSelectedTableName("");
+      
+      // Return empty array to prevent unhandled promise rejection
+      return [];
     } finally {
       setIsLoadingTables(false);
     }

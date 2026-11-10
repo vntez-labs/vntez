@@ -106,12 +106,13 @@ export async function GET() {
     }
 
     if (!enhancedTables || enhancedTables.length === 0) {
+      console.warn('No tables found in database');
       return NextResponse.json({
         success: true,
         tables: [],
         count: 0,
         totalRows: 0,
-        message: "No tables found in database"
+        message: "Không tìm thấy bảng nào trong cơ sở dữ liệu"
       });
     }
 
