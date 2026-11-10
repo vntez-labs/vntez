@@ -15,15 +15,33 @@ export async function GET() {
     const supabase = getSupabaseAdminClient();
     console.log('Supabase client initialized:', !!supabase);
 
-    // 1. Get list of tables using pg_tables (more reliable)
-    const { data: tablesData, error: tablesError } = await supabase
+    // Test simple query first
+    const testQuery = await supabase
+      .from('pg_catalog.pg_tables')
+      .select('tablename')
+      .eq('schemaname', 'public')
+      .limit(1);
+    
+    console.log('Test query result:', testQuery);
+    
+    if (testQuery.error) {
+      console.error('Basic query failed:', testQuery.error);
+      throw new Error(`Basic query failed: ${testQuery.error.message}`);
+    }
+
+    // 1. Get list of tables using RPC
+    console.log('Attempting to call get_public_tables RPC');
+    const rpcResult = await supabase
       .rpc('get_public_tables');
     
-    console.log('Tables query result:', { data: tablesData, error: tablesError });
-    if (tablesError) {
-      console.error('Tables query failed:', tablesError);
-      throw tablesError;
+    console.log('RPC call result:', rpcResult);
+    
+    if (rpcResult.error) {
+      console.error('RPC call failed:', rpcResult.error);
+      throw new Error(`RPC failed: ${rpcResult.error.message}`);
     }
+
+    const tablesData = rpcResult.data;
 
     // 2. Get column metadata from information_schema
     const { data: columnsData, error: columnsError } = await supabase
