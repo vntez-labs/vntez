@@ -131,7 +131,7 @@ export async function GET() {
     let pkData: any[] = [];
     
     // Return basic table list even if metadata fails
-    fallbackTablesData = tablesData || [];
+    fallbackTablesData = [];
     if (fallbackTablesData.length > 0) {
       const basicTables = fallbackTablesData.map((t: {table_name: string}) => ({
         name: t.table_name,
