@@ -77,16 +77,23 @@ export function useDatabaseManager() {
         console.warn("Database tables warning:", response.data.warning);
       }
 
-      return response.data.tables || [];
-
-      setTables(tables);
-      setSelectedTableName((prev) => {
-        // Preserve selection if still valid
-        if (prev && tables.some((t) => t.name === prev)) return prev;
-        // Default to first table with rows if available
-        const tableWithRows = tables.find(t => t.rowCount > 0);
-        return tableWithRows?.name || tables[0]?.name || "";
-      });
+      const tables = response.data.tables || [];
+      
+      if (tables.length > 0) {
+        setTables(tables);
+        setSelectedTableName((prev) => {
+          // Preserve selection if still valid
+          if (prev && tables.some((t) => t.name === prev)) return prev;
+          // Default to first table with rows if available
+          const tableWithRows = tables.find(t => t.rowCount > 0);
+          return tableWithRows?.name || tables[0]?.name || "";
+        });
+      } else {
+        // Handle empty tables case
+        setTables([]);
+        setSelectedTableName("");
+        console.warn("No tables returned from server");
+      }
 
     } catch (err: unknown) {
       console.error("Failed to fetch tables:", err);
