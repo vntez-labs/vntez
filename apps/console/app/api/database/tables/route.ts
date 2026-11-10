@@ -13,13 +13,9 @@ export async function GET() {
 
   try {
     const supabase = getSupabaseAdminClient();
-    console.log('Supabase client initialized:', !!supabase);
-
     // 1. Get list of tables using a custom RPC function
     const { data: tablesData, error: tablesError } = await supabase
       .rpc('get_public_tables_list');
-    
-    console.log('Tables query result:', { data: tablesData, error: tablesError });
     if (tablesError) {
       console.error('Tables query failed:', tablesError);
       throw tablesError;
@@ -39,7 +35,7 @@ export async function GET() {
         pkData = metadata.primary_keys || [];
         tableCounts = metadata.table_counts || [];
       } else {
-        console.warn('Metadata function not available, using fallback');
+        // Metadata function not available, using fallback
         // Fallback to basic table info without column details
         columnsData = tablesData.map((t: {table_name: string}) => ({
           table_name: t.table_name,
@@ -54,7 +50,7 @@ export async function GET() {
         }));
       }
     } catch (err) {
-      console.warn('Failed to fetch metadata:', err);
+      // Failed to fetch metadata
       // Continue with fallback data
     }
 
@@ -106,7 +102,7 @@ export async function GET() {
     }
 
     if (!enhancedTables || enhancedTables.length === 0) {
-      console.warn('No tables found in database');
+      // No tables found in database
       return NextResponse.json({
         success: true,
         tables: [],
@@ -123,15 +119,10 @@ export async function GET() {
       totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
     };
 
-    console.log('Returning tables data:', {
-      success: true,
-      count: responseData.count,
-      totalRows: responseData.totalRows
-    });
 
     return NextResponse.json(responseData);
   } catch (err: unknown) {
-    console.error("Database tables listing error:", err);
+    // Database tables listing error
     const error = err instanceof Error ? err : new Error("Unknown error");
     
     // Return basic table list even if metadata fails

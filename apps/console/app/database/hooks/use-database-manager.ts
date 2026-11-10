@@ -30,7 +30,6 @@ export function useDatabaseManager() {
     setIsLoadingTables(true);
     try {
       const response = await api.get<any>("/api/database/tables");
-      console.log("Tables API response:", response);
 
       if (!response) {
         throw new Error("Không nhận được phản hồi từ máy chủ");
@@ -58,7 +57,7 @@ export function useDatabaseManager() {
         setSelectedTableName("");
       }
     } catch (err: unknown) {
-      console.error("Failed to fetch tables:", err);
+      // Failed to fetch tables
       const errorMessage = err instanceof Error ? err.message : "Không thể tải danh sách bảng dữ liệu";
 
       toast.error(errorMessage);
@@ -112,7 +111,7 @@ export function useDatabaseManager() {
           };
         }
       } catch (err) {
-        console.error("Failed to fetch rows:", err);
+        // Failed to fetch rows
       } finally {
         setIsLoadingRows(false);
       }
