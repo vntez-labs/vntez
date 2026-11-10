@@ -47,11 +47,6 @@ export function useDatabaseManager() {
       }
 
       if (!response.data) {
-        throw new Error("Missing data in response");
-      }
-
-      if (!response.data) {
-        // Handle case where data is completely missing
         throw new Error("Server returned empty response");
       }
 
@@ -63,12 +58,8 @@ export function useDatabaseManager() {
         throw new Error(response.data.error || "Database tables request failed");
       }
 
-      if (!response.data.tables) {
-        // Handle case where tables array is missing
-        return []; // Return empty array instead of throwing error
-      }
-
-      if (!Array.isArray(response.data.tables)) {
+      // Handle missing or invalid tables data
+      if (!response.data.tables || !Array.isArray(response.data.tables)) {
         console.warn("Invalid tables data format:", response.data.tables);
         return []; // Return empty array instead of throwing error
       }
