@@ -46,26 +46,36 @@ export function useDatabaseManager() {
         throw new Error(response.error.message || "API request failed");
       }
 
-      if (!response || !response.data) {
-        console.error('Empty response from server:', response);
-        throw new Error("Không nhận được dữ liệu từ máy chủ");
+      if (!response) {
+        console.error('No response from server');
+        throw new Error("Không nhận được phản hồi từ máy chủ");
       }
 
-      if (!response.data.success) {
-        const errorMessage = response.data.error || "Yêu cầu dữ liệu bảng thất bại";
-        
-        if (response.data.error?.includes("permission denied")) {
-          throw new Error("Từ chối truy cập - kiểm tra quyền cơ sở dữ liệu");
-        }
-
-        // Try to return basic tables if we have them
-        if (response.data.tables) {
-          console.warn('Using fallback tables data due to error:', errorMessage);
-          return response.data.tables;
-        }
-
-        throw new Error(errorMessage);
+      // Handle case where response.data is missing
+      if (!response.data) {
+        console.error('Response missing data:', response);
+        throw new Error("Dữ liệu phản hồi không hợp lệ");
       }
+
+      // Handle successful response with tables data
+      if (response.data.success && response.data.tables) {
+        return response.data.tables;
+      }
+
+      // Handle error response
+      const errorMessage = response.data.error || "Yêu cầu dữ liệu bảng thất bại";
+      
+      if (response.data.error?.includes("permission denied")) {
+        throw new Error("Từ chối truy cập - kiểm tra quyền cơ sở dữ liệu");
+      }
+
+      // Try to return basic tables if we have them
+      if (response.data.tables) {
+        console.warn('Using fallback tables data due to error:', errorMessage);
+        return response.data.tables;
+      }
+
+      throw new Error(errorMessage);
 
       // Handle missing or invalid tables data
       if (!response.data.tables || !Array.isArray(response.data.tables)) {
@@ -105,11 +115,14 @@ export function useDatabaseManager() {
         errorMessage = err;
       }
 
-      toast.error({
-        title: "Lỗi cơ sở dữ liệu",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      // Show toast only if it's a real error, not empty response
+      if (!errorMessage.includes("Không nhận được")) {
+        toast.error({
+          title: "Lỗi cơ sở dữ liệu",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
 
       // Set empty state but don't break the UI
       setTables([]);

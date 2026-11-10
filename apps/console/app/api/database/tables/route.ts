@@ -116,12 +116,20 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       tables: enhancedTables,
       count: enhancedTables.length,
       totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
+    };
+
+    console.log('Returning tables data:', {
+      success: true,
+      count: responseData.count,
+      totalRows: responseData.totalRows
     });
+
+    return NextResponse.json(responseData);
   } catch (err: unknown) {
     console.error("Database tables listing error:", err);
     const error = err instanceof Error ? err : new Error("Unknown error");
