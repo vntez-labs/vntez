@@ -105,13 +105,21 @@ export async function GET() {
       }, { status: 404 });
     }
 
+    if (!enhancedTables || enhancedTables.length === 0) {
+      return NextResponse.json({
+        success: true,
+        tables: [],
+        count: 0,
+        totalRows: 0,
+        message: "No tables found in database"
+      });
+    }
+
     return NextResponse.json({
       success: true,
-      data: {
-        tables: enhancedTables,
-        count: enhancedTables.length,
-        totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
-      }
+      tables: enhancedTables,
+      count: enhancedTables.length,
+      totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
     });
   } catch (err: unknown) {
     console.error("Database tables listing error:", err);

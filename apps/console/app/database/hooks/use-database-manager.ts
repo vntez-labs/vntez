@@ -50,19 +50,34 @@ export function useDatabaseManager() {
         throw new Error("Missing data in response");
       }
 
+      if (!response.data) {
+        // Handle case where data is completely missing
+        throw new Error("Server returned empty response");
+      }
+
       if (!response.data.success) {
-        throw new Error(response.data.error || "Server returned unsuccessful response");
+        // Check for specific error cases
+        if (response.data.error?.includes("permission denied")) {
+          throw new Error("Permission denied - check database access");
+        }
+        throw new Error(response.data.error || "Database tables request failed");
+      }
+
+      if (!response.data.tables) {
+        // Handle case where tables array is missing
+        return []; // Return empty array instead of throwing error
       }
 
       if (!Array.isArray(response.data.tables)) {
-        throw new Error("Invalid tables data format");
+        console.warn("Invalid tables data format:", response.data.tables);
+        return []; // Return empty array instead of throwing error
       }
 
       if (response.data.warning) {
-        console.warn(response.data.warning);
+        console.warn("Database tables warning:", response.data.warning);
       }
 
-      const { tables = [] } = response.data;
+      return response.data.tables || [];
 
       setTables(tables);
       setSelectedTableName((prev) => {
