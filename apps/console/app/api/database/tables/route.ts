@@ -62,7 +62,25 @@ export async function GET() {
       tables: enhancedTables 
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Error listing database tables";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("Database tables listing error:", err);
+    let status = 500;
+    let message = "Error listing database tables";
+    
+    if (err instanceof Error) {
+      // Handle specific Supabase errors
+      if (err.message.includes("permission denied")) {
+        status = 403;
+        message = "Permission denied - check database permissions";
+      } else if (err.message.includes("connection")) {
+        status = 503;
+        message = "Database connection error";
+      }
+    }
+
+    return NextResponse.json({ 
+      success: false,
+      error: message,
+      details: err instanceof Error ? err.message : undefined 
+    }, { status });
   }
 }

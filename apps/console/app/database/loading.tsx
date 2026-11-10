@@ -30,9 +30,12 @@ export default function Loading() {
             </div>
             <Skeleton className="h-9 w-full rounded-xl" />
             <div className="space-y-1.5 pt-1">
-              {Array.from({ length: 7 }).map((_, i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className="h-9 w-full rounded-xl" />
               ))}
+              <div className="pt-2">
+                <Skeleton className="h-4 w-3/4 rounded" />
+              </div>
             </div>
           </div>
 

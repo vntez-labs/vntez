@@ -29,16 +29,34 @@ export function useDatabaseManager() {
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const data = await api.get<{ success: boolean; tables: TableMeta[] }>("/api/database/tables");
-      if (data.success && Array.isArray(data.tables)) {
-        setTables(data.tables);
-        setSelectedTableName((prev) => {
-          if (prev && data.tables.some((t) => t.name === prev)) return prev;
-          return data.tables[0]?.name || "";
-        });
+      const { data, error } = await api.get<{ 
+        success: boolean; 
+        tables: TableMeta[];
+        error?: string;
+      }>("/api/database/tables");
+
+      if (error || !data?.success) {
+        throw new Error(error || "Failed to fetch tables");
       }
+
+      if (!Array.isArray(data.tables)) {
+        throw new Error("Invalid tables data format");
+      }
+
+      setTables(data.tables);
+      setSelectedTableName((prev) => {
+        // Preserve selection if still valid
+        if (prev && data.tables.some((t) => t.name === prev)) return prev;
+        // Default to first table with rows if available
+        const tableWithRows = data.tables.find(t => t.rowCount > 0);
+        return tableWithRows?.name || data.tables[0]?.name || "";
+      });
+
     } catch (err) {
       console.error("Failed to fetch tables:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Failed to load database tables"
+      );
     } finally {
       setIsLoadingTables(false);
     }
