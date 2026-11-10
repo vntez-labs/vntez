@@ -29,23 +29,30 @@ export function useDatabaseManager() {
   const fetchTables = useCallback(async () => {
     setIsLoadingTables(true);
     try {
-      const response = await api.get<{ 
-        success: boolean; 
+      const { data, error } = await api.get<{ 
+        success: boolean;
         tables: TableMeta[];
+        warning?: string;
         error?: string;
       }>("/api/database/tables");
 
-      console.log('Tables API response:', response);
+      console.log('Tables API response:', { data, error });
       
-      if (!response) {
-        throw new Error("No response from tables API");
+      if (error) {
+        throw new Error(error.message || "Failed to fetch tables");
       }
 
-      if (response.error || !response.data?.success) {
-        throw new Error(response.error || "Failed to fetch tables");
+      if (!data) {
+        throw new Error("No data received from tables API");
       }
 
-      const { data } = response;
+      if (!data.success) {
+        throw new Error(data.error || "Failed to fetch tables");
+      }
+
+      if (data.warning) {
+        console.warn(data.warning);
+      }
 
       if (!Array.isArray(data.tables)) {
         throw new Error("Invalid tables data format");
@@ -60,10 +67,14 @@ export function useDatabaseManager() {
         return tableWithRows?.name || data.tables[0]?.name || "";
       });
 
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to fetch tables:", err);
-      toast.error(
-        err instanceof Error ? err.message : "Failed to load database tables"
+      const errorMessage = err instanceof Error ? err.message : "Failed to load database tables";
+      
+      // Show more detailed error in development
+      toast.error(process.env.NODE_ENV === "development" ? 
+        `Database Error: ${errorMessage}` : 
+        "Could not load database tables. Please try again."
       );
     } finally {
       setIsLoadingTables(false);

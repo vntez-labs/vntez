@@ -97,9 +97,19 @@ export async function GET() {
       };
     });
 
+    if (enhancedTables.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: "No tables found in database",
+        tables: []
+      }, { status: 404 });
+    }
+
     return NextResponse.json({ 
-      success: true, 
-      tables: enhancedTables 
+      success: true,
+      tables: enhancedTables,
+      count: enhancedTables.length,
+      totalRows: enhancedTables.reduce((sum, table) => sum + table.rowCount, 0)
     });
   } catch (err: unknown) {
     console.error("Database tables listing error:", err);
@@ -127,15 +137,21 @@ export async function GET() {
       });
     }
 
+    const statusCode = error.message.includes("permission denied") ? 403 : 
+                     error.message.includes("not found") ? 404 : 500;
+    
     return NextResponse.json({
       success: false,
-      error: "Failed to fetch tables list",
-      details: {
-        message: error.message,
-        stack: process.env.NODE_ENV === "development" ? error.stack : undefined
-      }
+      error: "Database tables listing failed",
+      message: error.message,
+      details: process.env.NODE_ENV === "development" ? {
+        stack: error.stack,
+        tablesData: tablesData,
+        columnsData: columnsData,
+        pkData: pkData
+      } : undefined
     }, { 
-      status: error.message.includes("permission denied") ? 403 : 500 
+      status: statusCode 
     });
   }
 }
