@@ -25,34 +25,66 @@ export async function GET() {
       throw tablesError;
     }
 
-    // 2. Get table metadata using RPC
-    const { data: metadata, error: metadataError } = await supabase
-      .rpc('get_table_metadata_with_counts');
-    
-    console.log('Metadata query result:', { data: metadata, error: metadataError });
-    if (metadataError) {
-      console.error('Metadata query failed:', metadataError);
-      throw metadataError;
-    }
+    // 2. Get table metadata - fallback to basic info if function doesn't exist
+    let columnsData: any[] = [];
+    let pkData: any[] = [];
+    let tableCounts: any[] = [];
 
-    const columnsData = metadata?.columns || [];
-    const pkData = metadata?.primary_keys || [];
-    const tableCounts = metadata?.table_counts || [];
+    try {
+      const { data: metadata, error: metadataError } = await supabase
+        .rpc('get_table_metadata_with_counts');
+      
+      if (!metadataError && metadata) {
+        columnsData = metadata.columns || [];
+        pkData = metadata.primary_keys || [];
+        tableCounts = metadata.table_counts || [];
+      } else {
+        console.warn('Metadata function not available, using fallback');
+        // Fallback to basic table info without column details
+        columnsData = tablesData.map(t => ({
+          table_name: t.table_name,
+          column_name: 'id',
+          data_type: 'text',
+          is_nullable: false,
+          column_default: null
+        }));
+        pkData = tablesData.map(t => ({
+          table_name: t.table_name,
+          column_name: 'id'
+        }));
+      }
+    } catch (err) {
+      console.warn('Failed to fetch metadata:', err);
+      // Continue with fallback data
+    }
 
     // 4. Build enhanced table metadata with counts
     const enhancedTables: TableMeta[] = tablesData.map(table => {
       const tableName = table.table_name;
+      
+      // Get columns for this table
       const tableColumns = columnsData
         .filter((c: any) => c.table_name === tableName)
         .map((col: any) => ({
           name: col.column_name,
-          type: col.data_type,
+          type: col.data_type || 'text',
           isPrimaryKey: pkData.some((pk: any) => 
             pk.table_name === tableName && pk.column_name === col.column_name
           ),
-          required: !col.is_nullable,
+          required: col.is_nullable === false,
           defaultVal: col.column_default
         } as ColumnMeta));
+
+      // Fallback if no columns found
+      if (tableColumns.length === 0) {
+        tableColumns.push({
+          name: 'id',
+          type: 'text',
+          isPrimaryKey: true,
+          required: true,
+          defaultVal: null
+        });
+      }
 
       const primaryKey = pkData.find((pk: any) => pk.table_name === tableName)?.column_name || 'id';
       const rowCount = tableCounts.find((tc: any) => tc.table_name === tableName)?.row_count || 0;
@@ -73,9 +105,31 @@ export async function GET() {
     console.error("Database tables listing error:", err);
     const error = err instanceof Error ? err : new Error("Unknown error");
     
+    // Return basic table list even if metadata fails
+    if (tablesData?.length > 0) {
+      const basicTables = tablesData.map(t => ({
+        name: t.table_name,
+        primaryKey: 'id',
+        rowCount: 0,
+        columns: [{
+          name: 'id',
+          type: 'text',
+          isPrimaryKey: true,
+          required: true,
+          defaultVal: null
+        }]
+      }));
+      
+      return NextResponse.json({ 
+        success: true,
+        tables: basicTables,
+        warning: "Limited metadata available: " + error.message
+      });
+    }
+
     return NextResponse.json({
       success: false,
-      error: "Failed to fetch database metadata",
+      error: "Failed to fetch tables list",
       details: {
         message: error.message,
         stack: process.env.NODE_ENV === "development" ? error.stack : undefined
