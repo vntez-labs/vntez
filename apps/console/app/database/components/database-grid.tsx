@@ -157,7 +157,7 @@ export function DatabaseGrid({
       {/* Pagination Footer */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-t border-border bg-card text-sm">
         <span className="text-muted-foreground font-medium">
-          Hiển thị <strong className="text-foreground font-bold">{rows.length}</strong> / <strong className="text-foreground font-bold">{totalCount}</strong> dòng
+          Trang hiện tại: <strong className="text-foreground font-bold">{rows.length}</strong> dòng / Tổng: <strong className="text-foreground font-bold">{totalCount}</strong> dòng
         </span>
         <div className="flex items-center gap-2">
           <Button
