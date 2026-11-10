@@ -1,10 +1,10 @@
 export interface ColumnMeta {
   name: string;
   type: string;
-  format?: string;
   isPrimaryKey: boolean;
   required: boolean;
-  defaultVal?: string;
+  defaultVal?: string | null;
+  description?: string;
 }
 
 export interface TableMeta {
