@@ -23,34 +23,31 @@ export async function GET() {
     
     if (tablesError) throw tablesError;
 
-    // 2. Get column metadata using a direct query
-    const { data: columnsData, error: columnsError } = await supabase
-      .rpc('get_columns_metadata');
+    // 2. Get all metadata in one RPC call
+    const { data: metadata, error: metadataError } = await supabase
+      .rpc('get_table_metadata');
     
-    if (columnsError) throw columnsError;
+    if (metadataError) throw metadataError;
 
-    // 3. Get primary keys using a direct query
-    const { data: pkData, error: pkError } = await supabase
-      .rpc('get_primary_keys');
-    
-    if (pkError) throw pkError;
+    const columnsData = metadata?.columns || [];
+    const pkData = metadata?.primary_keys || [];
 
     // 4. Build enhanced table metadata
     const enhancedTables: TableMeta[] = tablesData.map(table => {
-      const tableName = table.tablename;
+      const tableName = table.table_name;
       const tableColumns = columnsData
-        .filter(c => c.table_name === tableName)
-        .map(col => ({
+        .filter((c: any) => c.table_name === tableName)
+        .map((col: any) => ({
           name: col.column_name,
           type: col.data_type,
-          isPrimaryKey: pkData.some(pk => 
+          isPrimaryKey: pkData.some((pk: any) => 
             pk.table_name === tableName && pk.column_name === col.column_name
           ),
           required: !col.is_nullable,
           defaultVal: col.column_default
         } as ColumnMeta));
 
-      const primaryKey = pkData.find(pk => pk.table_name === tableName)?.column_name || 'id';
+      const primaryKey = pkData.find((pk: any) => pk.table_name === tableName)?.column_name || 'id';
       const rowCount = 0; // We'll get this separately
 
       return {
@@ -79,24 +76,17 @@ export async function GET() {
     });
   } catch (err: unknown) {
     console.error("Database tables listing error:", err);
-    let status = 500;
-    let message = "Error listing database tables";
+    const error = err instanceof Error ? err : new Error("Unknown error");
     
-    if (err instanceof Error) {
-      // Handle specific Supabase errors
-      if (err.message.includes("permission denied")) {
-        status = 403;
-        message = "Permission denied - check database permissions";
-      } else if (err.message.includes("connection")) {
-        status = 503;
-        message = "Database connection error";
-      }
-    }
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: false,
-      error: message,
-      details: err instanceof Error ? err.message : undefined 
-    }, { status });
+      error: "Failed to fetch database metadata",
+      details: {
+        message: error.message,
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined
+      }
+    }, { 
+      status: error.message.includes("permission denied") ? 403 : 500 
+    });
   }
 }
