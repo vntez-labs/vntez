@@ -126,8 +126,9 @@ export async function GET() {
     const error = err instanceof Error ? err : new Error("Unknown error");
     
     // Return basic table list even if metadata fails
-    if (tablesData?.length > 0) {
-      const basicTables = tablesData.map((t: {table_name: string}) => ({
+    const fallbackTablesData = tablesData || [];
+    if (fallbackTablesData.length > 0) {
+      const basicTables = fallbackTablesData.map((t: {table_name: string}) => ({
         name: t.table_name,
         primaryKey: 'id',
         rowCount: 0,
@@ -156,9 +157,9 @@ export async function GET() {
       message: error.message,
       details: process.env.NODE_ENV === "development" ? {
         stack: error.stack,
-        tablesData: tablesData,
-        columnsData: columnsData,
-        pkData: pkData
+        tablesData: fallbackTablesData,
+        columnsData: columnsData || [],
+        pkData: pkData || []
       } : undefined
     }, { 
       status: statusCode 
