@@ -93,7 +93,7 @@ export function DatabaseGrid({
                   </td>
                 </tr>
               ))
-            ) : rows.length === 0 ? (
+            ) : !rows || rows.length === 0 ? (
               <tr>
                 <td colSpan={tableMeta.columns.length + 2} className="py-20 text-center text-sm text-muted-foreground">
                   Bảng này hiện chưa có dòng dữ liệu nào.
@@ -119,11 +119,16 @@ export function DatabaseGrid({
                         onCheckedChange={() => onToggleSelectRow(pkValue)}
                       />
                     </td>
-                    {tableMeta.columns.map((col) => (
-                      <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
-                        {formatDatabaseCell(row[col.name], col.name, col.isPrimaryKey)}
-                      </td>
-                    ))}
+                    {tableMeta.columns.map((col) => {
+                      const cellValue = row[col.name];
+                      return (
+                        <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
+                          {cellValue === null || cellValue === undefined 
+                            ? <span className="text-muted-foreground italic">null</span>
+                            : formatDatabaseCell(cellValue, col.name, col.isPrimaryKey)}
+                        </td>
+                      );
+                    })}
                     <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
                         <Button
