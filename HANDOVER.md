@@ -385,6 +385,20 @@
   - `bun run build`: 4/4 apps thành công (`console`, `web`, `docs`, `legal`).
   - Đã commit và push trực tiếp lên nhánh `main` (`origin/main`) để kích hoạt Vercel auto-deploy.
 
+### 1.14. Tái Cấu Trúc Toàn Diện Luồng Xác Thực Theo 4 Bước Chuẩn `@vntez/sdk` & Dọn Dẹp Migrations
+- **Chuẩn Hóa 4 Bước Authentication của `@vntez/sdk`**:
+  1. **Bước 1 - Sign In**: [`apps/console/app/login/login-button.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/app/login/login-button.tsx) và [`apps/web/components/landing/header-user-menu.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/web/components/landing/header-user-menu.tsx) gọi trực tiếp `vntez.auth.signIn({ redirectUri: `${window.location.origin}/auth/callback` })`.
+  2. **Bước 2 - Handle Callback**: Thay thế hoàn toàn server `route.ts` bằng Client Pages tại [`apps/console/app/auth/callback/page.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/app/auth/callback/page.tsx) và [`apps/web/app/auth/callback/page.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/web/app/auth/callback/page.tsx), gọi `const { accessToken, user } = await vntez.auth.handleCallback(...)`, lưu `localStorage` chuẩn SDK và đồng bộ vào `useAuthStore` cùng cookie phiên.
+  3. **Bước 3 - Kiểm tra Trạng thái**: Sử dụng `vntez.auth.getToken()`, `vntez.auth.getUser()`, `vntez.auth.isAuthenticated()`.
+  4. **Bước 4 - Đăng xuất**: Cập nhật [`apps/console/components/user-dropdown.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/components/user-dropdown.tsx) gọi `vntez.auth.signOut(`${window.location.origin}/login`)`.
+- **Dọn Dẹp `supabase/migrations`**:
+  - Đã xóa bỏ hoàn toàn thư mục `supabase/migrations` (chứa các file SQL khởi tạo trước đây), do DB đã được migrate và mã nguồn runtime không còn phụ thuộc.
+- **Kiểm Thử & Triển Khai**:
+  - `find apps packages ... wc -l >= 300`: Đạt chuẩn **0 dòng**.
+  - `bun run typecheck`: 6/6 packages thành công (0 errors).
+  - `bun run build`: 4/4 apps thành công (`console`, `web`, `docs`, `legal`).
+  - Đã push lên nhánh `main` (`origin/main`) để kích hoạt Vercel auto-deploy.
+
 ---
 
 ## 2. KẾ HOẠCH CHO PHIÊN LÀM VIỆC TIẾP THEO (NEXT PRIORITIES)
