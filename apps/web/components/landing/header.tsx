@@ -43,7 +43,7 @@ export function Header() {
     <header
       className={`sticky top-0 z-40 transition-all duration-200 ${
         scrolled
-          ? "bg-white/85 dark:bg-[#080c14]/85 backdrop-blur-md border-b border-black/[0.04] dark:border-white/[0.04]"
+          ? "bg-[#FAF7F4]/90 dark:bg-[#080c14]/85 backdrop-blur-md border-b border-stone-200/60 dark:border-white/[0.04]"
           : "bg-transparent"
       }`}
     >
@@ -51,7 +51,7 @@ export function Header() {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <VntezLogo size={28} />
-          <span className="font-display text-xl font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+          <span className="font-display text-xl font-bold tracking-tight text-stone-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
             vntez
           </span>
         </Link>
@@ -69,7 +69,7 @@ export function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="relative py-1 transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                  className="relative py-1 transition-colors text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
                 >
                   {link.label}
                 </a>
@@ -83,7 +83,7 @@ export function Header() {
                 className={`relative py-1 transition-colors ${
                   isActive
                     ? "font-semibold text-[#fb291a]"
-                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    : "text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
                 }`}
               >
                 {link.label}
@@ -140,7 +140,7 @@ export function Header() {
                   <a
                     key={link.href}
                     href={link.href}
-                    className="block py-2 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    className="block py-2 text-sm font-medium transition-colors text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
                   >
                     {link.label}
                   </a>
@@ -154,14 +154,14 @@ export function Header() {
                   className={`block py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "font-semibold text-[#fb291a]"
-                      : "text-slate-600 dark:text-slate-300"
+                      : "text-stone-600 dark:text-stone-300 hover:text-stone-900"
                   }`}
                 >
                   {link.label}
                 </Link>
               )
             })}
-            <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+            <div className="pt-2 border-t border-stone-200/80 dark:border-white/[0.06] flex items-center justify-between">
               <HeaderUserMenu />
             </div>
           </motion.div>

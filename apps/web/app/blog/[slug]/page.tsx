@@ -103,7 +103,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="mb-6">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
         >
           <IconArrowLeft className="size-4" />
           <span>Quay lại Blog</span>
@@ -111,26 +111,26 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       {/* Article Header */}
-      <header className="space-y-4 pb-6 border-b border-slate-200/80 dark:border-white/[0.08]">
+      <header className="space-y-4 pb-6 border-b border-stone-200/80 dark:border-white/[0.08]">
         <div className="flex items-center gap-2.5">
           <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-semibold uppercase tracking-wider bg-slate-100 dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-semibold uppercase tracking-wider bg-[#FAF7F4] dark:bg-[#131b2e] border border-stone-200/70 text-stone-700 dark:text-slate-300 shadow-2xs"
           >
             <span className="size-2 rounded-full" style={{ backgroundColor: post.color || "#fb291a" }} />
             {post.category}
           </span>
-          <span className="text-xs text-slate-400 font-mono flex items-center gap-1">
+          <span className="text-xs text-stone-400 font-mono flex items-center gap-1">
             <IconClock className="size-3.5" />
             <span>{post.readTime}</span>
           </span>
         </div>
 
-        <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+        <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white leading-tight">
           {post.title}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-sans pt-1">
-          <div className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-stone-500 dark:text-slate-400 font-sans pt-1">
+          <div className="flex items-center gap-1.5 font-medium text-stone-700 dark:text-slate-200">
             <IconUser className="size-4 opacity-60" />
             <span>{post.author}</span>
           </div>
@@ -144,7 +144,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* Banner / Thumbnail if present */}
       {post.thumbnailUrl && (
-        <div className="my-8 max-h-[500px] w-full rounded-2xl overflow-hidden bg-slate-50 dark:bg-[#0c121e] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-center p-2 sm:p-4">
+        <div className="my-8 max-h-[500px] w-full rounded-2xl overflow-hidden bg-white dark:bg-[#0c121e] border border-stone-200 dark:border-white/[0.08] shadow-[0_2px_12px_rgba(28,25,23,0.04)] flex items-center justify-center p-2 sm:p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.thumbnailUrl}

@@ -9,11 +9,11 @@ export function PreFooterCta() {
   return (
     <section className="mx-auto max-w-4xl px-6 py-28 sm:py-36 text-center">
       <div className="space-y-8">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-tight">
           Sẵn sàng hiện đại hóa hạ tầng vận hành của bạn?
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-stone-600 dark:text-stone-300 leading-relaxed font-sans max-w-2xl mx-auto">
           Hợp nhất định danh & phân quyền IAM, lưu trữ Edge tốc độ cao và giải pháp bán lẻ offline-first trên một nền tảng đồng nhất.
         </p>
 
@@ -45,7 +45,7 @@ export function PreFooterCta() {
         </div>
 
         {/* Guarantee line */}
-        <div className="pt-2 flex items-center justify-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <div className="pt-2 flex items-center justify-center gap-2 text-xs font-medium text-stone-500 dark:text-stone-400">
           <IconShieldCheck className="size-4 text-emerald-500 shrink-0" />
           <span>Thiết lập chỉ 5 phút • Miễn phí gói khởi đầu • Nâng cấp linh hoạt theo quy mô</span>
         </div>

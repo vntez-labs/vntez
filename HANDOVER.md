@@ -7,12 +7,24 @@
 ## 1. TỔNG QUAN TIẾN ĐỘ ĐÃ HOÀN TẤT TRONG PHIÊN NÀY
 
 ### 1.1. Cải tổ Giao diện & Design Tokens (Console & Web)
-- **Tối ưu Độ tương phản & Màu nền Light Mode (Khắc phục Text chìm)**:
+- **Chuyển dịch Surface & Tokens sang Warm Human Skin / Warm Alabaster Palette (Khắc phục Nền lạnh)**:
   - Cập nhật CSS variables tại `packages/ui/src/styles/globals.css`:
-    - `--background: #f8f9fa` (Canvas trung tính sạch sẽ, sáng rõ, loại bỏ ánh xanh xám lạnh đục).
-    - `--border: #e2e8f0` & `--input: #cbd5e1` (Đường viền sắc nét 1px thực thụ, thay thế viền mờ `0.07 alpha` làm phẳng và nhòe card).
-    - `--muted-foreground: #475569` (Slate-600 đạt chuẩn WCAG AAA với độ tương phản 7.2:1, chữ phụ không còn bị rửa trôi trên nền sáng).
-    - `--card: #ffffff` với viền `#e2e8f0` và `shadow-2xs`/`shadow-xs` giúp các card nổi khối rõ ràng.
+    - `--background: #FAF7F4` (Nền canvas ấm áp tinh tế, sắc thái porcelain / human skin tone đồng điệu cùng màu thương hiệu, triệt tiêu hoàn toàn ánh xanh xám lạnh buốt slate-50/gray-50, giúp các khối card trắng `#ffffff` tách nền và nổi khối tối ưu).
+    - `--border: #E7E2DA` & `--input: #DDD7CE` (Đường viền stone trung tính ấm áp, thay thế hoàn toàn đường viền slate xanh lạnh).
+    - `--foreground: #1C1917` (Stone-900 ấm áp sang trọng, độ tương phản chuẩn WCAG AAA trên nền ấm).
+    - `--muted-foreground: #57534E` (Stone-600) & `--muted: #F5F1EB` (Stone-100 ấm dịu).
+    - `--card: #ffffff` với viền `#E7E2DA` và `shadow-[0_2px_12px_rgba(28,25,23,0.04)]` giúp toàn bộ khối card tách biệt rõ nét và nổi khối hữu cơ trên nền canvas ấm.
+- **Đồng bộ hóa Toàn bộ Landing & Pages trong `apps/web`**:
+  - Chuẩn hóa màu chữ sang Warm Stone (`text-stone-900`, `text-stone-600`, `text-stone-500`, `text-stone-400`).
+  - Nâng cấp 6 feature card Overview (`DuckDbGrid`), Deep Dives (`StorageDeepDive`, `IdDeepDive`, `PosDeepDive`), `ComparisonTable`, `DataSovereignty`, `ProductsPage`, `BlogPage` với bề mặt thẻ trắng `#ffffff`, viền stone ấm và bóng đổ nhẹ `0 2px 12px rgba(28,25,23,0.04)`.
+  - Thay thế toàn bộ dải `bg-slate-50/70` ở Footer sang nền `bg-[#F5F1EB]/60` ấm áp và viền `border-stone-200/70`.
+- **Đồng bộ Hóa & Đẩy Mã Nguồn VNTEZ IAM (`workers/iam-web`)**:
+  - Đã chuyển dịch toàn diện landing page và login page sang Warm Stone Palette (`#FAF9F6`, card `#ffffff` với viền `#E7E5E4` và shadow `0 2px 12px rgba(28, 25, 23, 0.04)`).
+  - Tiêu đề hero "Who I-Am?" & login page: loại bỏ gradient chói gắt, dùng màu đỏ san hô thương hiệu `#F03E2F` đồng nhất với "thực sự cần." và dấu `?` trong `#1C1917`.
+  - Nút CTA chính dùng `#F03E2F` (hover `#D93224`) với bóng đổ `0 4px 14px rgba(240, 62, 47, 0.22)`.
+  - Header dot-grid tint ấm `#D6D3D1` mờ dần vào `#FAF9F6` phía trên feature cards.
+  - Loại bỏ hoàn toàn thanh chân card xanh lá lặp lại "✓ Sẵn sàng sử dụng" trên 6 feature cards.
+  - Đã build thành công và `git push` lên `github.com:hnamhocit/iam-web.git`.
 - **Cải tổ Bảng Điều Khiển Tổng Quan (Executive Operational Dashboard) — 100% Real Supabase Telemetry**:
   - Triệt tiêu hoàn toàn dữ liệu giả lập/fallback giả (đã gỡ bỏ toàn bộ baseline 1,808 fake req, 8 users giả, baselineDaily). Toàn bộ dữ liệu được query trực tiếp từ Supabase:
     1. **4 Chỉ số Vận hành Cốt lõi ([`DashboardKpis`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/components/dashboard/dashboard-kpis.tsx))**:

@@ -32,12 +32,12 @@ export function DeveloperExperience() {
             TRẢI NGHIỆM PHÁT TRIỂN // SDK & API
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.15]">
             Đơn giản cho lập trình viên. <br />
             <span className="text-[#fb291a]">Mạnh mẽ cho hệ thống lớn.</span>
           </h2>
 
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+          <p className="text-base sm:text-lg text-stone-600 dark:text-slate-300 leading-relaxed font-sans">
             Thư viện chính thức cho Node, C# (.NET) và Python. Tương thích 100% chuẩn AWS S3 API và tích hợp quản trị định danh & phân quyền IAM bảo mật.
           </p>
         </div>
@@ -48,15 +48,15 @@ export function DeveloperExperience() {
             href="https://github.com/hnamhocit"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e] px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:border-[#fb291a]/40 hover:text-[#fb291a] transition-all shadow-xs"
+            className="inline-flex items-center gap-2 rounded-xl border border-stone-200 dark:border-white/[0.08] bg-white dark:bg-[#0c121e] px-4 py-2.5 text-xs font-semibold text-stone-800 dark:text-slate-200 hover:border-[#fb291a]/40 hover:text-[#fb291a] shadow-[0_1px_3px_rgba(28,25,23,0.03)] transition-all"
           >
-            <IconBrandGithub className="size-4 text-slate-500" />
+            <IconBrandGithub className="size-4 text-stone-500" />
             <span>Mã nguồn mở SDK</span>
           </a>
 
           <a
             href={process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-100/90 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl bg-stone-100/90 dark:bg-white/[0.06] hover:bg-stone-200 dark:hover:bg-white/[0.1] px-4 py-2.5 text-xs font-semibold text-stone-800 dark:text-slate-200 transition-colors"
           >
             <IconBook className="size-4 text-slate-500" />
             <span>Tài liệu API</span>

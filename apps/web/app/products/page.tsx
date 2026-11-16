@@ -37,8 +37,8 @@ export default async function ProductsPage() {
     <div className="mx-auto max-w-6xl px-6 pt-10 sm:pt-14 pb-20 sm:pb-28 space-y-20">
       {/* Grid Products */}
       {products.length === 0 ? (
-        <div className="py-24 text-center space-y-3 bg-slate-50/50 dark:bg-white/[0.02] rounded-3xl border border-dashed border-slate-200 dark:border-white/[0.06] p-8">
-          <p className="text-base font-bold text-slate-800 dark:text-slate-200">Chưa có sản phẩm nào được công bố</p>
+        <div className="py-24 text-center space-y-3 bg-[#F5F1EB]/50 dark:bg-white/[0.02] rounded-3xl border border-dashed border-stone-200 dark:border-white/[0.06] p-8">
+          <p className="text-base font-bold text-stone-800 dark:text-slate-200">Chưa có sản phẩm nào được công bố</p>
           <p className="text-xs text-muted-foreground max-w-md mx-auto">
             Hệ sinh thái đang sẵn sàng. Hãy tạo sản phẩm đầu tiên trong VNTEZ Console để hiển thị tại đây.
           </p>
@@ -74,12 +74,12 @@ export default async function ProductsPage() {
                       href={targetHref}
                       target={isExternal ? "_blank" : undefined}
                       rel={isExternal ? "noreferrer" : undefined}
-                      className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:bg-slate-100/80 dark:group-hover:bg-[#0e1626] transition-colors block cursor-pointer"
+                      className="relative aspect-[16/10] w-full rounded-2xl bg-white dark:bg-[#0c121e] border border-stone-200 dark:border-stone-800 shadow-[0_2px_12px_rgba(28,25,23,0.04)] flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:border-[#fb291a]/40 dark:group-hover:bg-[#0e1626] transition-all block cursor-pointer"
                     >
                       {/* Category badge */}
                       {prod.category && (
                         <div className="absolute top-3.5 left-3.5 z-10">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-[#FAF7F4] dark:bg-[#131b2e] border border-stone-200/80 dark:border-white/10 text-stone-700 dark:text-slate-300 shadow-2xs">
                             <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
                             {prod.category}
                           </span>
@@ -101,10 +101,10 @@ export default async function ProductsPage() {
                       )}
                     </a>
                   ) : (
-                    <div className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden">
+                    <div className="relative aspect-[16/10] w-full rounded-2xl bg-white dark:bg-[#0c121e] border border-stone-200 dark:border-stone-800 shadow-[0_2px_12px_rgba(28,25,23,0.04)] flex items-center justify-center p-6 sm:p-8 overflow-hidden">
                       {/* Category badge */}
                       <div className="absolute top-3.5 left-3.5 z-10">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-white dark:bg-[#131b2e] text-slate-700 dark:text-slate-300 shadow-xs">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-[#FAF7F4] dark:bg-[#131b2e] border border-stone-200/80 dark:border-white/10 text-stone-700 dark:text-slate-300 shadow-2xs">
                           <span className="size-1.5 rounded-full" style={{ backgroundColor: prod.color || "#fb291a" }} />
                           {prod.category}
                         </span>
@@ -126,7 +126,7 @@ export default async function ProductsPage() {
                   )}
 
                   {/* Title & Interactive Arrow */}
-                  <h2 className="mt-6 font-display text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+                  <h2 className="mt-6 font-display text-lg font-bold text-stone-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
                     {hasLink ? (
                       <a
                         href={targetHref}
@@ -143,7 +143,7 @@ export default async function ProductsPage() {
                   </h2>
 
                   {/* Description - Clamped to 3 lines */}
-                  <p className="mt-2.5 text-[13px] sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-sans line-clamp-3">
+                  <p className="mt-2.5 text-[13px] sm:text-sm text-stone-600 dark:text-slate-400 leading-relaxed font-sans line-clamp-3">
                     {prod.description}
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export default async function ProductsPage() {
                       {prod.platforms.map((plat) => (
                         <span
                           key={plat}
-                          className="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400"
+                          className="inline-flex items-center gap-1 rounded-md bg-stone-100 dark:bg-zinc-800/60 px-2 py-0.5 text-[10px] font-mono text-stone-600 dark:text-zinc-400"
                         >
                           <IconDeviceDesktop className="size-2.5 opacity-60" />
                           {plat}
@@ -165,7 +165,7 @@ export default async function ProductsPage() {
                   )}
 
                   {hasLink && (
-                    <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                    <div className="pt-2 border-t border-stone-200/60 dark:border-white/[0.06] flex items-center justify-between text-xs">
                       <a
                         href={targetHref}
                         target={isExternal ? "_blank" : undefined}

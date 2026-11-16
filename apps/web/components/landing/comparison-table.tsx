@@ -101,22 +101,22 @@ export function ComparisonTable() {
     <section id="comparison" className="mx-auto max-w-6xl px-6 py-28 sm:py-36">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-tight">
           Tại sao chọn vntez?
         </h2>
 
-        <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+        <p className="mt-4 text-base sm:text-lg text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
           So sánh chi tiết vntez với các giải pháp đám mây ngoại quốc và phần mềm quản lý truyền thống trên thị trường.
         </p>
       </div>
 
       {/* Comparison Table */}
-      <div className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c101a] overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c101a] overflow-hidden shadow-[0_2px_12px_rgba(28,25,23,0.04)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-black/[0.06] dark:border-white/[0.06] bg-slate-50/70 dark:bg-[#101524]">
-                <th className="py-5 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 w-2/5">
+              <tr className="border-b border-stone-200/80 dark:border-white/[0.06] bg-[#F5F1EB]/60 dark:bg-[#101524]">
+                <th className="py-5 px-6 text-sm font-semibold text-stone-700 dark:text-stone-300 w-2/5">
                   Tiêu chí so sánh
                 </th>
                 <th className="py-5 px-6 text-sm font-bold text-[#fb291a] w-1/5 bg-[#fb291a]/5 border-x border-[#fb291a]/20">
@@ -127,26 +127,26 @@ export function ComparisonTable() {
                     </span>
                   </div>
                 </th>
-                <th className="py-5 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 w-1/5">
+                <th className="py-5 px-6 text-sm font-semibold text-stone-700 dark:text-stone-300 w-1/5">
                   Đám mây ngoại (AWS / Firebase)
                 </th>
-                <th className="py-5 px-6 text-sm font-semibold text-slate-700 dark:text-slate-300 w-1/5">
+                <th className="py-5 px-6 text-sm font-semibold text-stone-700 dark:text-stone-300 w-1/5">
                   Phần mềm truyền thống
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-black/[0.06] dark:divide-white/[0.06] text-sm">
+            <tbody className="divide-y divide-stone-200/60 dark:divide-white/[0.06] text-sm">
               {COMPARISON_DATA.map((row, index) => (
                 <tr
                   key={index}
-                  className="hover:bg-slate-50/50 dark:hover:bg-[#121827] transition-colors"
+                  className="hover:bg-stone-50/60 dark:hover:bg-[#121827] transition-colors"
                 >
                   {/* Criterion details */}
                   <td className="py-5 px-6">
-                    <div className="font-bold text-slate-900 dark:text-white">
+                    <div className="font-bold text-stone-900 dark:text-white">
                       {row.criterion}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    <div className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                       {row.detail}
                     </div>
                   </td>
@@ -157,12 +157,12 @@ export function ComparisonTable() {
                       <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#fb291a] text-white">
                         <IconCheck className="size-3 stroke-[3]" />
                       </div>
-                      <span className="text-slate-900 dark:text-white font-bold">{row.vntez.text}</span>
+                      <span className="text-stone-900 dark:text-white font-bold">{row.vntez.text}</span>
                     </div>
                   </td>
 
                   {/* Foreign cloud column */}
-                  <td className="py-5 px-6 text-slate-600 dark:text-slate-400">
+                  <td className="py-5 px-6 text-stone-600 dark:text-stone-400">
                     <div className="flex items-center gap-2">
                       <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
                         <IconX className="size-3 stroke-[2.5]" />
@@ -172,9 +172,9 @@ export function ComparisonTable() {
                   </td>
 
                   {/* Traditional column */}
-                  <td className="py-5 px-6 text-slate-500 dark:text-slate-400">
+                  <td className="py-5 px-6 text-stone-500 dark:text-stone-400">
                     <div className="flex items-center gap-2">
-                      <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">
+                      <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-stone-200 dark:bg-stone-800 text-stone-500">
                         <IconMinus className="size-3" />
                       </div>
                       <span>{row.traditional.text}</span>

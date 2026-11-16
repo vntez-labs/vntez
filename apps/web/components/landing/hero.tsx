@@ -6,7 +6,7 @@ export function Hero() {
   return (
     <section className="relative mx-auto max-w-5xl px-6 pt-24 pb-14 text-center">
       {/* Main Headline (Strictly 2 lines) */}
-      <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] max-w-5xl mx-auto">
+      <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.15] max-w-5xl mx-auto">
         <span className="block sm:whitespace-nowrap">Những gì doanh nghiệp bạn</span>
         <span className="block text-[#fb291a]">thực sự cần.</span>
       </h1>

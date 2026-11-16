@@ -12,19 +12,19 @@ const DOCS_URL =
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50/70 dark:bg-[#060a10] py-16 sm:py-20 text-slate-600 dark:text-slate-400 transition-colors duration-200 border-t border-black/[0.04] dark:border-white/[0.04]">
+    <footer className="bg-[#F5F1EB]/60 dark:bg-[#060a10] py-16 sm:py-20 text-stone-600 dark:text-stone-400 transition-colors duration-200 border-t border-stone-200/70 dark:border-white/[0.04]">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 lg:gap-12">
           {/* Cột 1: Thương hiệu & Trạng thái */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group w-fit">
               <VntezLogo size={26} />
-              <span className="font-display text-xl font-bold text-slate-900 dark:text-white tracking-tight group-hover:text-[#fb291a] transition-colors">
+              <span className="font-display text-xl font-bold text-stone-900 dark:text-white tracking-tight group-hover:text-[#fb291a] transition-colors">
                 vntez
               </span>
             </Link>
 
-            <p className="text-slate-600 dark:text-slate-400 max-w-xs leading-relaxed font-sans text-sm">
+            <p className="text-stone-600 dark:text-stone-400 max-w-xs leading-relaxed font-sans text-sm">
               Hạ tầng lưu trữ Edge tốc độ cao, định danh & phân quyền IAM (vntez-iam) và giải pháp bán lẻ offline-first tại Việt Nam.
             </p>
 
@@ -44,7 +44,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub @hnamhocit"
-                className="flex size-9 items-center justify-center rounded-lg border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e] text-slate-700 dark:text-slate-300 hover:text-[#fb291a] hover:border-[#fb291a]/40 transition-all"
+                className="flex size-9 items-center justify-center rounded-lg border border-stone-200 dark:border-white/[0.08] bg-white dark:bg-[#0c121e] text-stone-700 dark:text-stone-300 hover:text-[#fb291a] hover:border-[#fb291a]/40 shadow-xs transition-all"
               >
                 <IconBrandGithub className="size-4.5" />
               </a>
@@ -53,7 +53,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook @hnamhocit"
-                className="flex size-9 items-center justify-center rounded-lg border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e] text-slate-700 dark:text-slate-300 hover:text-[#fb291a] hover:border-[#fb291a]/40 transition-all"
+                className="flex size-9 items-center justify-center rounded-lg border border-stone-200 dark:border-white/[0.08] bg-white dark:bg-[#0c121e] text-stone-700 dark:text-stone-300 hover:text-[#fb291a] hover:border-[#fb291a]/40 shadow-xs transition-all"
               >
                 <IconBrandFacebook className="size-4.5" />
               </a>
@@ -62,7 +62,7 @@ export function Footer() {
 
           {/* Cột 2: Sản phẩm hệ sinh thái */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-200">
               Sản phẩm
             </h4>
             <ul className="mt-4 space-y-3 text-sm">
@@ -100,7 +100,7 @@ export function Footer() {
 
           {/* Cột 3: Tài nguyên & Lập trình viên */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-200">
               Tài nguyên
             </h4>
             <ul className="mt-4 space-y-3 text-sm">
@@ -127,7 +127,7 @@ export function Footer() {
                   className="hover:text-[#fb291a] transition-colors flex items-center gap-1.5"
                 >
                   <span>GitHub @hnamhocit</span>
-                  <IconArrowUpRight className="size-3 text-slate-400" />
+                  <IconArrowUpRight className="size-3 text-stone-400" />
                 </a>
               </li>
               <li>
@@ -138,7 +138,7 @@ export function Footer() {
                   className="hover:text-[#fb291a] transition-colors flex items-center gap-1.5"
                 >
                   <span>Facebook @hnamhocit</span>
-                  <IconArrowUpRight className="size-3 text-slate-400" />
+                  <IconArrowUpRight className="size-3 text-stone-400" />
                 </a>
               </li>
             </ul>
@@ -146,7 +146,7 @@ export function Footer() {
 
           {/* Cột 4: Chính sách & Pháp lý */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-200">
               Chính sách
             </h4>
             <ul className="mt-4 space-y-3 text-sm">
@@ -175,9 +175,9 @@ export function Footer() {
         </div>
 
         {/* Bottom copyright row */}
-        <div className="mt-14 pt-6 border-t border-black/[0.04] dark:border-white/[0.04] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+        <div className="mt-14 pt-6 border-t border-stone-200/70 dark:border-white/[0.04] flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-3">
           <div>© 2026 vntez. Bản quyền thuộc về VNTEZ LABS • Phát triển bởi @hnamhocit.</div>
-          <div className="flex items-center gap-4 font-mono text-xs text-slate-400">
+          <div className="flex items-center gap-4 font-mono text-xs text-stone-400">
             <span className="flex items-center gap-1">
               <IconShieldCheck className="size-3.5 text-emerald-500" />
               Zero Vendor Lock-in

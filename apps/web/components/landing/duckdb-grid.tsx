@@ -31,16 +31,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-[#fb291a]/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-[#fb291a]/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconServer2 className="size-7 shrink-0 text-[#fb291a]" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
                 Lưu trữ Edge tốc độ cao
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Lưu trữ S3 nội địa tốc độ cao với NVMe. Gói cước minh bạch, nâng cấp linh hoạt không lo chi phí ẩn.
             </p>
           </div>
@@ -66,16 +66,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-[#fb291a]/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-[#fb291a]/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconShieldCheck className="size-7 shrink-0 text-[#fb291a]" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
                 Định danh & Phân quyền IAM
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Hệ thống IAM toàn diện: Quản lý người dùng, phân quyền ma trận RBAC/ABAC, SSO và xác thực an toàn chuẩn Enterprise.
             </p>
           </div>
@@ -101,16 +101,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-cyan-500/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-cyan-500/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconRefresh className="size-7 shrink-0 text-cyan-500" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-500 transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-cyan-500 transition-colors">
                 Vận hành Offline-First
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Xử lý giao dịch trơn tru ngay cả khi mất Internet. Dữ liệu lưu cục bộ và tự động đồng bộ khi có kết nối trở lại.
             </p>
           </div>
@@ -136,16 +136,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-emerald-500/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-emerald-500/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconTruckDelivery className="size-7 shrink-0 text-emerald-500" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-500 transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-emerald-500 transition-colors">
                 Điều phối chuỗi cung ứng
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Tự động tối ưu vị trí kệ kho và vạch lộ trình giao hàng chặng cuối theo thời gian thực với sai số dưới 3 phút.
             </p>
           </div>
@@ -171,16 +171,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-[#f77241]/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-[#f77241]/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconActivity className="size-7 shrink-0 text-[#f77241]" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#f77241] transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-[#f77241] transition-colors">
                 Giám sát & Trải nghiệm
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Tự động bắt lỗi runtime trên thiết bị và phân tích phễu hành vi, phát hiện sự cố trước khi khách hàng phàn nàn.
             </p>
           </div>
@@ -206,16 +206,16 @@ export function DuckDbGrid() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="group relative flex flex-col justify-between rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#0c121e]/80 p-6 shadow-sm hover:shadow-md hover:border-purple-500/40 transition-all duration-200 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e]/80 p-6 shadow-[0_2px_12px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_20px_rgba(28,25,23,0.08)] hover:border-purple-500/40 transition-all duration-200 overflow-hidden"
         >
           <div>
             <div className="flex items-center gap-3 mb-3">
               <IconLayersLinked className="size-7 shrink-0 text-purple-500" strokeWidth={1.75} />
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-500 transition-colors">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 dark:text-white group-hover:text-purple-500 transition-colors">
                 Hệ sinh thái liên thông
               </h3>
             </div>
-            <p className="max-w-[65%] text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+            <p className="max-w-[65%] text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
               Kết nối hạ tầng, bán lẻ và vận tải qua một giao diện duy nhất. Tích hợp nhanh qua SDK chính thức cho mọi nền tảng.
             </p>
           </div>
