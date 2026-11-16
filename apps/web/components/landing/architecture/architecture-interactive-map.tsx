@@ -1,6 +1,9 @@
 "use client"
 
 import React from "react"
+import { motion, AnimatePresence } from "motion/react"
+import { FLOW_STEPS } from "./flow-steps-data"
+import { DiagramSvgCanvas } from "./diagram-svg-canvas"
 
 interface ArchitectureInteractiveMapProps {
   activeStep: string
@@ -11,229 +14,75 @@ export function ArchitectureInteractiveMap({
   activeStep,
   onSelectStep,
 }: ArchitectureInteractiveMapProps) {
+  const currentStep =
+    FLOW_STEPS.find((s) => s.id === activeStep) ?? FLOW_STEPS[0]!
+  const isAll = activeStep === "ecosystem"
+
   return (
-    <div className="relative aspect-[16/10] w-full rounded-2xl bg-slate-50/80 dark:bg-[#0c121e] flex items-center justify-center p-6 sm:p-8 overflow-hidden">
-      <svg
-        viewBox="0 0 540 300"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full max-w-[500px] select-none"
-      >
-        <defs>
-          <linearGradient id="topArchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="50%" stopColor="#F03E2F" />
-            <stop offset="100%" stopColor="#F03E2F" />
-          </linearGradient>
+    <div className="relative w-full rounded-2xl border border-[#E7E5E4] dark:border-stone-800 bg-white dark:bg-[#0c121e] shadow-[0_2px_12px_rgba(28,25,23,0.04)] overflow-hidden flex flex-col">
+      {/* Subtle Warm Dot-Grid Background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-60 bg-[radial-gradient(#E7E5E4_1px,transparent_1px)] dark:bg-[radial-gradient(#292524_1px,transparent_1px)] [background-size:16px_16px]"
+      />
 
-          <linearGradient id="bottomArchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#f77241" />
-            <stop offset="100%" stopColor="#10b981" />
-          </linearGradient>
-        </defs>
+      {/* Top Topology Ribbon */}
+      <div className="relative z-10 flex items-center justify-between px-5 pt-3.5 pb-2 border-b border-stone-100 dark:border-stone-800/60 font-mono text-[10px]">
+        <div className="flex items-center gap-1.5 text-stone-400">
+          <span className="size-2 rounded-full bg-stone-300 dark:bg-stone-700" />
+          <span className="size-2 rounded-full bg-stone-300 dark:bg-stone-700" />
+          <span className="size-2 rounded-full bg-[#F03E2F]/60" />
+          <span className="ml-1.5 font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            VNTEZ DISTRIBUTED TOPOLOGY
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 text-[#F03E2F] font-semibold">
+          <span className="size-1.5 rounded-full bg-[#F03E2F] animate-pulse" />
+          <span>
+            {isAll
+              ? "MESH SYNCHRONIZED"
+              : `FLOW // ${currentStep.id.toUpperCase()}`}
+          </span>
+        </div>
+      </div>
 
-        {/* Top Direct Edge Replication Bus (POS -> S3) */}
-        <path
-          id="topArchPath"
-          d="M 172 45 C 240 10, 300 10, 368 45"
-          fill="none"
-          stroke="url(#topArchGrad)"
-          strokeWidth="1.5"
-          strokeDasharray="4 4"
-          className="opacity-40 dark:opacity-50"
-        />
+      {/* SVG Canvas */}
+      <DiagramSvgCanvas
+        activeStep={activeStep}
+        onSelectStep={onSelectStep}
+      />
 
-        {/* Bottom Telemetry Fleet Telemetry Bus */}
-        <path
-          id="bottomArchPath"
-          d="M 172 255 C 240 290, 300 290, 368 255"
-          fill="none"
-          stroke="url(#bottomArchGrad)"
-          strokeWidth="1.5"
-          strokeDasharray="4 4"
-          className="opacity-40 dark:opacity-50"
-        />
+      {/* Live Payload Pill at the bottom of the diagram */}
+      <div className="relative z-10 px-5 pb-3 -mt-1 flex justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeStep}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18 }}
+            className="inline-flex items-center gap-2 max-w-full px-3.5 py-1.5 rounded-full bg-[#FAF9F6] dark:bg-stone-900/90 border border-[#E7E5E4] dark:border-stone-700/80 shadow-[0_1px_4px_rgba(28,25,23,0.04)] text-xs font-mono"
+          >
+            <span className="size-2 rounded-full bg-[#F03E2F] animate-pulse shrink-0" />
+            <span className="text-[#1C1917] dark:text-stone-200 font-semibold truncate">
+              {currentStep.payloadPill}
+            </span>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-        {/* Curve 1: POS -> Hub (Top-Left) */}
-        <path
-          id="pathPosToHub"
-          d="M 172 59 C 220 59, 215 150, 230 150"
-          fill="none"
-          stroke="#06b6d4"
-          strokeWidth={activeStep === "pos" ? "2.5" : "1.5"}
-          strokeOpacity={activeStep === "pos" ? 1 : 0.3}
-          className="transition-all duration-300"
-        />
-
-        {/* Curve 2: Hub -> Storage (Top-Right) */}
-        <path
-          id="pathHubToStorage"
-          d="M 310 150 C 325 150, 320 59, 368 59"
-          fill="none"
-          stroke="#F03E2F"
-          strokeWidth={activeStep === "storage" ? "2.5" : "1.5"}
-          strokeOpacity={activeStep === "storage" ? 1 : 0.3}
-          className="transition-all duration-300"
-        />
-
-        {/* Curve 3: Hub -> Telemetry (Bottom-Left) */}
-        <path
-          id="pathHubToTelemetry"
-          d="M 230 150 C 215 150, 220 241, 172 241"
-          fill="none"
-          stroke="#f77241"
-          strokeWidth={activeStep === "telemetry" ? "2.5" : "1.5"}
-          strokeOpacity={activeStep === "telemetry" ? 1 : 0.3}
-          className="transition-all duration-300"
-        />
-
-        {/* Curve 4: Hub -> Fleet (Bottom-Right) */}
-        <path
-          id="pathHubToFleet"
-          d="M 310 150 C 325 150, 320 241, 368 241"
-          fill="none"
-          stroke="#10b981"
-          strokeWidth={activeStep === "logistics" ? "2.5" : "1.5"}
-          strokeOpacity={activeStep === "logistics" ? 1 : 0.3}
-          className="transition-all duration-300"
-        />
-
-        {/* Dynamic Flying Data Particles */}
-        {activeStep === "pos" && (
-          <circle r="4" fill="#06b6d4">
-            <animateMotion dur="1.8s" repeatCount="indefinite" path="M 172 59 C 220 59, 215 150, 230 150" />
-          </circle>
-        )}
-        {activeStep === "storage" && (
-          <circle r="4" fill="#F03E2F">
-            <animateMotion dur="1.8s" repeatCount="indefinite" path="M 230 150 C 245 150, 320 59, 368 59" />
-          </circle>
-        )}
-        {activeStep === "telemetry" && (
-          <circle r="4" fill="#f77241">
-            <animateMotion dur="1.8s" repeatCount="indefinite" path="M 230 150 C 215 150, 220 241, 172 241" />
-          </circle>
-        )}
-        {activeStep === "logistics" && (
-          <circle r="4" fill="#10b981">
-            <animateMotion dur="1.8s" repeatCount="indefinite" path="M 310 150 C 325 150, 320 241, 368 241" />
-          </circle>
-        )}
-
-        {/* NODE 1: Center Core vntez-iam / Ecosystem Hub */}
-        <g
-          className="cursor-pointer transition-transform hover:scale-105"
-          onClick={() => onSelectStep("id")}
-        >
-          <rect
-            x="220"
-            y="110"
-            width="100"
-            height="80"
-            rx="16"
-            className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
-            strokeWidth={activeStep === "id" || activeStep === "ecosystem" ? "2" : "1"}
-            stroke={activeStep === "id" ? "#F03E2F" : activeStep === "ecosystem" ? "#a855f7" : undefined}
-          />
-          <circle cx="270" cy="140" r="14" fill="#F03E2F" fillOpacity="0.1" />
-          <path d="M 264 135 L 270 145 L 276 135" stroke="#F03E2F" strokeWidth="2" strokeLinecap="round" />
-          <text x="270" y="172" textAnchor="middle" className="text-[11px] font-bold font-mono fill-slate-800 dark:fill-white">
-            vntez CORE
-          </text>
-        </g>
-
-        {/* NODE 2: Top-Left BMAN POS */}
-        <g
-          className="cursor-pointer transition-transform hover:scale-105"
-          onClick={() => onSelectStep("pos")}
-        >
-          <rect
-            x="72"
-            y="25"
-            width="100"
-            height="68"
-            rx="14"
-            className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
-            strokeWidth={activeStep === "pos" ? "2" : "1"}
-            stroke={activeStep === "pos" ? "#06b6d4" : undefined}
-          />
-          <text x="122" y="54" textAnchor="middle" className="text-[11px] font-bold font-mono fill-cyan-500">
-            BMAN POS
-          </text>
-          <text x="122" y="72" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">
-            SQLite (WAL)
-          </text>
-        </g>
-
-        {/* NODE 3: Top-Right Storage NVMe */}
-        <g
-          className="cursor-pointer transition-transform hover:scale-105"
-          onClick={() => onSelectStep("storage")}
-        >
-          <rect
-            x="368"
-            y="25"
-            width="100"
-            height="68"
-            rx="14"
-            className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
-            strokeWidth={activeStep === "storage" ? "2" : "1"}
-            stroke={activeStep === "storage" ? "#F03E2F" : undefined}
-          />
-          <text x="418" y="54" textAnchor="middle" className="text-[11px] font-bold font-mono fill-[#F03E2F]">
-            Edge S3
-          </text>
-          <text x="418" y="72" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">
-            HAN/SGN NVMe
-          </text>
-        </g>
-
-        {/* NODE 4: Bottom-Left Telemetry */}
-        <g
-          className="cursor-pointer transition-transform hover:scale-105"
-          onClick={() => onSelectStep("telemetry")}
-        >
-          <rect
-            x="72"
-            y="207"
-            width="100"
-            height="68"
-            rx="14"
-            className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
-            strokeWidth={activeStep === "telemetry" ? "2" : "1"}
-            stroke={activeStep === "telemetry" ? "#f77241" : undefined}
-          />
-          <text x="122" y="236" textAnchor="middle" className="text-[11px] font-bold font-mono fill-orange-500">
-            Telemetry
-          </text>
-          <text x="122" y="254" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">
-            &lt; 8KB Trace
-          </text>
-        </g>
-
-        {/* NODE 5: Bottom-Right Smart WMS & Fleet */}
-        <g
-          className="cursor-pointer transition-transform hover:scale-105"
-          onClick={() => onSelectStep("logistics")}
-        >
-          <rect
-            x="368"
-            y="207"
-            width="100"
-            height="68"
-            rx="14"
-            className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
-            strokeWidth={activeStep === "logistics" ? "2" : "1"}
-            stroke={activeStep === "logistics" ? "#10b981" : undefined}
-          />
-          <text x="418" y="236" textAnchor="middle" className="text-[11px] font-bold font-mono fill-emerald-500">
-            WMS Fleet
-          </text>
-          <text x="418" y="254" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">
-            TSP Routing
-          </text>
-        </g>
-      </svg>
+      {/* Live Protocol / Telemetry Status Footer */}
+      <div className="relative z-10 flex items-center justify-between px-5 py-3 border-t border-[#E7E5E4] dark:border-stone-800 bg-[#FAF9F6] dark:bg-[#090e18] font-mono text-[11px] text-[#78716C] dark:text-stone-400">
+        <div className="flex items-center gap-2 truncate">
+          <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="font-semibold text-[#1C1917] dark:text-stone-200 truncate">
+            {currentStep.telemetry}
+          </span>
+        </div>
+        <span className="shrink-0 text-emerald-600 dark:text-emerald-400 font-semibold hidden sm:inline">
+          Live Telemetry
+        </span>
+      </div>
     </div>
   )
 }

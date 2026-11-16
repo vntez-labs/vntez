@@ -11,43 +11,53 @@ export function ArchitectureFlow() {
   const current = FLOW_STEPS.find((s) => s.id === activeStep) ?? FLOW_STEPS[0]!
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28 space-y-12 sm:space-y-16">
-      {/* Step Selector Pills */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-        {FLOW_STEPS.map((step, idx) => {
+    <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28 space-y-8 sm:space-y-10">
+      {/* 6-Step Stepper Navigation (Consistent Warm Brand Palette) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 w-full">
+        {FLOW_STEPS.map((step) => {
           const isActive = step.id === activeStep
+          const stepLabel = step.tabLabel.replace(/^\d+\s*·\s*/, "")
+
           return (
             <button
               key={step.id}
+              type="button"
               onClick={() => setActiveStep(step.id)}
-              className={`relative flex flex-col text-left p-3.5 sm:p-4 rounded-xl transition-all overflow-hidden cursor-pointer ${
+              className={`group relative flex items-center justify-center text-center p-3 sm:py-3.5 sm:px-2 rounded-xl transition-all cursor-pointer border ${
                 isActive
-                  ? "shadow-sm"
-                  : "bg-stone-100/80 dark:bg-[#0c101a] hover:bg-stone-200/60 dark:hover:bg-slate-800/60"
+                  ? "bg-white dark:bg-[#0c121e] border-[#E7E5E4] dark:border-stone-700 shadow-[0_2px_12px_rgba(28,25,23,0.06)]"
+                  : "bg-white/60 dark:bg-stone-900/40 border-stone-200/60 dark:border-stone-800/60 hover:bg-white dark:hover:bg-stone-800/60 hover:border-[#E7E5E4] dark:hover:border-stone-700 shadow-[0_1px_3px_rgba(28,25,23,0.02)]"
               }`}
             >
               {isActive && (
                 <motion.div
-                  layoutId="activeStepBackground"
-                  className="absolute inset-0 rounded-xl"
-                  style={{ backgroundColor: step.color }}
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  layoutId="activeArchitectureTab"
+                  className="absolute bottom-0 inset-x-3 h-[2px] bg-[#F03E2F] rounded-full"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-              <span
-                className={`relative z-10 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-colors ${
-                  isActive ? "text-white/85" : "text-stone-400 dark:text-slate-500"
-                }`}
-              >
-                Bước 0{idx + 1}
-              </span>
-              <span
-                className={`relative z-10 font-display text-xs sm:text-sm font-bold mt-1.5 line-clamp-1 transition-colors ${
-                  isActive ? "text-white" : "text-stone-900 dark:text-white"
-                }`}
-              >
-                {step.title.split(". ")[1]}
+              <span className="text-xs sm:text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5">
+                <span
+                  className={
+                    isActive
+                      ? "text-[#F03E2F] font-bold font-mono"
+                      : "text-[#78716C] dark:text-stone-500 font-mono group-hover:text-[#F03E2F]"
+                  }
+                >
+                  {step.stepNum}
+                </span>
+                <span className="text-[#D6D3D1] dark:text-stone-600 select-none">
+                  ·
+                </span>
+                <span
+                  className={
+                    isActive
+                      ? "text-[#1C1917] dark:text-white font-bold"
+                      : "text-[#57534E] dark:text-stone-400 font-medium group-hover:text-[#1C1917] dark:group-hover:text-stone-200"
+                  }
+                >
+                  {stepLabel}
+                </span>
               </span>
             </button>
           )
@@ -55,41 +65,51 @@ export function ArchitectureFlow() {
       </div>
 
       {/* Dynamic Graphic Pipeline View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        {/* Left: Animated Step Details */}
-        <div className="lg:col-span-5 flex flex-col justify-between min-h-[220px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
+        {/* Left: Step Details & Technical Highlights */}
+        <div className="lg:col-span-5 flex flex-col justify-center min-h-[240px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStep}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="space-y-4"
             >
-              <div
-                className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5"
-                style={{ color: current.color }}
-              >
-                {current.role}
+              <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#F03E2F]">
+                BƯỚC {current.stepNum} // {current.role}
               </div>
 
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-3">
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1C1917] dark:text-white leading-[1.2] text-balance">
                 {current.title}
-              </h3>
+              </h2>
 
-              <p className="text-sm sm:text-base text-stone-600 dark:text-slate-300 leading-relaxed font-sans mb-6">
+              <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300 leading-relaxed font-sans text-balance">
                 {current.desc}
               </p>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-stone-100 dark:bg-white/[0.06] text-stone-700 dark:text-slate-300">
-                <IconCheck className="size-3.5 text-emerald-500 shrink-0" />
-                <span>{current.metric}</span>
+              {/* 2-3 Crisp Inline Technical Highlights */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-2 text-xs font-mono">
+                {current.highlights.map((item, idx) => (
+                  <React.Fragment key={item}>
+                    {idx > 0 && (
+                      <span className="text-[#D6D3D1] dark:text-stone-700 font-bold select-none">
+                        /
+                      </span>
+                    )}
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-stone-800/60 border border-[#E7E5E4] dark:border-stone-700 text-[#1C1917] dark:text-stone-200 font-medium shadow-[0_1px_2px_rgba(28,25,23,0.02)]">
+                      <IconCheck className="size-3.5 text-[#F03E2F] shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  </React.Fragment>
+                ))}
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Right: Interactive SVG Map */}
+        {/* Right: Step-Aware Interactive SVG Map */}
         <div className="lg:col-span-7">
           <ArchitectureInteractiveMap
             activeStep={activeStep}

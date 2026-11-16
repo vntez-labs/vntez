@@ -7,6 +7,29 @@
 ## 1. TỔNG QUAN TIẾN ĐỘ ĐÃ HOÀN TẤT TRONG PHIÊN NÀY
 
 ### 1.1. Cải tổ Giao diện & Design Tokens (Console & Web)
+- **Tái thiết kế Phân hệ Kiến trúc Liên thông 6 Bước (Interactive Architecture Walkthrough)**:
+  - **Căn lề chuẩn xác & Hài hòa độ rộng Container**: Cả dải Stepper Navigation và bảng chi tiết 2 cột bên dưới được bọc đồng nhất trong `max-w-6xl mx-auto px-6`, triệt tiêu hoàn toàn lệch mép trái/phải.
+  - **Triệt tiêu Cắt cụt Tab (`...`) & Chuẩn hóa Nhãn**:
+    - `01 · Xác thực IAM`
+    - `02 · Bán hàng POS`
+    - `03 · Lưu trữ Edge`
+    - `04 · Giám sát lỗi`
+    - `05 · Điều phối kho`
+    - `06 · Hợp nhất Core`
+    - Gỡ bỏ hoàn toàn `truncate` và `line-clamp`, đảm bảo 100% nhãn đọc rõ ràng trên mọi thiết bị.
+  - **Đồng bộ Active State chuẩn Warm Brand (#FAF9F6 / #FFFFFF / #F03E2F)**:
+    - Loại bỏ hiện tượng đổi màu lộn xộn (rainbow switching) ở Bước 02.
+    - Toàn bộ tab active sử dụng nền thẻ trắng `#FFFFFF` (dark `#0c121e`), viền `#E7E5E4`, chữ `#1C1917`, số bước màu đỏ san hô `#F03E2F` và thanh chỉ báo đáy `2px` mượt mà cùng bóng đổ ấm dịu.
+  - **Bản đồ Kiến trúc Trực quan Động & Nhận biết Theo Bước (Step-Aware Topology Map)**:
+    - Bề mặt card trắng `#FFFFFF` với viền `#E7E5E4`, `rounded-2xl`, lưới chấm ấm (`#E7E5E4`), thay thế toàn bộ khối hộp xanh lạnh cũ.
+    - Trung tâm điều phối: **`vntez CORE`** (Event Bus & Unified Gateway).
+    - 5 phân hệ vệ tinh bố trí đối xứng hoàn hảo: **`VNTEZ IAM`** (Top-Left), **`Telemetry`** (Top-Center), **`Edge S3`** (Top-Right), **`BMAN POS`** (Bottom-Left), **`WMS Fleet`** (Bottom-Right).
+    - Ở Bước 1 (`Xác thực IAM`), kích hoạt đường truyền **`VNTEZ IAM` $\leftrightarrow$ `vntez CORE`** với đường xung nhịp `#F03E2F` và luồng hạt dữ liệu chuyển động liên tục.
+    - Bổ sung **Live Payload Pill** thu nhỏ đặt ngay dưới sơ đồ (e.g., `POST /oauth/token · PKCE Verified · JWT Issued (15m)`).
+    - Thanh trạng thái chân sơ đồ (Footer) hiển thị giao thức và telemetry chuẩn xác cho từng bước.
+    - Bước 06 (`Hợp nhất Core`) kích hoạt toàn bộ 5 luồng mesh đồng bộ dữ liệu song song.
+    - Hỗ trợ tương tác 2 chiều: click vào bất kỳ node nào trên SVG sẽ tự động kích hoạt bước tương ứng.
+  - **Tinh gọn Copy Cột Trái**: Gỡ bỏ số thứ tự thừa (`"1."`) trong thẻ `<h2>` (do đã có `BƯỚC 01` ở eyebrow), thay thế pill badge đơn lẻ bằng 2–3 thẻ highlight kỹ thuật sắc nét phân tách bởi dấu gạch ấm `/`.
 - **Chuyển dịch Surface & Tokens sang Warm Human Skin / Warm Alabaster Palette (Khắc phục Nền lạnh)**:
   - Cập nhật CSS variables tại `packages/ui/src/styles/globals.css`:
     - `--background: #FAF7F4` (Nền canvas ấm áp tinh tế, sắc thái porcelain / human skin tone đồng điệu cùng màu thương hiệu, triệt tiêu hoàn toàn ánh xanh xám lạnh buốt slate-50/gray-50, giúp các khối card trắng `#ffffff` tách nền và nổi khối tối ưu).

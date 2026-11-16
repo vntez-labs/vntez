@@ -1,73 +1,80 @@
 export interface FlowStep {
   id: string
+  stepNum: string
+  tabLabel: string
   title: string
   role: string
   desc: string
-  metric: string
-  color: string
-  bgSoft: string
-  borderSoft: string
+  highlights: string[]
+  payloadPill: string
+  telemetry: string
 }
 
 export const FLOW_STEPS: FlowStep[] = [
   {
     id: "id",
-    title: "1. Định danh & Phân quyền (vntez-iam)",
-    role: "IAM & RBAC MATRIX",
-    desc: "Quản lý người dùng, ma trận phân quyền chi tiết và xác thực SSO chuẩn Enterprise.",
-    metric: "Ma trận RBAC • SSO • Token JWT",
-    color: "#F03E2F",
-    bgSoft: "bg-[#F03E2F]/10",
-    borderSoft: "border-[#F03E2F]/30",
+    stepNum: "01",
+    tabLabel: "01 · Xác thực IAM",
+    title: "Định danh & Phân quyền IAM",
+    role: "IDENTITY & ACCESS",
+    desc: "Quản lý định danh người dùng tập trung, hỗ trợ Single Sign-On (SSO) và kiểm soát ma trận phân quyền RBAC/ABAC theo chuẩn RFC 7636.",
+    highlights: ["OAuth 2.0 PKCE", "Ma trận RBAC", "Short-lived JWT (15m)"],
+    payloadPill: "POST /oauth/token · PKCE Verified · JWT Issued (15m)",
+    telemetry: "RFC 7636 PKCE · SHA-256 Code Challenge · Access Token Exp: 900s",
   },
   {
     id: "pos",
-    title: "2. Thu ngân & Thiết bị bán lẻ",
+    stepNum: "02",
+    tabLabel: "02 · Bán hàng POS",
+    title: "Bán lẻ & Thu ngân Offline-First",
     role: "OFFLINE-FIRST CLIENT",
-    desc: "Bán hàng và in bill tức thời trên SQLite cục bộ, không lo rớt mạng hay gián đoạn.",
-    metric: "Offline 100% • Tự động đối soát",
-    color: "#06b6d4",
-    bgSoft: "bg-cyan-500/10",
-    borderSoft: "border-cyan-500/30",
+    desc: "Vận hành bán hàng không gián đoạn khi mất kết nối mạng. Toàn bộ đơn hàng ghi nhận an toàn vào SQLite cục bộ và in bill LAN chỉ 15ms.",
+    highlights: ["SQLite ACID", "In bill LAN 15ms", "Tự động đối soát"],
+    payloadPill: "POST /pos/sync · 18 đơn chờ đối soát · SQLite WAL",
+    telemetry: "Offline Engine Active · SQLite WAL · Local LAN Print: 14.8ms",
   },
   {
     id: "storage",
-    title: "3. Đồng bộ Lưu trữ biên (Edge S3)",
-    role: "EDGE S3 HIGH PERFORMANCE",
-    desc: "Đồng bộ hóa đơn và tệp dữ liệu lên cụm máy chủ nội địa tại Hà Nội và TP.HCM với tốc độ cao.",
-    metric: "Độ trễ < 15ms • Tương thích AWS S3",
-    color: "#F03E2F",
-    bgSoft: "bg-[#F03E2F]/10",
-    borderSoft: "border-[#F03E2F]/30",
+    stepNum: "03",
+    tabLabel: "03 · Lưu trữ Edge",
+    title: "Lưu trữ biên Edge S3 NVMe",
+    role: "EDGE S3 CLUSTER",
+    desc: "Đồng bộ tệp dữ liệu dung lượng lớn lên cụm máy chủ nội địa tại Hà Nội và TP.HCM với độ trễ dưới 15ms và chi phí cố định không phí ẩn.",
+    highlights: ["Độ trễ < 15ms", "Tương thích AWS S3", "Không phí Egress"],
+    payloadPill: "PUT /multipart-upload · HAN-01 NVMe · 420 MB/s",
+    telemetry: "HAN-01 & SGN-01 Dual Clusters · NVMe SSD · Zero Egress Fee",
   },
   {
     id: "telemetry",
-    title: "4. Giám sát sự cố tự động (Telemetry)",
+    stepNum: "04",
+    tabLabel: "04 · Giám sát lỗi",
+    title: "Giám sát & Bắt lỗi Real-Time",
     role: "REAL-TIME OBSERVABILITY",
-    desc: "Bắt lỗi runtime tự động và phân tích sự cố trên thiết bị trước khi khách hàng báo cáo.",
-    metric: "Báo lỗi tức thời • SDK < 8KB",
-    color: "#f77241",
-    bgSoft: "bg-[#f77241]/10",
-    borderSoft: "border-[#f77241]/30",
+    desc: "SDK tự động thu thập telemetry, bắt lỗi runtime và phân tích phễu hành vi trên thiết bị trước khi khách hàng kịp gửi phản hồi.",
+    highlights: ["OpenTelemetry", "SDK < 8.4 KB", "Cảnh báo tức thời"],
+    payloadPill: "OTel Trace · Crash Sentinel · Alert Latency 0.8s",
+    telemetry: "OpenTelemetry v1.28 · Error Catch Rate: 100% · SDK: 8.2 KB",
   },
   {
     id: "logistics",
-    title: "5. Chuỗi cung ứng & Điều phối WMS",
-    role: "WMS & SMART FLEET",
-    desc: "Cập nhật tồn kho tự động và tối ưu hóa tuyến đường giao hàng chặng cuối cho tài xế.",
-    metric: "Tiết kiệm 30% lộ trình • Real-time",
-    color: "#10b981",
-    bgSoft: "bg-emerald-500/10",
-    borderSoft: "border-emerald-500/30",
+    stepNum: "05",
+    tabLabel: "05 · Điều phối kho",
+    title: "Chuỗi cung ứng & Kho vận WMS",
+    role: "SMART WMS & FLEET",
+    desc: "Đồng bộ tồn kho đa kênh theo thời gian thực và tự động tối ưu hóa tuyến đường giao hàng chặng cuối cho tài xế với sai số dưới 3 phút.",
+    highlights: ["Khóa tồn kho nguyên tử", "Tối ưu lộ trình TSP", "Sai số < 3 phút"],
+    payloadPill: "GRPC /wms/route · TSP Optimized · Stock Lock: 12ms",
+    telemetry: "Dynamic Vehicle Routing · TSP Multi-Stop · ETA Deviation < 3m",
   },
   {
     id: "ecosystem",
-    title: "6. Hợp nhất qua vntez SDK",
-    role: "UNIFIED DEVELOPER EXPERIENCE",
-    desc: "Lập trình viên tích hợp mọi dịch vụ qua một bộ SDK duy nhất với Type Definition hoàn chỉnh.",
-    metric: "TypeScript, Go, Python, C#",
-    color: "#a855f7",
-    bgSoft: "bg-purple-500/10",
-    borderSoft: "border-purple-500/30",
+    stepNum: "06",
+    tabLabel: "06 · Hợp nhất Core",
+    title: "Hợp nhất qua vntez Core SDK",
+    role: "UNIFIED ARCHITECTURE",
+    desc: "Kết nối toàn bộ hạ tầng, bán lẻ và vận tải qua một Unified Gateway duy nhất với bộ SDK chính thức cho TypeScript và .NET 8.",
+    highlights: ["Unified Gateway", "TypeScript & .NET 8", "Zero Vendor Lock-in"],
+    payloadPill: "RPC Event Mesh · Unified Gateway · @vntez/sdk Connected",
+    telemetry: "Unified Runtime · HTTP/3 & gRPC · Type-Safe Contracts Active",
   },
 ]
