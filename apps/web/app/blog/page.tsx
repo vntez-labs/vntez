@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  IconCalendar,
-  IconUser,
   IconArrowUpRight,
   IconMessageCircle,
   IconHeart,
@@ -19,7 +17,6 @@ import {
 } from "@/components/landing/card-illustrations";
 import { buttonVariants } from "@workspace/ui/components/button";
 import { fetchLiveBlogPosts } from "@workspace/ui/lib/content-service";
-import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 
 export const metadata: Metadata = {
   title: "Blog & Kỹ thuật — vntez Engineering",

@@ -10,7 +10,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function POST(req: Request, { params }: RouteParams) {
+export async function POST(_req: Request, { params }: RouteParams) {
   const { user } = await getServerSession();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

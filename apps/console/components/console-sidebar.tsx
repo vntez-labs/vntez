@@ -20,8 +20,6 @@ import {
   IconSendFilled,
   IconCloud,
   IconCloudFilled,
-  IconShieldCheck,
-  IconShieldCheckFilled,
   IconUser,
   IconUserFilled,
   IconSettings,

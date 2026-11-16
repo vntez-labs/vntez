@@ -12,7 +12,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(req: Request, { params }: RouteParams) {
+export async function GET(_req: Request, { params }: RouteParams) {
   const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "Thiếu ID ứng dụng" }, { status: 400 });
@@ -66,7 +66,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(req: Request, { params }: RouteParams) {
+export async function DELETE(_req: Request, { params }: RouteParams) {
   const { user } = await getServerSession();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

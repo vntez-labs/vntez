@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@workspace/auth/store";
-import { isVntezAuthenticated, signOutFromVntez } from "@workspace/auth/sdk";
+import { signOutFromVntez } from "@workspace/auth/sdk";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import {
   LogOut,

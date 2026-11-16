@@ -20,7 +20,7 @@ interface AppCardProps {
   onDelete: (id: string) => void;
 }
 
-export function AppCard({ app, onEdit, onDelete }: AppCardProps) {
+export function AppCard({ app, onEdit: _onEdit, onDelete }: AppCardProps) {
   const liveUrl = app.url || (app.ctaLink && app.ctaLink.startsWith("http") ? app.ctaLink : null);
   const clientId = app.clientId || `vntez_${app.id.replace(/-/g, "_")}`;
 

@@ -393,6 +393,17 @@
   4. **Bước 4 - Đăng xuất**: Cập nhật [`apps/console/components/user-dropdown.tsx`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/components/user-dropdown.tsx) gọi `vntez.auth.signOut(`${window.location.origin}/login`)`.
 - **Dọn Dẹp `supabase/migrations`**:
   - Đã xóa bỏ hoàn toàn thư mục `supabase/migrations` (chứa các file SQL khởi tạo trước đây), do DB đã được migrate và mã nguồn runtime không còn phụ thuộc.
+
+### 1.15. Dọn Dẹp Toàn Diện Dead Code, Unused Variables & Tối Ưu Hóa `packages/auth`
+- **Xóa Bỏ Mã Chết Trong `packages/auth`**:
+  - Đã xóa bỏ vĩnh viễn `packages/auth/src/client.ts` (229 dòng) và `packages/auth/src/pkce.ts` (96 dòng) vì `@vntez/sdk` đã đảm nhiệm toàn bộ PKCE và OAuth state trong browser.
+  - Tinh gọn `packages/auth/src/server.ts` từ 263 dòng xuống còn 85 dòng, loại bỏ code PKCE server-side cũ, chỉ giữ lại các tiện ích xác thực cookie và giải mã session Next.js.
+- **Làm Rõ Vai Trò Của `packages/auth` (Next.js React Adapter)**:
+  - `@vntez/sdk` là thư viện client-side (chỉ chạy trong môi trường trình duyệt với `localStorage`).
+  - Next.js Server Components, Server Actions và hơn 15 API routes quản trị backend (`/api/users`, `/api/apps`, `/api/database/query`, v.v.) không thể truy cập `localStorage`.
+  - `packages/auth` đóng vai trò cầu nối React/Next.js: cung cấp `getServerSession()` để đọc cookie phiên an toàn phía server, bộ Zustand `useAuthStore`, `<AuthGuard>` và `<AuthProvider>`.
+- **Triệt Tiêu Unused Locals & Imports Across All Packages**:
+  - Đã rà soát và loại bỏ sạch sẽ toàn bộ biến, tham số hàm thừa (`--noUnusedLocals`, `--noUnusedParameters`) trên 21 files tại `apps/console`, 8 files tại `apps/web`, và 4 files tại `packages/ui`.
 - **Kiểm Thử & Triển Khai**:
   - `find apps packages ... wc -l >= 300`: Đạt chuẩn **0 dòng**.
   - `bun run typecheck`: 6/6 packages thành công (0 errors).

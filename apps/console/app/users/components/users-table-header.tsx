@@ -8,10 +8,8 @@ import { useUsersStore } from "../users-store";
 export function UsersTableHeader() {
   const {
     users,
-    isLoading,
     searchQuery,
     setSearchQuery,
-    fetchUsers,
     openAddUserModal,
   } = useUsersStore();
 

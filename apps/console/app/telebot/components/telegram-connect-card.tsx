@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Send, CheckCircle2, ExternalLink, Link2, ShieldCheck, UserCheck } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
 import { CopyButton } from "@workspace/ui/components/copy-button";
 import { useAuthStore } from "@workspace/auth/store";
 import { useTelebotStore } from "../telebot-store";

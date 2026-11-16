@@ -1,14 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAuthStore } from "@workspace/auth/store";
-import { isVntezAuthenticated, signInWithVntez, signOutFromVntez } from "@workspace/auth/sdk";
+import { signInWithVntez, signOutFromVntez } from "@workspace/auth/sdk";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
-import { Button, buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import {
-  IconUser,
   IconChevronDown,
   IconLayoutDashboard,
   IconSettings,
@@ -19,7 +16,6 @@ export function HeaderUserMenu() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -74,7 +70,7 @@ export function HeaderUserMenu() {
     setIsOpen(false);
     // Clear the local SDK token cache, then delegate to the server-side
     // session teardown (httpOnly cookie) which remains the source of truth.
-    if (isVntezAuthenticated()) {
+    if (isAuthenticated) {
       signOutFromVntez();
     }
     await logout();

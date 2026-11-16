@@ -2,11 +2,9 @@
 
 import React from "react"
 import {
-  IconScale,
   IconCheck,
   IconX,
   IconMinus,
-  IconSparkles,
 } from "@tabler/icons-react"
 
 interface ComparisonRow {

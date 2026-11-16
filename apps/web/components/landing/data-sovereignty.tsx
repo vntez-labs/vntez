@@ -5,8 +5,6 @@ import {
   IconLockOpen,
   IconShieldLock,
   IconActivityHeartbeat,
-  IconSparkles,
-  IconServer,
   IconCheck,
 } from "@tabler/icons-react"
 

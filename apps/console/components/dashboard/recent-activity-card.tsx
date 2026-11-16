@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldCheck, Clock, Key, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2 } from "lucide-react";
 import type { DashboardStats } from "./dashboard-types";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 

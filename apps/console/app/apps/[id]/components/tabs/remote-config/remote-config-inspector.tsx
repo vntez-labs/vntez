@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sliders, Sparkles, Code2, Copy, Check, ShieldCheck, Wrench } from "lucide-react";
+import { Sliders, Sparkles, Code2, Copy, Check } from "lucide-react";
 import { CONFIG_PRESETS, type ConfigPreset } from "./remote-config-presets";
 
 interface RemoteConfigInspectorProps {

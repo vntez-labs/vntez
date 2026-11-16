@@ -3,7 +3,6 @@ import { getServerSession } from "@workspace/auth/server";
 import {
   fetchRootPermissionsMatrix,
   saveRootPermissionsMatrix,
-  type StoredPermissionsMatrix,
 } from "@/lib/permissions-storage-service";
 
 export async function GET() {

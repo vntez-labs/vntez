@@ -8,7 +8,6 @@ import {
   IconEyeOff,
   IconRefresh,
   IconShieldLock,
-  IconChevronDown,
 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Check, Copy } from "lucide-react";
 import { useClipboard } from "@workspace/ui/hooks/use-clipboard";
 import { cn } from "@workspace/ui/lib/utils";

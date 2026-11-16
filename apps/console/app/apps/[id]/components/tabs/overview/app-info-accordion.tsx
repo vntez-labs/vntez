@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { IconInfoCircle, IconChevronDown } from "@tabler/icons-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { AutoResizeTextarea } from "@workspace/ui/components/auto-resize-textarea";
 import {
   CustomSelect,

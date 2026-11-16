@@ -19,7 +19,7 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-export async function GET(req: Request, { params }: RouteParams) {
+export async function GET(_req: Request, { params }: RouteParams) {
   const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "Thiếu ID ứng dụng" }, { status: 400, headers: CORS_HEADERS });

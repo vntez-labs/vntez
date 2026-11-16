@@ -11,7 +11,6 @@ import {
   IsometricEcosystemArt,
 } from "@/components/landing/card-illustrations";
 import { fetchLiveApps } from "@workspace/ui/lib/content-service";
-import type { AppItem } from "@workspace/ui/lib/content-types";
 
 export const metadata: Metadata = {
   title: "Sản phẩm — Hệ sinh thái Công nghệ vntez",

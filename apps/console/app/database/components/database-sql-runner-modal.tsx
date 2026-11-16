@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Play, RotateCcw, Terminal, Database, ExternalLink } from "lucide-react";
+import { X, Play, Terminal, ExternalLink } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { api } from "@workspace/ui/lib/api-client";
 import { SqlSchemaSidebar } from "./sql-schema-sidebar";

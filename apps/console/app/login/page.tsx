@@ -16,11 +16,7 @@ interface LoginPageProps {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error, redirect } = await searchParams;
-
-  const loginActionUrl = redirect
-    ? `/api/auth/login?redirect=${encodeURIComponent(redirect)}`
-    : "/api/auth/login";
+  const { error } = await searchParams;
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-white text-slate-900 selection:bg-[#fb291a]/15 selection:text-[#fb291a]">

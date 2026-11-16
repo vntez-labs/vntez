@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Copy, Check, ExternalLink, Database } from "lucide-react";
+import { Copy, Check, ExternalLink, Database } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";

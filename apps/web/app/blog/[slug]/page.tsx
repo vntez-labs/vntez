@@ -7,7 +7,7 @@ import {
   IconUser,
   IconClock,
 } from "@tabler/icons-react";
-import { fetchLiveBlogPostBySlug, fetchLiveBlogPosts } from "@workspace/ui/lib/content-service";
+import { fetchLiveBlogPostBySlug } from "@workspace/ui/lib/content-service";
 import { BlogInteractions } from "./components/blog-interactions";
 import { BlogCommentsSection } from "./components/blog-comments-section";
 import { BlogMarkdownReader } from "./components/blog-markdown-reader";

@@ -9,7 +9,7 @@ import { useStorageStore } from "./storage-store";
 import { HardDrive } from "lucide-react";
 
 export default function StoragePage() {
-  const { fetchMetrics, isLoading } = useStorageStore();
+  const { fetchMetrics } = useStorageStore();
 
   useEffect(() => {
     fetchMetrics();
