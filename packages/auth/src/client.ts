@@ -62,7 +62,7 @@ export function buildAuthorizeUrl({
   }
   if (appId !== undefined) {
     url.searchParams.set('app_id', appId === null ? 'null' : appId);
-  } else if (clientId === 'vntez-console-app' || clientId.includes('console')) {
+  } else if (clientId === 'vntez' || clientId === 'vntez-console-app' || clientId.includes('console')) {
     url.searchParams.set('app_id', 'null');
   }
 

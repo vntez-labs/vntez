@@ -68,7 +68,7 @@ export async function initiatePKCEFlow({
     redirectUri,
     state,
     codeChallenge,
-    appId: appId !== undefined ? appId : (clientId === 'vntez-console-app' ? null : undefined),
+    appId: appId !== undefined ? appId : (clientId === 'vntez' || clientId === 'vntez-console-app' ? null : undefined),
   });
 }
 
@@ -133,7 +133,7 @@ export async function handleOAuthCallback({
     });
 
     // 4. Fetch user profile from /oauth/userinfo
-    const effectiveAppId = appId !== undefined ? appId : (clientId === 'vntez-console-app' ? null : undefined);
+    const effectiveAppId = appId !== undefined ? appId : (clientId === 'vntez' || clientId === 'vntez-console-app' ? null : undefined);
     const rawUser = await fetchUserInfo(tokenResponse.access_token, baseUrl, effectiveAppId);
     const user: VntezUser = {
       ...rawUser,

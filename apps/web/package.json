@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.49.1",
     "@tabler/icons-react": "^3.50.0",
     "@types/prismjs": "^1.26.6",
+    "@vntez/sdk": "^0.1.0",
     "@workspace/auth": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^1.63.0",

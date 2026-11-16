@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@workspace/auth/store";
+import { isVntezAuthenticated, signOutFromVntez } from "@workspace/auth/sdk";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import {
   LogOut,
@@ -167,6 +168,9 @@ export function UserDropdown() {
               type="button"
               onClick={() => {
                 setIsOpen(false);
+                if (isVntezAuthenticated()) {
+                  signOutFromVntez();
+                }
                 logout();
               }}
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"

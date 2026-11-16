@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@workspace/auth/store";
+import { isVntezAuthenticated, signOutFromVntez } from "@workspace/auth/sdk";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import {
@@ -69,6 +70,11 @@ export function HeaderUserMenu() {
 
   const handleLogout = async () => {
     setIsOpen(false);
+    // Clear the local SDK token cache, then delegate to the server-side
+    // session teardown (httpOnly cookie) which remains the source of truth.
+    if (isVntezAuthenticated()) {
+      signOutFromVntez();
+    }
     await logout();
     window.location.reload();
   };
