@@ -29,7 +29,7 @@ export function VntezLogo({ className = "", size = 32 }: VntezLogoProps) {
           y2="100%"
         >
           <stop offset="0%" stopColor="#f77241" />
-          <stop offset="35%" stopColor="#fb291a" />
+          <stop offset="35%" stopColor="#F03E2F" />
           <stop offset="70%" stopColor="#e3062a" />
           <stop offset="100%" stopColor="#b60343" />
         </linearGradient>

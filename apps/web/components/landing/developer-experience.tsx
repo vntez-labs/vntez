@@ -28,17 +28,16 @@ export function DeveloperExperience() {
       {/* Top Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
         <div className="space-y-4 max-w-2xl">
-          <div className="text-xs font-mono font-bold tracking-wider text-[#fb291a] uppercase">
-            TRẢI NGHIỆM PHÁT TRIỂN // SDK & API
+          <div className="text-xs font-mono font-bold tracking-wider text-[#F03E2F] uppercase">
+            TRẢI NGHIỆM PHÁT TRIỂN // SDK &amp; API
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.15]">
-            Đơn giản cho lập trình viên. <br />
-            <span className="text-[#fb291a]">Mạnh mẽ cho hệ thống lớn.</span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#1C1917] dark:text-white leading-[1.15] text-balance">
+            Đơn giản cho lập trình viên, mạnh mẽ cho <span className="text-[#F03E2F]">hệ thống</span>.
           </h2>
 
-          <p className="text-base sm:text-lg text-stone-600 dark:text-slate-300 leading-relaxed font-sans">
-            Thư viện chính thức cho Node, C# (.NET) và Python. Tương thích 100% chuẩn AWS S3 API và tích hợp quản trị định danh & phân quyền IAM bảo mật.
+          <p className="text-base sm:text-lg text-[#57534E] dark:text-stone-300 leading-relaxed font-sans text-balance">
+            Thư viện chính thức hỗ trợ TypeScript, C# (.NET 8) và REST API. Tương thích 100% chuẩn AWS S3 API và tích hợp sẵn giải pháp quản trị định danh &amp; phân quyền IAM.
           </p>
         </div>
 
@@ -48,7 +47,7 @@ export function DeveloperExperience() {
             href="https://github.com/hnamhocit"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl border border-stone-200 dark:border-white/[0.08] bg-white dark:bg-[#0c121e] px-4 py-2.5 text-xs font-semibold text-stone-800 dark:text-slate-200 hover:border-[#fb291a]/40 hover:text-[#fb291a] shadow-[0_1px_3px_rgba(28,25,23,0.03)] transition-all"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E7E5E4] dark:border-stone-800 bg-white dark:bg-[#0c121e] px-4 py-2.5 text-xs font-semibold text-[#1C1917] dark:text-stone-200 hover:border-[#F03E2F]/40 hover:text-[#F03E2F] shadow-[0_1px_3px_rgba(28,25,23,0.03)] transition-all"
           >
             <IconBrandGithub className="size-4 text-stone-500" />
             <span>Mã nguồn mở SDK</span>
@@ -56,16 +55,16 @@ export function DeveloperExperience() {
 
           <a
             href={process.env.NEXT_PUBLIC_DOCS_URL || "https://vntez-docs.vercel.app"}
-            className="inline-flex items-center gap-2 rounded-xl bg-stone-100/90 dark:bg-white/[0.06] hover:bg-stone-200 dark:hover:bg-white/[0.1] px-4 py-2.5 text-xs font-semibold text-stone-800 dark:text-slate-200 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 px-4 py-2.5 text-xs font-semibold text-[#1C1917] dark:text-stone-200 transition-colors"
           >
-            <IconBook className="size-4 text-slate-500" />
+            <IconBook className="size-4 text-stone-500" />
             <span>Tài liệu API</span>
           </a>
         </div>
       </div>
 
-      {/* Code Card Shell */}
-      <div className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-[#070b14] shadow-sm overflow-hidden text-slate-200 font-mono">
+      {/* Code Card Shell with dark charcoal background (#141413) */}
+      <div className="rounded-2xl border border-white/[0.08] bg-[#141413] shadow-sm overflow-hidden text-stone-200 font-mono">
         {/* Top bar with tabs & actions */}
         <div className="flex flex-wrap items-center justify-between border-b border-white/[0.06] bg-black/40 px-4 sm:px-6 py-3 gap-3">
           {/* Language selector tabs */}
@@ -75,17 +74,18 @@ export function DeveloperExperience() {
               return (
                 <button
                   key={tab}
+                  type="button"
                   onClick={() => setActiveTab(tab)}
                   className={`relative px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     isActive
                       ? "text-white"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
+                      : "text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]"
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeLangTab"
-                      className="absolute inset-0 rounded-lg bg-white/[0.08] border border-white/[0.1]"
+                      className="absolute inset-0 rounded-lg bg-white/[0.1] border border-white/[0.12]"
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -97,13 +97,14 @@ export function DeveloperExperience() {
 
           {/* Copy and Filename actions */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 select-none hidden sm:inline">
+            <span className="text-xs text-stone-400 select-none hidden sm:inline">
               {currentSnippet.filename}
             </span>
 
             <button
+              type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] px-3 py-1.5 text-xs font-sans font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] px-3 py-1.5 text-xs font-sans font-medium text-stone-300 hover:text-white transition-colors cursor-pointer"
             >
               {copied ? (
                 <>
@@ -136,19 +137,19 @@ export function DeveloperExperience() {
           </AnimatePresence>
         </div>
 
-        {/* Micro-benchmarking footer */}
-        <div className="flex flex-wrap items-center justify-between border-t border-white/[0.06] bg-black/30 px-6 py-3 text-[11px] font-mono text-slate-400 gap-3">
+        {/* Micro-benchmarking footer with authentic metadata */}
+        <div className="flex flex-wrap items-center justify-between border-t border-white/[0.06] bg-black/30 px-6 py-3 text-[11px] font-mono text-stone-400 gap-3">
           <div className="flex items-center gap-2">
-            <IconCode className="size-3.5 text-[#fb291a]" />
-            <span>Type Definition: Hoàn chỉnh 100% TypeScript & C#</span>
+            <IconCode className="size-3.5 text-[#F03E2F]" />
+            <span>@vntez/sdk · TypeScript &amp; .NET 8 · MIT License</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-stone-400">
             <span className="text-emerald-400 font-semibold">
-              Kích thước Bundle: &lt; 8.4 KB (gzipped)
+              Kích thước: &lt; 8.4 KB (gzipped)
             </span>
-            <span className="hidden sm:inline">•</span>
-            <span className="text-slate-400">Zero C/C++ dependencies</span>
+            <span className="hidden sm:inline">·</span>
+            <span>Tương thích chuẩn AWS S3</span>
           </div>
         </div>
       </div>

@@ -8,6 +8,8 @@ import {
   IconCoffee,
   IconBread,
   IconPrinter,
+  IconDatabase,
+  IconArrowsExchange,
 } from "@tabler/icons-react"
 
 export function PosDeepDive() {
@@ -15,131 +17,138 @@ export function PosDeepDive() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
       {/* Left Column: Text & Features */}
       <div className="lg:col-span-6 space-y-6">
-        <div className="text-xs font-mono font-bold tracking-wider text-[#fb291a] uppercase">
-          BMAN POS & CHUỖI CUNG ỨNG // OFFLINE ENGINE
+        <div className="text-xs font-mono font-bold tracking-wider text-[#F03E2F] uppercase">
+          BMAN POS // OFFLINE ENGINE
         </div>
 
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.15]">
-          Bán hàng liên tục khi rớt mạng. <br />
-          <span className="text-[#fb291a]">Tự động đối soát khi online.</span>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#1C1917] dark:text-white leading-[1.15] text-balance">
+          Bán hàng liên tục không lo <span className="text-[#F03E2F]">rớt mạng</span>.
         </h2>
 
-        <p className="text-base sm:text-lg text-stone-600 dark:text-slate-300 leading-relaxed font-sans">
-          Máy thu ngân và nhân viên quét mã tiếp tục in hóa đơn và thanh toán bình thường kể cả khi mất mạng. Dữ liệu lưu an toàn trên SQLite và tự động đồng bộ khi có kết nối.
+        <p className="text-base sm:text-lg text-[#57534E] dark:text-stone-300 leading-relaxed font-sans text-balance">
+          Giải pháp điểm bán lẻ offline-first giúp thu ngân in hóa đơn tức thì qua mạng LAN và ghi nhận giao dịch vào cơ sở dữ liệu SQLite cục bộ mà không phụ thuộc đường truyền internet.
         </p>
 
-        <div className="space-y-3.5 pt-1">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
+        <div className="space-y-4 pt-1">
+          <div className="flex items-start gap-3.5">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800 text-[#1C1917] dark:text-stone-200 border border-[#E7E5E4] dark:border-stone-700">
+              <IconPrinter className="size-4 text-[#F03E2F]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Bán hàng Offline 100% không độ trễ</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Thao tác quét mã, thêm món và in bill qua mạng LAN chỉ mất 15ms.
+              <h4 className="text-sm font-bold text-[#1C1917] dark:text-white">
+                In hóa đơn qua mạng LAN chỉ 15ms
+              </h4>
+              <p className="text-xs sm:text-sm text-[#57534E] dark:text-stone-400 mt-0.5">
+                Giao thức ESC/POS trực tiếp tới máy in trong mạng nội bộ, loại bỏ độ trễ điện toán đám mây.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
+          <div className="flex items-start gap-3.5">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800 text-[#1C1917] dark:text-stone-200 border border-[#E7E5E4] dark:border-stone-700">
+              <IconDatabase className="size-4 text-[#F03E2F]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Tự động đối soát (Reconciliation)</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Giải quyết xung đột dữ liệu tự động, cập nhật sổ sách ngay khi có mạng trở lại.
+              <h4 className="text-sm font-bold text-[#1C1917] dark:text-white">
+                Cơ sở dữ liệu SQLite cục bộ chuẩn ACID
+              </h4>
+              <p className="text-xs sm:text-sm text-[#57534E] dark:text-stone-400 mt-0.5">
+                Toàn bộ đơn hàng được ghi nhận an toàn tại quầy, sẵn sàng hoạt động ngay cả khi ngắt kết nối mạng hoàn toàn.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
+          <div className="flex items-start gap-3.5">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800 text-[#1C1917] dark:text-stone-200 border border-[#E7E5E4] dark:border-stone-700">
+              <IconArrowsExchange className="size-4 text-[#F03E2F]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Khóa tồn kho nguyên tử</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Tránh bán vượt tồn kho trong các chiến dịch bán hàng đa kênh có lượng truy cập lớn.
+              <h4 className="text-sm font-bold text-[#1C1917] dark:text-white">
+                Tự động đối soát và hòa giải xung đột
+              </h4>
+              <p className="text-xs sm:text-sm text-[#57534E] dark:text-stone-400 mt-0.5">
+                Khi có kết nối internet trở lại, hệ thống tự động đẩy hàng đợi và đối soát số liệu với máy chủ trung tâm.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Column: Sleek Cashier Terminal Register */}
+      {/* Right Column: Warm Retail Receipt + Sync Queue Card */}
       <div className="lg:col-span-6">
         <motion.div
           whileHover={{ y: -3 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e] shadow-[0_2px_12px_rgba(28,25,23,0.04)] overflow-hidden"
+          className="rounded-2xl border border-[#E7E5E4] dark:border-stone-800 bg-white dark:bg-[#0c121e] shadow-[0_2px_12px_rgba(28,25,23,0.04)] overflow-hidden"
         >
-          {/* Terminal Topbar */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200/70 dark:border-white/[0.06] bg-[#F5F1EB]/60 dark:bg-[#090e18]">
-            <div className="flex items-center gap-2.5">
-              <span className="font-mono text-xs font-bold text-stone-900 dark:text-white">
+          {/* Topbar */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] dark:border-stone-800 bg-[#FAF9F6] dark:bg-[#090e18]">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs font-bold text-[#1C1917] dark:text-white">
                 BMAN POS 3.4
               </span>
-              <span className="text-[11px] text-stone-400">| Quầy 02 • Chi nhánh Cầu Giấy</span>
+              <span className="text-[11px] text-[#78716C] dark:text-stone-400">
+                · Quầy 02
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
-              <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+              <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
               <IconWifiOff className="size-3.5" />
-              <span>Wi-Fi ngắt • SQLite Engine</span>
+              <span>Offline · SQLite cục bộ</span>
             </div>
           </div>
 
-          {/* Seamless Cashier Terminal Surface */}
+          {/* Receipt Body */}
           <div className="p-6 space-y-5">
-            {/* Receipt Header Row */}
-            <div className="flex items-center justify-between text-xs font-mono text-stone-400 pb-2 border-b border-stone-200/70 dark:border-white/[0.06]">
-              <span className="font-semibold text-stone-700 dark:text-slate-300">HÓA ĐƠN #POS-2026-9041</span>
-              <span>14:32:05 • Bàn 06</span>
+            {/* Receipt Header */}
+            <div className="flex items-center justify-between text-xs font-mono text-[#78716C] dark:text-stone-400 pb-2 border-b border-[#E7E5E4] dark:border-stone-800">
+              <span className="font-semibold text-[#1C1917] dark:text-stone-200">HÓA ĐƠN #POS-2026-9041</span>
+              <span>14:32:05 · Bàn 06</span>
             </div>
 
             {/* Line Items */}
-            <div className="space-y-3.5">
+            <div className="space-y-3">
               {/* Item 1 */}
-              <div className="flex items-center justify-between hover:bg-stone-50/80 dark:hover:bg-slate-800/40 p-1 rounded-lg transition-colors">
+              <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                    <IconCoffee className="size-4.5" />
+                  <div className="size-8 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center justify-center">
+                    <IconCoffee className="size-4" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white">
+                    <div className="text-xs sm:text-sm font-semibold text-[#1C1917] dark:text-white">
                       Cà phê sữa đá Sài Gòn
                     </div>
-                    <div className="text-[11px] text-stone-400 font-sans">
-                      Size L • 50% ngọt • Nhiều đá
+                    <div className="text-[11px] text-[#78716C] dark:text-stone-400">
+                      Size L · Nhiều đá
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono text-stone-400">× 2</span>
-                  <span className="text-xs sm:text-sm font-mono font-bold text-stone-900 dark:text-white">
+                  <span className="text-xs font-mono text-[#78716C] dark:text-stone-400">× 2</span>
+                  <span className="text-xs sm:text-sm font-mono font-bold text-[#1C1917] dark:text-white">
                     70.000 ₫
                   </span>
                 </div>
               </div>
 
               {/* Item 2 */}
-              <div className="flex items-center justify-between hover:bg-stone-50/80 dark:hover:bg-slate-800/40 p-1 rounded-lg transition-colors">
+              <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-[#fb291a]/10 text-[#fb291a] flex items-center justify-center">
-                    <IconBread className="size-4.5" />
+                  <div className="size-8 rounded-lg bg-[#F03E2F]/10 text-[#F03E2F] flex items-center justify-center">
+                    <IconBread className="size-4" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white">
-                      Bánh mì xíu mại trứng muối
+                    <div className="text-xs sm:text-sm font-semibold text-[#1C1917] dark:text-white">
+                      Bánh mì xíu mại
                     </div>
-                    <div className="text-[11px] text-stone-400 font-sans">
-                      Nóng giòn • Không cay
+                    <div className="text-[11px] text-[#78716C] dark:text-stone-400">
+                      Nóng giòn
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono text-stone-400">× 1</span>
-                  <span className="text-xs sm:text-sm font-mono font-bold text-stone-900 dark:text-white">
+                  <span className="text-xs font-mono text-[#78716C] dark:text-stone-400">× 1</span>
+                  <span className="text-xs sm:text-sm font-mono font-bold text-[#1C1917] dark:text-white">
                     45.000 ₫
                   </span>
                 </div>
@@ -147,52 +156,45 @@ export function PosDeepDive() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-stone-200/70 dark:border-white/[0.06]" />
+            <div className="border-t border-[#E7E5E4] dark:border-stone-800" />
 
-            {/* Total Calculation & Paid Status */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs text-stone-500">
+            {/* Total Calculation */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center text-xs text-[#78716C] dark:text-stone-400">
                 <span>Tạm tính (Đã gồm 8% VAT)</span>
                 <span className="font-mono">115.000 ₫</span>
               </div>
               <div className="flex justify-between items-center pt-1">
-                <span className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white">
-                  TỔNG THANH TOÁN
+                <span className="text-xs sm:text-sm font-bold text-[#1C1917] dark:text-white">
+                  TỔNG CỘNG
                 </span>
-                <span className="font-mono text-xl sm:text-2xl font-black text-[#fb291a]">
+                <span className="font-mono text-xl sm:text-2xl font-black text-[#F03E2F]">
                   115.000 ₫
                 </span>
               </div>
             </div>
 
-            {/* LAN Print Status Banner */}
-            <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 px-3.5 py-2.5 text-xs text-emerald-700 dark:text-emerald-300">
-              <div className="flex items-center gap-2 font-semibold">
-                <IconCheck className="size-4 text-emerald-500 shrink-0" />
-                <span>Đã thanh toán tiền mặt</span>
+            {/* Print Confirmation */}
+            <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 px-3.5 py-2 text-xs text-emerald-800 dark:text-emerald-300">
+              <div className="flex items-center gap-1.5 font-medium">
+                <IconCheck className="size-4 text-emerald-600" />
+                <span>Đã in bill LAN (15ms)</span>
               </div>
-              <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-600 dark:text-emerald-400">
-                <IconPrinter className="size-3.5" />
-                <span>In bill LAN 12ms</span>
-              </div>
+              <span className="font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
+                Đã lưu SQLite
+              </span>
             </div>
           </div>
 
-          {/* Seamless Bottom Telemetry Dock */}
-          <div className="px-6 py-3.5 border-t border-stone-200/70 dark:border-white/[0.06] bg-[#F5F1EB]/60 dark:bg-[#070b14] space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-2 font-medium text-stone-700 dark:text-slate-300">
-                <span className="size-2 rounded-full bg-emerald-500 animate-ping" />
-                Hàng đợi SQLite cục bộ: 18 đơn an toàn
-              </span>
-              <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                ACID Ready
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 dark:text-slate-400">
-              <span>Tự động đối soát khi có mạng</span>
-              <span className="text-stone-700 dark:text-slate-300">Reconciliation: TỰ ĐỘNG</span>
-            </div>
+          {/* Single Clean Footer Status Bar */}
+          <div className="px-6 py-3 border-t border-[#E7E5E4] dark:border-stone-800 bg-[#FAF9F6] dark:bg-[#090e18] flex items-center justify-between text-[11px] font-mono text-[#78716C] dark:text-stone-400">
+            <span className="flex items-center gap-2 font-medium text-[#1C1917] dark:text-stone-200">
+              <span className="size-2 rounded-full bg-emerald-500" />
+              18 đơn chờ đồng bộ · Tự động đẩy khi có mạng
+            </span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              ACID Safe
+            </span>
           </div>
         </motion.div>
       </div>

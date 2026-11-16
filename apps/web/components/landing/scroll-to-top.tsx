@@ -36,7 +36,7 @@ export function ScrollToTop() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Cuộn lên đầu trang"
-          className="fixed bottom-6 right-6 z-50 flex size-11 sm:size-12 items-center justify-center rounded-full bg-white/90 dark:bg-[#0c121e]/90 text-slate-700 dark:text-slate-200 border border-black/[0.08] dark:border-white/[0.1] shadow-lg backdrop-blur-md hover:border-[#fb291a]/50 hover:text-[#fb291a] dark:hover:text-[#fb291a] transition-colors"
+          className="fixed bottom-6 right-6 z-50 flex size-11 sm:size-12 items-center justify-center rounded-full bg-white/90 dark:bg-[#0c121e]/90 text-stone-700 dark:text-stone-200 border border-[#E7E5E4] dark:border-white/[0.1] shadow-lg backdrop-blur-md hover:border-[#F03E2F]/50 hover:text-[#F03E2F] dark:hover:text-[#F03E2F] transition-colors"
         >
           <IconArrowUp className="size-5" strokeWidth={2.2} />
         </motion.button>

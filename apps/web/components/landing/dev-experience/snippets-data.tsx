@@ -104,7 +104,7 @@ var result = await client.Storage.UploadAsync(stream);`,
     ),
   },
   curl: {
-    language: "cURL / REST",
+    language: "cURL",
     filename: "terminal.sh",
     raw: `# Upload trực tiếp tới cụm Edge S3 nội địa
 curl -X PUT "https://storage.vntez.net/bucket/pos.tar.gz" \\

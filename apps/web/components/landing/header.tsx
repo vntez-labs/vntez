@@ -51,7 +51,7 @@ export function Header() {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <VntezLogo size={28} />
-          <span className="font-display text-xl font-bold tracking-tight text-stone-900 dark:text-white group-hover:text-[#fb291a] transition-colors">
+          <span className="font-display text-xl font-bold tracking-tight text-[#1C1917] dark:text-white group-hover:text-[#F03E2F] transition-colors">
             vntez
           </span>
         </Link>
@@ -69,7 +69,7 @@ export function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="relative py-1 transition-colors text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
+                  className="relative py-1 transition-colors text-[#57534E] dark:text-stone-300 hover:text-[#1C1917] dark:hover:text-white"
                 >
                   {link.label}
                 </a>
@@ -82,15 +82,15 @@ export function Header() {
                 href={link.href}
                 className={`relative py-1 transition-colors ${
                   isActive
-                    ? "font-semibold text-[#fb291a]"
-                    : "text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
+                    ? "font-semibold text-[#F03E2F]"
+                    : "text-[#57534E] dark:text-stone-300 hover:text-[#1C1917] dark:hover:text-white"
                 }`}
               >
                 {link.label}
                 {isActive && (
                   <motion.div
                     layoutId="headerActiveIndicator"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#fb291a] rounded-full"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#F03E2F] rounded-full"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -153,8 +153,8 @@ export function Header() {
                   href={link.href}
                   className={`block py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? "font-semibold text-[#fb291a]"
-                      : "text-stone-600 dark:text-stone-300 hover:text-stone-900"
+                      ? "font-semibold text-[#F03E2F]"
+                      : "text-[#57534E] dark:text-stone-300 hover:text-[#1C1917]"
                   }`}
                 >
                   {link.label}

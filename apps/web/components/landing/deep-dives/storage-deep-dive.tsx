@@ -2,79 +2,65 @@
 
 import React from "react"
 import { motion } from "motion/react"
-import { IconCheck, IconCloudUpload } from "@tabler/icons-react"
+import { IconCloudUpload, IconServer } from "@tabler/icons-react"
 
 export function StorageDeepDive() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
       {/* Left Column: Text & Features */}
       <div className="lg:col-span-6 space-y-6">
-        <div className="text-xs font-mono font-bold tracking-wider text-[#fb291a] uppercase">
+        <div className="text-xs font-mono font-bold tracking-wider text-[#F03E2F] uppercase">
           LƯU TRỮ BIÊN // NVME CLUSTER
         </div>
 
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.15]">
-          Lưu trữ Edge tốc độ cao. <br />
-          <span className="text-[#fb291a]">Hiệu năng thực, chi phí minh bạch.</span>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#1C1917] dark:text-white leading-[1.15] text-balance">
+          Lưu trữ Edge tốc độ cao với <span className="text-[#F03E2F]">NVMe</span>.
         </h2>
 
-        <p className="text-base sm:text-lg text-stone-600 dark:text-slate-300 leading-relaxed font-sans">
-          Hạ tầng lưu trữ S3 nội địa với ổ NVMe Enterprise tại Hà Nội và TP.HCM. Khởi đầu miễn phí, nâng cấp gói linh hoạt theo dung lượng thực tế, không chi phí ẩn.
+        <p className="text-base sm:text-lg text-[#57534E] dark:text-stone-300 leading-relaxed font-sans text-balance">
+          Hạ tầng lưu trữ tương thích AWS S3 chuẩn hóa, vận hành trực tiếp trên cụm ổ cứng NVMe Enterprise tại Hà Nội và TP.HCM. Tốc độ phản hồi cực nhanh, không phí tải về bất ngờ.
         </p>
 
-        <div className="space-y-3.5 pt-1">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
+        {/* 2 Compact Inline Stat Callouts */}
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0c121e] border border-[#E7E5E4] dark:border-stone-800 shadow-[0_2px_8px_rgba(28,25,23,0.03)]">
+            <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1C1917] dark:text-white">
+              &lt; 15ms
             </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Upload đa phân mảnh (Multipart Upload)</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Tải lên tệp dung lượng lớn ổn định, tự động phục hồi khi kết nối gián đoạn.
-              </p>
+            <div className="text-xs font-semibold text-[#1C1917] dark:text-stone-200 mt-1">
+              Độ trễ nội địa
             </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Tốc độ NVMe nội địa (&lt; 15ms)</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Tốc độ đọc/ghi vượt trội, tối ưu băng thông và tuân thủ lưu trữ dữ liệu trong nước.
-              </p>
+            <div className="text-[11px] text-[#78716C] dark:text-stone-400 mt-0.5">
+              NVMe cluster HAN-01 &amp; SGN-01
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <IconCheck className="size-3.5" />
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0c121e] border border-[#E7E5E4] dark:border-stone-800 shadow-[0_2px_8px_rgba(28,25,23,0.03)]">
+            <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#F03E2F]">
+              100%
             </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-white">Tương thích 100% chuẩn AWS S3</h4>
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400">
-                Sử dụng ngay thư viện AWS SDK quen thuộc chỉ bằng cách thay đổi endpoint.
-              </p>
+            <div className="text-xs font-semibold text-[#1C1917] dark:text-stone-200 mt-1">
+              Tương thích S3 SDK
+            </div>
+            <div className="text-[11px] text-[#78716C] dark:text-stone-400 mt-0.5">
+              Thay đổi endpoint, không đổi code
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Column: Unified Storage Monitor (Light Animated Surface) */}
+      {/* Right Column: Clean Telemetry Card (No fake macOS traffic lights) */}
       <div className="lg:col-span-6">
         <motion.div
           whileHover={{ y: -3 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c121e] shadow-[0_2px_12px_rgba(28,25,23,0.04)] overflow-hidden"
+          className="rounded-2xl border border-[#E7E5E4] dark:border-stone-800 bg-white dark:bg-[#0c121e] shadow-[0_2px_12px_rgba(28,25,23,0.04)] overflow-hidden"
         >
-          {/* Window title bar */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200/70 dark:border-white/[0.06] bg-[#F5F1EB]/60 dark:bg-[#090e18]">
+          {/* Telemetry Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] dark:border-stone-800 bg-[#FAF9F6] dark:bg-[#090e18]">
             <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-red-400/80" />
-              <div className="size-3 rounded-full bg-amber-400/80" />
-              <div className="size-3 rounded-full bg-emerald-400/80" />
-              <span className="ml-2 font-mono text-xs text-stone-500 dark:text-slate-400">
+              <IconServer className="size-4 text-[#F03E2F]" />
+              <span className="font-mono text-xs font-semibold text-[#1C1917] dark:text-stone-200">
                 storage_telemetry.cluster
               </span>
             </div>
@@ -89,55 +75,65 @@ export function StorageDeepDive() {
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <IconCloudUpload className="size-4 text-[#fb291a]" />
-                  <span className="font-mono font-semibold text-stone-900 dark:text-white">
+                  <IconCloudUpload className="size-4 text-[#F03E2F]" />
+                  <span className="font-mono font-semibold text-[#1C1917] dark:text-white">
                     enterprise_catalog_assets.tar
                   </span>
                 </div>
-                <span className="font-mono text-[11px] text-stone-500">48.2 GB • 90%</span>
+                <span className="font-mono text-[11px] text-[#78716C] dark:text-stone-400">
+                  48.2 GB · 420 MB/s · HAN-01
+                </span>
               </div>
 
-              <div className="h-2 w-full bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: "0%" }}
                   whileInView={{ width: "90%" }}
                   viewport={{ once: true }}
                   transition={{ duration: 1.2, ease: "easeOut" }}
-                  className="h-full bg-[#fb291a] rounded-full"
+                  className="h-full bg-[#F03E2F] rounded-full"
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 dark:text-slate-400">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#78716C] dark:text-stone-400">
                 <span>Multipart: 18/20 parts song song</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  Tốc độ: 420 MB/s • HAN-01 NVMe
+                  90% hoàn tất
                 </span>
               </div>
             </div>
 
             {/* Divider */}
-            <div className="border-t border-stone-200/60 dark:border-white/[0.06]" />
+            <div className="border-t border-[#E7E5E4] dark:border-stone-800" />
 
             {/* Cost Predictability Comparison */}
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-stone-500 dark:text-slate-400">Dự báo ngân sách mở rộng</span>
-                <span className="font-mono text-[11px] text-stone-400">Chi phí Egress & Dung lượng</span>
+                <span className="font-semibold text-[#1C1917] dark:text-stone-200">
+                  Dự báo ngân sách mở rộng
+                </span>
+                <span className="font-mono text-[11px] text-[#78716C] dark:text-stone-400">
+                  Chi phí Egress
+                </span>
               </div>
 
               {/* AWS S3 Bar */}
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="text-stone-600 dark:text-slate-400">Đám mây ngoại (AWS S3 thông thường)</span>
-                  <span className="font-mono text-rose-500 font-semibold text-[11px]">Phí tải về leo thang không kiểm soát</span>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[#57534E] dark:text-stone-400 truncate">
+                    AWS S3 Egress
+                  </span>
+                  <span className="text-rose-600 dark:text-rose-400 font-medium text-[11px] shrink-0">
+                    Phí tải về leo thang
+                  </span>
                 </div>
-                <div className="h-3 w-full bg-stone-100 dark:bg-slate-800 rounded-md overflow-hidden">
+                <div className="h-2.5 w-full bg-stone-100 dark:bg-stone-800 rounded-md overflow-hidden">
                   <motion.div
                     initial={{ width: "0%" }}
                     whileInView={{ width: "88%" }}
                     viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.1, ease: "easeOut" }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                     className="h-full bg-rose-500/70 rounded-md"
                   />
                 </div>
@@ -145,21 +141,21 @@ export function StorageDeepDive() {
 
               {/* VNTEZ Bar */}
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-bold text-stone-900 dark:text-white flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-[#fb291a]" />
-                    vntez Edge Storage
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="font-bold text-[#1C1917] dark:text-white truncate flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-[#F03E2F]" />
+                    vntez Edge Storage — Cố định, không phí tải về
                   </span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
-                    Gói cước cố định, nâng cấp linh hoạt
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px] shrink-0">
+                    Chi phí ổn định
                   </span>
                 </div>
-                <div className="h-3 w-full bg-stone-100 dark:bg-slate-800 rounded-md overflow-hidden">
+                <div className="h-2.5 w-full bg-stone-100 dark:bg-stone-800 rounded-md overflow-hidden">
                   <motion.div
                     initial={{ width: "0%" }}
-                    whileInView={{ width: "35%" }}
+                    whileInView={{ width: "32%" }}
                     viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                    transition={{ duration: 1, delay: 0.1, ease: "easeOut" }}
                     className="h-full bg-emerald-500 rounded-md"
                   />
                 </div>
@@ -167,8 +163,8 @@ export function StorageDeepDive() {
             </div>
           </div>
 
-          {/* Seamless Bottom Telemetry Footer */}
-          <div className="px-6 py-3 border-t border-stone-200/60 dark:border-white/[0.06] bg-[#F5F1EB]/60 dark:bg-[#090e18] flex items-center justify-between text-[11px] font-mono text-stone-500">
+          {/* Telemetry Footer */}
+          <div className="px-6 py-3 border-t border-[#E7E5E4] dark:border-stone-800 bg-[#FAF9F6] dark:bg-[#090e18] flex items-center justify-between text-[11px] font-mono text-[#78716C] dark:text-stone-400">
             <span className="flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-emerald-500" />
               Tương thích 100% chuẩn AWS S3 API

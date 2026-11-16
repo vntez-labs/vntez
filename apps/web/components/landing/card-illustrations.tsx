@@ -14,7 +14,7 @@ export function IsometricStorageArt({ className = "w-full h-full" }: { className
       <defs>
         <linearGradient id="iso-storage-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#f77241" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#fb291a" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#F03E2F" stopOpacity="0.85" />
         </linearGradient>
       </defs>
 
@@ -38,15 +38,15 @@ export function IsometricStorageArt({ className = "w-full h-full" }: { className
         {/* LED Lights */}
         <circle cx="15" cy="52" r="2" fill="#10b981" />
         <circle cx="23" cy="56" r="2" fill="#06b6d4" />
-        <circle cx="15" cy="75" r="2" fill="#fb291a" />
+        <circle cx="15" cy="75" r="2" fill="#F03E2F" />
         <circle cx="23" cy="79" r="2" fill="#10b981" />
       </g>
 
       {/* Floating S3 Block */}
       <g transform="translate(10, 60)">
-        <polygon points="25,0 50,12 25,24 0,12" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#fb291a" fillOpacity="0.06" />
-        <polygon points="0,12 25,24 25,36 0,24" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#fb291a" fillOpacity="0.08" />
-        <polygon points="25,24 50,12 50,24 25,36" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#fb291a" fillOpacity="0.04" />
+        <polygon points="25,0 50,12 25,24 0,12" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#F03E2F" fillOpacity="0.06" />
+        <polygon points="0,12 25,24 25,36 0,24" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#F03E2F" fillOpacity="0.08" />
+        <polygon points="25,24 50,12 50,24 25,36" stroke="url(#iso-storage-grad)" strokeWidth="1.2" fill="#F03E2F" fillOpacity="0.04" />
       </g>
 
       <path d="M35 72 Q 70 85 85 95" stroke="#10b981" strokeWidth="1.2" strokeDasharray="3 3" />
@@ -63,7 +63,7 @@ export function IsometricSecurityArt({ className = "w-full h-full" }: { classNam
       <defs>
         <linearGradient id="iso-sec-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#f77241" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#fb291a" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#F03E2F" stopOpacity="0.85" />
         </linearGradient>
       </defs>
 
@@ -83,19 +83,19 @@ export function IsometricSecurityArt({ className = "w-full h-full" }: { classNam
           points="50,22 85,38 85,80 50,102 15,80 15,38"
           stroke="url(#iso-sec-grad)"
           strokeWidth="1.4"
-          fill="#fb291a"
+          fill="#F03E2F"
           fillOpacity="0.05"
         />
 
         {/* Biometric Thumbprint Scanning Arcs */}
         <path d="M50 42 C40 42 32 50 32 62 C32 74 40 82 50 86" stroke="#f77241" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M50 48 C44 48 38 54 38 63 C38 71 44 77 50 79" stroke="#fb291a" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M50 48 C44 48 38 54 38 63 C38 71 44 77 50 79" stroke="#F03E2F" strokeWidth="1.8" strokeLinecap="round" />
         <path d="M50 55 C46 55 44 58 44 63 C44 68 47 72 50 74" stroke="#d60238" strokeWidth="1.8" strokeLinecap="round" />
         <path d="M56 52 C64 58 64 68 60 76" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="text-slate-400 dark:text-slate-600" />
         <path d="M62 44 C72 54 72 70 66 82" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="text-slate-400 dark:text-slate-600" />
 
         {/* Laser Scanning Horizon */}
-        <line x1="22" y1="62" x2="78" y2="62" stroke="#fb291a" strokeWidth="1.4" strokeDasharray="3 2" />
+        <line x1="22" y1="62" x2="78" y2="62" stroke="#F03E2F" strokeWidth="1.4" strokeDasharray="3 2" />
 
         {/* Verified Passkey Token Dot */}
         <circle cx="50" cy="102" r="3.5" fill="#10b981" />
@@ -204,9 +204,9 @@ export function IsometricSupplyChainArt({ className = "w-full h-full" }: { class
 
       {/* Destination Waypoint Pin */}
       <g transform="translate(170, 32)">
-        <circle cx="10" cy="10" r="5" fill="#fb291a" />
-        <circle cx="10" cy="10" r="10" stroke="#fb291a" strokeWidth="1" strokeDasharray="2 2" />
-        <path d="M10 10 L10 24" stroke="#fb291a" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="10" r="5" fill="#F03E2F" />
+        <circle cx="10" cy="10" r="10" stroke="#F03E2F" strokeWidth="1" strokeDasharray="2 2" />
+        <path d="M10 10 L10 24" stroke="#F03E2F" strokeWidth="1.5" strokeLinecap="round" />
       </g>
     </svg>
   )
@@ -248,8 +248,8 @@ export function IsometricTelemetryArt({ className = "w-full h-full" }: { classNa
       <circle cx="95" cy="115" r="8" stroke="#10b981" strokeWidth="1" strokeDasharray="2 2" />
 
       {/* Telemetry Sparkline on Left */}
-      <path d="M20 70 L35 70 L45 50 L55 85 L65 65 L75 70" stroke="#fb291a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="75" cy="70" r="2" fill="#fb291a" />
+      <path d="M20 70 L35 70 L45 50 L55 85 L65 65 L75 70" stroke="#F03E2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="75" cy="70" r="2" fill="#F03E2F" />
     </svg>
   )
 }

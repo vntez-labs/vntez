@@ -37,11 +37,11 @@ export function DataSovereignty() {
     <section id="philosophy" className="mx-auto max-w-6xl px-6 py-28 sm:py-36">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-tight">
-          Dữ liệu của bạn. <span className="text-[#fb291a]">Thuộc về bạn.</span>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#1C1917] dark:text-white leading-tight text-balance">
+          Dữ liệu của bạn. <span className="text-[#F03E2F]">Thuộc về bạn.</span>
         </h2>
 
-        <p className="mt-4 text-base sm:text-lg text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
+        <p className="mt-4 text-base sm:text-lg text-[#57534E] dark:text-stone-300 leading-relaxed font-sans text-balance">
           Chúng tôi xây dựng vntez với nguyên tắc cốt lõi: Trao toàn quyền tự chủ cho doanh nghiệp, không tạo bẫy chi phí ẩn và không giữ chân khách hàng bằng các định dạng đóng.
         </p>
       </div>
@@ -53,28 +53,28 @@ export function DataSovereignty() {
           return (
             <div
               key={idx}
-              className="flex flex-col justify-between rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0c101a] p-7 hover:border-[#fb291a]/30 transition-all shadow-[0_2px_12px_rgba(28,25,23,0.04)]"
+              className="flex flex-col justify-between rounded-2xl border border-[#E7E5E4] dark:border-stone-800 bg-white dark:bg-[#0c101a] p-7 hover:border-[#F03E2F]/30 transition-all shadow-[0_2px_12px_rgba(28,25,23,0.04)]"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-[#fb291a]/10 text-[#fb291a]">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-[#F03E2F]/10 text-[#F03E2F]">
                     <IconComp className="size-6" />
                   </div>
-                  <span className="font-mono text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                  <span className="font-mono text-[11px] font-semibold text-[#78716C] dark:text-stone-500 uppercase tracking-wider">
                     {c.subtitle}
                   </span>
                 </div>
 
-                <h3 className="font-display text-lg font-bold text-stone-900 dark:text-white mb-2.5">
+                <h3 className="font-display text-lg font-bold text-[#1C1917] dark:text-white mb-2.5">
                   {c.title}
                 </h3>
 
-                <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
+                <p className="text-sm text-[#57534E] dark:text-stone-300 leading-relaxed font-sans">
                   {c.desc}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-stone-200/60 dark:border-white/[0.06] flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="mt-6 pt-4 border-t border-[#E7E5E4] dark:border-white/[0.06] flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                 <IconCheck className="size-3.5" />
                 <span>{c.metric}</span>
               </div>

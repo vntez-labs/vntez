@@ -22,8 +22,8 @@ export function ArchitectureInteractiveMap({
         <defs>
           <linearGradient id="topArchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="50%" stopColor="#fb291a" />
-            <stop offset="100%" stopColor="#fb291a" />
+            <stop offset="50%" stopColor="#F03E2F" />
+            <stop offset="100%" stopColor="#F03E2F" />
           </linearGradient>
 
           <linearGradient id="bottomArchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -70,7 +70,7 @@ export function ArchitectureInteractiveMap({
           id="pathHubToStorage"
           d="M 310 150 C 325 150, 320 59, 368 59"
           fill="none"
-          stroke="#fb291a"
+          stroke="#F03E2F"
           strokeWidth={activeStep === "storage" ? "2.5" : "1.5"}
           strokeOpacity={activeStep === "storage" ? 1 : 0.3}
           className="transition-all duration-300"
@@ -105,7 +105,7 @@ export function ArchitectureInteractiveMap({
           </circle>
         )}
         {activeStep === "storage" && (
-          <circle r="4" fill="#fb291a">
+          <circle r="4" fill="#F03E2F">
             <animateMotion dur="1.8s" repeatCount="indefinite" path="M 230 150 C 245 150, 320 59, 368 59" />
           </circle>
         )}
@@ -133,10 +133,10 @@ export function ArchitectureInteractiveMap({
             rx="16"
             className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
             strokeWidth={activeStep === "id" || activeStep === "ecosystem" ? "2" : "1"}
-            stroke={activeStep === "id" ? "#fb291a" : activeStep === "ecosystem" ? "#a855f7" : undefined}
+            stroke={activeStep === "id" ? "#F03E2F" : activeStep === "ecosystem" ? "#a855f7" : undefined}
           />
-          <circle cx="270" cy="140" r="14" fill="#fb291a" fillOpacity="0.1" />
-          <path d="M 264 135 L 270 145 L 276 135" stroke="#fb291a" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="270" cy="140" r="14" fill="#F03E2F" fillOpacity="0.1" />
+          <path d="M 264 135 L 270 145 L 276 135" stroke="#F03E2F" strokeWidth="2" strokeLinecap="round" />
           <text x="270" y="172" textAnchor="middle" className="text-[11px] font-bold font-mono fill-slate-800 dark:fill-white">
             vntez CORE
           </text>
@@ -178,9 +178,9 @@ export function ArchitectureInteractiveMap({
             rx="14"
             className="fill-white dark:fill-[#101726] stroke-slate-200 dark:stroke-white/10"
             strokeWidth={activeStep === "storage" ? "2" : "1"}
-            stroke={activeStep === "storage" ? "#fb291a" : undefined}
+            stroke={activeStep === "storage" ? "#F03E2F" : undefined}
           />
-          <text x="418" y="54" textAnchor="middle" className="text-[11px] font-bold font-mono fill-[#fb291a]">
+          <text x="418" y="54" textAnchor="middle" className="text-[11px] font-bold font-mono fill-[#F03E2F]">
             Edge S3
           </text>
           <text x="418" y="72" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">
