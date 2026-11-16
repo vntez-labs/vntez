@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@workspace/auth/store";
-import { isVntezAuthenticated, signOutFromVntez } from "@workspace/auth/sdk";
+import { isVntezAuthenticated, signInWithVntez, signOutFromVntez } from "@workspace/auth/sdk";
 import { fixVietnameseEncoding } from "@workspace/auth/encoding";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import {
@@ -50,18 +50,20 @@ export function HeaderUserMenu() {
   }
 
   if (!isAuthenticated || !user) {
-    const loginUrl = `/api/auth/login?redirect=${encodeURIComponent(pathname || "/")}`;
     return (
-      <Link
-        href={loginUrl}
+      <button
+        type="button"
+        onClick={() => {
+          signInWithVntez(`${window.location.origin}/auth/callback`);
+        }}
         className={buttonVariants({
           variant: "default",
           size: "sm",
-          className: "font-semibold shadow-sm px-4 rounded-full",
+          className: "font-semibold shadow-sm px-4 rounded-full cursor-pointer",
         })}
       >
         Đăng nhập
-      </Link>
+      </button>
     );
   }
 

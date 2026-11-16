@@ -166,12 +166,10 @@ export function UserDropdown() {
           <div className="pt-1 border-t border-border">
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 setIsOpen(false);
-                if (isVntezAuthenticated()) {
-                  signOutFromVntez();
-                }
-                logout();
+                await logout();
+                signOutFromVntez(`${window.location.origin}/login`);
               }}
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
             >

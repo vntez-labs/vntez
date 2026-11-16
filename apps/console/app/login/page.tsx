@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { KeyRound, AlertTriangle, ArrowRight, Terminal } from "lucide-react";
+import { AlertTriangle, Terminal } from "lucide-react";
 import { IsometricConsoleArt } from "@/components/isometric-console-art";
+import { LoginButton } from "./login-button";
 
 export const metadata: Metadata = {
   title: "Đăng nhập | VNTEZ Console",
@@ -114,16 +115,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
           {/* Primary SSO Action Button with proper padding-x */}
           <div>
-            <a
-              href={loginActionUrl}
-              className="w-full h-12 rounded-xl bg-[#fb291a] hover:bg-[#e02012] text-white font-semibold text-sm flex items-center justify-between px-6 transition-colors cursor-pointer shadow-xs group"
-            >
-              <div className="flex items-center gap-3">
-                <KeyRound className="size-4.5 shrink-0" />
-                <span>Đăng nhập bằng VNTEZ IAM</span>
-              </div>
-              <ArrowRight className="size-4.5 shrink-0 transition-transform group-hover:translate-x-1" />
-            </a>
+            <LoginButton />
           </div>
         </div>
 
