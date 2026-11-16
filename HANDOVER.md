@@ -367,6 +367,24 @@
   - `bun run typecheck`: 6/6 packages thành công (0 errors).
   - `bun run build`: Biên dịch thành công 4/4 apps (`console`, `web`, `docs`, `legal`).
 
+### 1.13. Chuyển Đổi Client ID sang `vntez` & Tích Hợp `@vntez/sdk` từ NPM
+- **Đồng Bộ Client ID sang `vntez`**:
+  - Khắc phục lỗi `Không tìm thấy ứng dụng với client_id: "vntez-console-app"` từ VNTEZ IAM.
+  - Chuẩn hóa fallback client_id thành `"vntez"` tại:
+    - [`apps/console/app/api/auth/login/route.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/app/api/auth/login/route.ts)
+    - [`apps/console/app/auth/callback/route.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/console/app/auth/callback/route.ts)
+    - [`apps/web/app/api/auth/login/route.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/web/app/api/auth/login/route.ts)
+    - [`apps/web/app/auth/callback/route.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/apps/web/app/auth/callback/route.ts)
+    - [`packages/auth/src/client.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/packages/auth/src/client.ts) & [`packages/auth/src/server.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/packages/auth/src/server.ts) (hỗ trợ cả `vntez` và `vntez-console-app`).
+    - `.env.local` và `apps/console/.env.example`.
+- **Nâng Cấp Gói `@vntez/sdk` từ NPM Registry**:
+  - Chuyển đổi toàn bộ dependencies từ git pointer sang gói npm chính thức `@vntez/sdk@^0.1.0` tại root `package.json`, `packages/auth`, `apps/console`, `apps/web`.
+  - Cung cấp module [`packages/auth/src/sdk.ts`](file:///home/hnamhocit/Workspace/frontend/vntez/packages/auth/src/sdk.ts) singleton `VntezClient` với các helpers `signInWithVntez`, `isVntezAuthenticated`, `getVntezUser`, `signOutFromVntez`.
+- **Kiểm Thử & Triển Khai**:
+  - `bun run typecheck`: 6/6 packages thành công (0 errors).
+  - `bun run build`: 4/4 apps thành công (`console`, `web`, `docs`, `legal`).
+  - Đã commit và push trực tiếp lên nhánh `main` (`origin/main`) để kích hoạt Vercel auto-deploy.
+
 ---
 
 ## 2. KẾ HOẠCH CHO PHIÊN LÀM VIỆC TIẾP THEO (NEXT PRIORITIES)
