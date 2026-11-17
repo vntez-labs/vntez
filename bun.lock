@@ -5,7 +5,7 @@
     "": {
       "name": "next-monorepo",
       "dependencies": {
-        "@vntez/sdk": "^0.1.0",
+        "@vntez/sdk": "^0.1.1",
       },
       "devDependencies": {
         "@workspace/eslint-config": "workspace:*",
@@ -800,7 +800,7 @@
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@4.7.0", "", { "dependencies": { "@babel/core": "^7.28.0", "@babel/plugin-transform-react-jsx-self": "^7.27.1", "@babel/plugin-transform-react-jsx-source": "^7.27.1", "@rolldown/pluginutils": "1.0.0-beta.27", "@types/babel__core": "^7.20.5", "react-refresh": "^0.17.0" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" } }, "sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA=="],
 
-    "@vntez/sdk": ["@vntez/sdk@0.1.0", "", {}, "sha512-61rtT0Q/kDt+Chmc+av5ol0PdVXxFpuBhmRCRRBbA8llq+BkaFNPb0cNQ5S6DClCUWmoPApn95T6gkiX2a6lwQ=="],
+    "@vntez/sdk": ["@vntez/sdk@0.1.1", "", {}, "sha512-CliqQo8AH80qk5lrf1pMYRXMRiebRsJdyU+l8PfnvdEJdzoVrKICYhmBoHwK7cZqoy2bf8ifesabztgRILQkHA=="],
 
     "@volar/kit": ["@volar/kit@2.4.31", "", { "dependencies": { "@volar/language-service": "2.4.31", "@volar/typescript": "2.4.31", "typesafe-path": "^0.2.2", "vscode-languageserver-textdocument": "^1.0.11", "vscode-uri": "^3.0.8" }, "peerDependencies": { "typescript": "<7" } }, "sha512-pQgvegC28dfdNcs/iDNZVHkMs+dG7rpD9Aj+sNU2hildv1QuH7/MIoff/cSJW/IR25AGOeHWbJXWWFKDXXWtVw=="],
 

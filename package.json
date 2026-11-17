@@ -26,6 +26,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "@vntez/sdk": "^0.1.0"
+    "@vntez/sdk": "^0.1.1"
   }
 }
