@@ -3,7 +3,6 @@ import { Be_Vietnam_Pro, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/goo
 import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@workspace/auth/provider";
-import { getServerSession } from "@workspace/auth/server";
 import { cn } from "@workspace/ui/lib/utils";
 import { TopProgressBar } from "@workspace/ui/components/top-progress-bar";
 import { Toaster } from "@workspace/ui/components/toaster";
@@ -96,13 +95,11 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, accessToken } = await getServerSession();
-
   return (
     <html
       lang="vi"
@@ -121,7 +118,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <TopProgressBar />
           <Toaster />
-          <AuthProvider initialUser={user} initialToken={accessToken}>
+          <AuthProvider>
             {children}
           </AuthProvider>
         </ThemeProvider>

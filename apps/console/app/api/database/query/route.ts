@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
 import { executeSqlQuery } from "@/lib/sql-executor";
+import { verifyAdminSession } from "@/lib/admin-guard";
 
 export async function POST(req: NextRequest) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {
     const { query } = await req.json();
     if (!query || typeof query !== "string") {
-      return NextResponse.json({ error: "Tham số câu lệnh SQL (query) không hợp lệ" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Tham số câu lệnh SQL (query) không hợp lệ" },
+        { status: 400 }
+      );
     }
 
     const result = await executeSqlQuery(query);

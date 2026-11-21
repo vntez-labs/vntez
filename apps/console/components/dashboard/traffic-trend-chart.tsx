@@ -47,9 +47,9 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
   const totalWeekReq = sevenDayTrend.reduce((acc, cur) => acc + cur.total, 0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 2xl:gap-6">
       {/* Left: 7-Day Request Volume Bar Chart */}
-      <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-5 overflow-hidden">
+      <div className="lg:col-span-2 p-4 sm:p-5 2xl:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-4 2xl:space-y-5 overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-border/70">
           <div>
             <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-2">
@@ -129,7 +129,7 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
       </div>
 
       {/* Right: Real Services & Telemetry Distribution */}
-      <div className="p-5 sm:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-4 flex flex-col justify-between">
+      <div className="p-4 sm:p-5 2xl:p-6 rounded-2xl border border-border bg-card shadow-2xs space-y-4 flex flex-col justify-between">
         <div>
           <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-2">
             <Globe className="h-4 w-4 text-cyan-600" />
@@ -140,7 +140,7 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
           </p>
         </div>
 
-        <div className="space-y-3.5">
+        <div className="space-y-3 2xl:space-y-3.5">
           {/* API Gateway / Auth codes */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
@@ -171,18 +171,15 @@ export function TrafficTrendChart({ stats }: TrafficTrendChartProps) {
             </div>
           </div>
 
-          {/* Super Admin */}
+          {/* Admin & RBAC Roles */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
               <span className="flex items-center gap-1.5 font-medium text-foreground">
-                <Globe className="h-3.5 w-3.5 text-cyan-500" /> Người Dùng Admin
+                <Globe className="h-3.5 w-3.5 text-cyan-500" /> Quản Trị Viên (Admin)
               </span>
               <span className="font-mono text-foreground font-semibold">
-                {summary.totalUsers} tài khoản
+                {summary.adminUsersCount} / {summary.totalUsers} tài khoản
               </span>
-            </div>
-            <div className="text-[11px] text-muted-foreground font-mono truncate">
-              {summary.userEmail || "hnamhocit@gmail.com"}
             </div>
           </div>
 

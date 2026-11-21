@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import {
   getFullAppWorkspace,
   saveFullAppWorkspace,
@@ -13,6 +13,9 @@ interface RouteParams {
 }
 
 export async function GET(_req: Request, { params }: RouteParams) {
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "Thiếu ID ứng dụng" }, { status: 400 });
@@ -27,10 +30,8 @@ export async function GET(_req: Request, { params }: RouteParams) {
 }
 
 export async function PUT(req: Request, { params }: RouteParams) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const { id } = await params;
   if (!id) {
@@ -67,10 +68,8 @@ export async function PUT(req: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const { id } = await params;
   if (!id) {

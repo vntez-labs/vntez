@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 
 export interface OAuthClientRecord {
@@ -16,11 +16,8 @@ export interface OAuthClientRecord {
 
 // 1. GET /api/clients - Lấy toàn bộ danh sách Client OAuth từ Supabase
 export async function GET() {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const supabaseClient = getSupabaseAdminClient();
@@ -75,11 +72,8 @@ export async function GET() {
 
 // 2. POST /api/clients - Thêm mới OAuth Client
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const body = await req.json();
@@ -158,11 +152,8 @@ export async function POST(req: Request) {
 
 // 3. PUT /api/clients - Cập nhật thông tin OAuth Client
 export async function PUT(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const body = await req.json();
@@ -226,11 +217,8 @@ export async function PUT(req: Request) {
 
 // 4. DELETE /api/clients - Xóa OAuth Client
 export async function DELETE(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const { searchParams } = new URL(req.url);

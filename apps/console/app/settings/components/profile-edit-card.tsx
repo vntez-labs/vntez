@@ -70,7 +70,10 @@ export function ProfileEditCard() {
       });
 
       if (data.user) {
-        setUser(data.user);
+        if (user) {
+          const { name, avatar, phone } = data.user;
+          setUser({ ...user, name, avatar, phone });
+        }
         setSuccessMessage("Đã lưu thông tin hồ sơ thành công!");
         toast.success("Đã lưu thông tin hồ sơ thành công!");
         setTimeout(() => setSuccessMessage(null), 3000);

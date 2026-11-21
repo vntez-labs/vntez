@@ -1,29 +1,32 @@
 import { NextResponse } from "next/server";
 import {
-  getServerSession,
   updateServerSessionUser,
   refreshServerSessionCookie,
 } from "@workspace/auth/server";
 import { getPermissionsForRole } from "@workspace/auth/permissions";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { getVerifiedIamSession } from "@/lib/iam-session";
 import type { VntezUser } from "@workspace/auth/types";
 
 export async function GET() {
-  const { user, accessToken } = await getServerSession();
+  const session = await getVerifiedIamSession().catch(() => undefined);
+  if (session === undefined) return NextResponse.json({ error: "IAM không khả dụng" }, { status: 503 });
 
-  if (!user) {
+  if (!session) {
     return NextResponse.json(
       { authenticated: false, user: null, accessToken: null },
       { status: 401 }
     );
   }
 
+  const { user, accessToken } = session;
+
   // 1. Fetch real role & metadata from Supabase Auth & iam_user_roles
-  let realRole = (user.role as string) || "viewer";
+  let realRole = "viewer";
   let realName = user.name;
   let realAvatar = user.avatar;
   let realPhone = user.phone;
-  let realRoles: string[] = [];
+  let realRoles: string[] = ["viewer"];
 
   try {
     const supabase = getSupabaseAdminClient();
@@ -40,24 +43,13 @@ export async function GET() {
       realPhone = u.phone || realPhone;
     }
 
-    if (rolesRes.data && rolesRes.data.length > 0) {
-      realRoles = rolesRes.data.map((r: { role_id: string }) => r.role_id);
-    }
-
-    if (realRoles.length > 0 && realRoles[0]) {
-      realRole = realRoles[0];
-    } else if (user.email === "hnamhocit@gmail.com") {
-      realRole = "admin";
-      realRoles = ["admin"];
-    } else {
-      realRoles = [realRole];
-    }
+    if (rolesRes.error) throw rolesRes.error;
+    const rootRoles = rolesRes.data.map(({ role_id }) => role_id);
+    if (rootRoles.length > 0) realRoles = rootRoles;
+    realRole = realRoles.includes("admin") ? "admin" : realRoles[0] ?? "viewer";
   } catch (err) {
-    console.warn("Could not fetch user metadata from Supabase Auth admin:", err);
-    if (user.email === "hnamhocit@gmail.com") {
-      realRole = "admin";
-      realRoles = ["admin"];
-    }
+    console.warn("Không thể tải hồ sơ Root IAM:", err);
+    return NextResponse.json({ error: "Không thể tải hồ sơ Root IAM" }, { status: 503 });
   }
 
   // 2. Compute 100% real permissions based on role
@@ -85,13 +77,10 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    const session = await getVerifiedIamSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user } = session;
     const body = await req.json();
     const { name, avatar, phone } = body;
 
@@ -99,20 +88,16 @@ export async function PATCH(req: Request) {
     const trimmedAvatar = typeof avatar === "string" ? avatar.trim() : user.avatar;
     const trimmedPhone = typeof phone === "string" ? phone.trim() : user.phone;
 
-    // 1. Update Supabase Auth user metadata
-    try {
-      const supabase = getSupabaseAdminClient();
-      await supabase.auth.admin.updateUserById(user.sub, {
-        phone: trimmedPhone ? String(trimmedPhone) : undefined,
-        user_metadata: {
-          full_name: trimmedName,
-          name: trimmedName,
-          avatar_url: trimmedAvatar || null,
-        },
-      });
-    } catch (dbErr) {
-      console.warn("Could not sync with Supabase Auth admin, updating session cookie only:", dbErr);
-    }
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.auth.admin.updateUserById(user.sub, {
+      phone: trimmedPhone ? String(trimmedPhone) : undefined,
+      user_metadata: {
+        full_name: trimmedName,
+        name: trimmedName,
+        avatar_url: trimmedAvatar || null,
+      },
+    });
+    if (error) throw error;
 
     // 2. Build updated user session object with preserved role & permissions
     const updatedUser: VntezUser = {

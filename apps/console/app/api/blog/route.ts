@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import { getStoredBlogPosts, saveStoredBlogPosts } from "@/lib/storage-content";
 import type { BlogPostItem } from "@workspace/ui/lib/content-types";
 
@@ -9,10 +9,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const body = await req.json();
@@ -36,7 +34,7 @@ export async function POST(req: Request) {
         content: content.trim(),
         category: category?.trim() || "Kỹ thuật & Kiến trúc",
         color: color || "#fb291a",
-        author: author?.trim() || (user.name || "Engineering Team"),
+        author: author?.trim() || (auth.user.name || "Engineering Team"),
         readTime: readTime || `${Math.max(2, Math.round(content.split(/\s+/).length / 200))} phút đọc`,
         illustrationKey: illustrationKey || "ecosystem",
         thumbnailUrl: thumbnailUrl || null,
@@ -55,7 +53,7 @@ export async function POST(req: Request) {
       content: content.trim(),
       category: category?.trim() || "Kỹ thuật & Kiến trúc",
       color: color || "#fb291a",
-      author: author?.trim() || (user.name || "Engineering Team"),
+      author: author?.trim() || (auth.user.name || "Engineering Team"),
       date: new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }),
       readTime: readTime || `${Math.max(2, Math.round(content.split(/\s+/).length / 200))} phút đọc`,
       commentsCount: 0,
@@ -79,10 +77,8 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const body = await req.json();
@@ -121,10 +117,8 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const { searchParams } = new URL(req.url);

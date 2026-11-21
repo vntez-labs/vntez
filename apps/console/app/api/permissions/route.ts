@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import {
   fetchRootPermissionsMatrix,
   saveRootPermissionsMatrix,
 } from "@/lib/permissions-storage-service";
 
 export async function GET() {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { ok: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {
@@ -26,9 +29,12 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { ok: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {

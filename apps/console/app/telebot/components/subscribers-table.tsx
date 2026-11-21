@@ -81,16 +81,16 @@ export function SubscribersTable() {
             </p>
           </div>
         ) : (
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full text-left border-collapse text-xs 2xl:text-sm">
             <thead>
-              <tr className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border text-xs">
-                <th className="py-3.5 px-4 font-semibold">Email Nhận Tin</th>
-                <th className="py-3.5 px-4 font-semibold">Chat ID</th>
-                <th className="py-3.5 px-4 font-semibold">Người Dùng Telegram</th>
-                <th className="py-3.5 px-4 font-semibold">Tài Khoản Liên Kết</th>
-                <th className="py-3.5 px-4 font-semibold">Ngày Tham Gia</th>
-                <th className="py-3.5 px-4 font-semibold">Trạng Thái</th>
-                <th className="py-3.5 px-4 font-semibold text-right">Thao Tác</th>
+              <tr className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border text-[11px] 2xl:text-xs">
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Email Nhận Tin</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Chat ID</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Người Dùng Telegram</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Tài Khoản Liên Kết</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Ngày Tham Gia</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Trạng Thái</th>
+                <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold text-right">Thao Tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -99,30 +99,30 @@ export function SubscribersTable() {
                 return (
                   <tr key={s.chat_id} className="hover:bg-muted/40 transition-colors">
                     {/* 1. Email */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-2.5 2xl:py-3.5 px-3 2xl:px-4">
                       <div className="flex items-center gap-1.5 font-semibold text-foreground">
-                        <Mail className="h-4 w-4 text-primary shrink-0" />
-                        <span className="font-sans text-sm">{s.email || "Chưa có email"}</span>
+                        <Mail className="h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-primary shrink-0" />
+                        <span className="font-sans text-xs 2xl:text-sm truncate max-w-[160px] 2xl:max-w-[200px]">{s.email || "Chưa có email"}</span>
                       </div>
                     </td>
 
                     {/* 2. Chat ID */}
-                    <td className="py-3.5 px-4 font-mono font-semibold text-foreground text-sm">
+                    <td className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-mono font-semibold text-foreground text-xs 2xl:text-sm">
                       {s.chat_id}
                     </td>
 
                     {/* 3. Telegram User */}
-                    <td className="py-3.5 px-4 text-foreground">
-                      <div className="font-semibold text-sm">{s.first_name || "Unknown"}</div>
+                    <td className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 text-foreground">
+                      <div className="font-semibold text-xs 2xl:text-sm">{s.first_name || "Unknown"}</div>
                       {s.username && (
-                        <div className="text-xs font-mono text-muted-foreground">@{s.username}</div>
+                        <div className="text-[11px] 2xl:text-xs font-mono text-muted-foreground">@{s.username}</div>
                       )}
                     </td>
 
                     {/* 4. Linked User ID */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-2.5 2xl:py-3.5 px-3 2xl:px-4">
                       {s.user_id ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-mono text-xs bg-sky-500/10 text-sky-600 dark:text-sky-400 font-medium">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[11px] 2xl:text-xs bg-sky-500/10 text-sky-600 dark:text-sky-400 font-medium">
                           <LinkIcon className="h-3 w-3" />
                           {String(s.user_id).slice(0, 8)}...
                         </span>

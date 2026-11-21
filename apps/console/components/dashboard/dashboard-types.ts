@@ -7,7 +7,8 @@ export interface DashboardSummary {
   totalApps: number;
   activeApps: number;
   totalUsers: number;
-  userEmail?: string;
+  adminUsersCount: number;
+  normalUsersCount: number;
   newUsersThisWeek: number;
   weeklyGrowthPct: number;
   activeToday: number;

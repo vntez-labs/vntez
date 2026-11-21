@@ -1,50 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { getVntezClient } from "@workspace/auth/sdk";
-import { useAuthStore } from "@workspace/auth/store";
 import { COOKIE_NAMES } from "@workspace/auth/cookies";
 
 export default function AuthCallbackPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
 
+  const callback = useRef<Promise<void> | null>(null);
   useEffect(() => {
-    let active = true;
-
-    async function processCallback() {
-      try {
-        const vntez = getVntezClient();
-        const callbackUrl = `${window.location.origin}/auth/callback`;
-        const { accessToken, user } = await vntez.auth.handleCallback(callbackUrl);
-
-        // Sync token and session profile into cookies so Next.js server components and API routes can read it
-        const maxAge = 60 * 60 * 24 * 30; // 30 days
-        document.cookie = `${COOKIE_NAMES.ACCESS_TOKEN}=${encodeURIComponent(accessToken)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        document.cookie = `${COOKIE_NAMES.USER_SESSION}=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=${maxAge}; SameSite=Lax`;
-
-        if (active) {
-          setAuthenticated(user as any, accessToken);
-          router.replace("/");
-        }
-      } catch (err) {
-        if (active) {
-          console.error("OAuth callback processing error:", err);
-          setError(err instanceof Error ? err.message : "Xác thực danh tính thất bại");
-        }
-      }
+    async function storeIamSession() {
+      const callbackUrl = `${window.location.origin}/auth/callback`;
+      const { accessToken, user } = await getVntezClient().auth.handleCallback(callbackUrl);
+      const maxAge = 60 * 60 * 24 * 30;
+      document.cookie = `${COOKIE_NAMES.ACCESS_TOKEN}=${encodeURIComponent(accessToken)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `${COOKIE_NAMES.USER_SESSION}=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=${maxAge}; SameSite=Lax`;
     }
 
-    processCallback();
+    let active = true;
+    callback.current ??= storeIamSession();
+    callback.current.then(() => {
+      if (active) window.location.replace("/");
+    }).catch((err: unknown) => {
+      if (active) setError(err instanceof Error ? err.message : "Xác thực danh tính thất bại");
+    });
 
-    return () => {
-      active = false;
-    };
-  }, [router, setAuthenticated]);
+    return () => { active = false; };
+  }, []);
 
   if (error) {
     return (

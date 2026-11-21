@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import { uploadAssetFile } from "@/lib/storage-content";
 
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
     const formData = await req.formData();

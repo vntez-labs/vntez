@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
 import { getSupabaseAdminClient, SUPABASE_URL } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-guard";
+import { summarizeOAuthActivity } from "@/lib/dashboard-oauth-activity";
+import { listRootIamUsers, listRootUserRoles } from "@/lib/root-iam-users";
 
 export async function GET() {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   const startTime = performance.now();
@@ -15,19 +19,24 @@ export async function GET() {
     const supabaseClient = getSupabaseAdminClient();
 
     // Fetch real apps, oauth_codes, blog_posts, and auth users directly from Supabase
-    const [appsRes, codesRes, postsRes, authUsersRes] = await Promise.all([
+    const [appsRes, codesRes, postsRes, authUsers, rootRoles] = await Promise.all([
       supabaseClient.from("apps").select("*"),
       supabaseClient.from("oauth_codes").select("*").order("created_at", { ascending: false }),
       supabaseClient.from("blog_posts").select("slug, views_count, likes_count, comments_count"),
-      supabaseClient.auth.admin.listUsers().catch(() => ({ data: { users: [] }, error: null })),
+      listRootIamUsers(supabaseClient),
+      listRootUserRoles(supabaseClient),
     ]);
+
+    if (appsRes.error) throw appsRes.error;
+    if (codesRes.error) throw codesRes.error;
+    if (postsRes.error) throw postsRes.error;
 
     const latencyMs = Math.max(Math.round(performance.now() - startTime), 8);
 
     const rawApps = appsRes.data || [];
     const codes = codesRes.data || [];
     const posts = postsRes.data || [];
-    const authUsers = (authUsersRes as any)?.data?.users || [];
+
 
     const appsList = rawApps.map((a: any) => ({
       id: a.id || a.client_id,
@@ -47,55 +56,20 @@ export async function GET() {
 
     // Exact Users Metrics
     const totalUsers = authUsers.length;
-    const adminUser = authUsers[0] || null;
+    const adminUsersCount = authUsers.filter(({ id }) => rootRoles.get(id)?.includes("admin")).length;
+    const normalUsersCount = totalUsers - adminUsersCount;
+
     const newUsersThisWeek = authUsers.filter(
-      (u: any) => new Date(u.created_at) >= sevenDaysAgo
+      (u) => new Date(u.created_at) >= sevenDaysAgo
     ).length;
     const activeToday = authUsers.filter(
-      (u: any) => u.last_sign_in_at && new Date(u.last_sign_in_at) >= oneDayAgo
+      (u) => u.last_sign_in_at && new Date(u.last_sign_in_at) >= oneDayAgo
     ).length;
 
-    // Exact Requests / OAuth Metrics
-    const totalRequests = codes.length;
-    const successfulCodes = codes.filter((c: any) => c.used).length;
-    const failedCodes = codes.filter(
-      (c: any) => !c.used && new Date(c.expires_at) < now
-    ).length;
-    const successRate =
-      totalRequests > 0
-        ? `${Math.round((successfulCodes / totalRequests) * 100)}%`
-        : "100%";
-
-    const codesThisWeek = codes.filter(
-      (c: any) => new Date(c.created_at) >= sevenDaysAgo
-    );
-    const requestsThisWeek = codesThisWeek.length;
-
-    // Exact 7-Day chronological trend series from real oauth_codes
-    const VI_DAYS = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
-    const sevenDayTrend = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().slice(0, 10);
-      const dayLabel = `${VI_DAYS[d.getDay()]}, ${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}`;
-
-      const dayCodes = codes.filter(
-        (c: any) => c.created_at && c.created_at.slice(0, 10) === dateStr
-      );
-      const dayFailed = dayCodes.filter(
-        (c: any) => !c.used && new Date(c.expires_at) < now
-      ).length;
-      const daySuccess = dayCodes.filter((c: any) => c.used).length;
-
-      sevenDayTrend.push({
-        date: dateStr,
-        label: dayLabel,
-        total: dayCodes.length,
-        success: daySuccess,
-        failed: dayFailed,
-      });
-    }
+    const {
+      totalRequests, successfulCodes, failedCodes, successRate, requestsThisWeek,
+      sevenDayTrend, redirectUriMap, recentEvents,
+    } = summarizeOAuthActivity(codes, now, sevenDaysAgo);
 
     // Exact Blog & Content telemetry
     const totalPosts = posts.length;
@@ -137,7 +111,8 @@ export async function GET() {
       totalApps: appsList.length,
       activeApps: appsList.filter((a: any) => a.status === "active").length,
       totalUsers,
-      userEmail: adminUser?.email || "hnamhocit@gmail.com",
+      adminUsersCount,
+      normalUsersCount,
       newUsersThisWeek,
       weeklyGrowthPct: 0,
       activeToday,
@@ -146,29 +121,6 @@ export async function GET() {
       totalLikes,
       totalComments,
     };
-
-    // Distribution of redirect URIs in real codes
-    const redirectUriMap: Record<string, number> = {};
-    codes.forEach((c: any) => {
-      if (c.redirect_uri) {
-        redirectUriMap[c.redirect_uri] =
-          (redirectUriMap[c.redirect_uri] || 0) + 1;
-      }
-    });
-
-    // Real recent authorization events from oauth_codes (last 6)
-    const recentEvents = codes.slice(0, 6).map((c: any) => ({
-      codePrefix: c.code
-        ? `${c.code.slice(0, 8)}...${c.code.slice(-6)}`
-        : "unknown",
-      clientId: c.client_id,
-      userId: c.user_id,
-      redirectUri: c.redirect_uri,
-      challengeMethod: c.code_challenge_method || "S256",
-      used: c.used,
-      createdAt: c.created_at,
-      expiresAt: c.expires_at,
-    }));
 
     return NextResponse.json({
       success: true,

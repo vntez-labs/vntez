@@ -40,7 +40,8 @@ function DatabaseContent() {
     searchQuery,
     setSearchQuery,
     isLoadingRows,
-    fetchRows,
+    canEditRows,
+    refreshRows,
     selectedPks,
     setSelectedPks,
     isDeleting,
@@ -53,7 +54,7 @@ function DatabaseContent() {
 
   // Modal states
   const [editingRow, setEditingRow] = useState<Record<string, any> | null>(null);
-  const [isRowModalOpen, setIsRowModalOpen] = useState(false);
+  const [rowModalTable, setRowModalTable] = useState<string | null>(null);
   const [isSqlModalOpen, setIsSqlModalOpen] = useState(false);
   const [isSqlRunnerOpen, setIsSqlRunnerOpen] = useState(false);
 
@@ -120,6 +121,7 @@ function DatabaseContent() {
         tables={tables}
         selectedTable={selectedTableName}
         onSelectTable={(t) => {
+          setRowModalTable(null);
           setSelectedTableName(t);
           setPage(1);
           setSearchQuery("");
@@ -145,9 +147,10 @@ function DatabaseContent() {
         {currentTableMeta && (
           <Button
             size="sm"
+            disabled={!canEditRows}
             onClick={() => {
               setEditingRow(null);
-              setIsRowModalOpen(true);
+              setRowModalTable(selectedTableName);
             }}
             className="h-9 px-4 text-xs font-semibold gap-1.5 rounded-xl shadow-xs cursor-pointer shrink-0"
           >
@@ -175,7 +178,7 @@ function DatabaseContent() {
           onToggleSelectAll={handleToggleSelectAll}
           onEditRow={(row) => {
             setEditingRow(row);
-            setIsRowModalOpen(true);
+            setRowModalTable(selectedTableName);
           }}
           onDeleteSingle={handleDeleteSingle}
           isLoading={isLoadingRows}
@@ -196,11 +199,12 @@ function DatabaseContent() {
       />
 
       {/* Modals */}
-      {currentTableMeta && (
+      {currentTableMeta && rowModalTable === selectedTableName && (
         <DatabaseRowModal
-          isOpen={isRowModalOpen}
+          key={rowModalTable}
+          isOpen
           onClose={() => {
-            setIsRowModalOpen(false);
+            setRowModalTable(null);
             setEditingRow(null);
           }}
           tableMeta={currentTableMeta}
@@ -219,7 +223,7 @@ function DatabaseContent() {
         onClose={() => setIsSqlRunnerOpen(false)}
         tables={tables}
         defaultTable={selectedTableName}
-        onTableMutated={fetchRows}
+        onTableMutated={refreshRows}
       />
     </div>
   );

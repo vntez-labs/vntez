@@ -15,7 +15,7 @@ import {
 import { useUsersStore } from "../users-store";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { formatDate } from "@workspace/ui/lib/formatters";
-import type { SupabaseAuthUser } from "@/app/api/users/route";
+import type { SupabaseAuthUser } from "@/lib/console-users";
 
 function getRoleBadge(roleStr: string) {
   const r = roleStr.toLowerCase();
@@ -113,17 +113,17 @@ export function UsersTable() {
           </div>
         ) : (
           <div className="w-full max-w-full overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-muted/60 text-muted-foreground text-xs uppercase tracking-wider font-mono border-b border-border">
+            <table className="w-full text-left text-xs 2xl:text-sm">
+              <thead className="bg-muted/60 text-muted-foreground text-[11px] 2xl:text-xs uppercase tracking-wider font-mono border-b border-border">
                 <tr>
-                  <th className="py-3.5 px-6">Người dùng</th>
-                  <th className="py-3.5 px-5">UID</th>
-                  <th className="py-3.5 px-5">Vai trò (Role)</th>
-                  <th className="py-3.5 px-5">Đăng nhập cuối</th>
-                  <th className="py-3.5 px-6 text-right">Thao tác</th>
+                  <th className="py-2.5 2xl:py-3.5 px-3.5 2xl:px-5 font-semibold">Người dùng</th>
+                  <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">UID</th>
+                  <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Vai trò (Role)</th>
+                  <th className="py-2.5 2xl:py-3.5 px-3 2xl:px-4 font-semibold">Đăng nhập cuối</th>
+                  <th className="py-2.5 2xl:py-3.5 px-3.5 2xl:px-5 text-right font-semibold">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border text-sm">
+              <tbody className="divide-y divide-border">
                 {filteredUsers.map((item: SupabaseAuthUser) => (
                   <tr
                     key={item.id}
@@ -133,42 +133,42 @@ export function UsersTable() {
                     }`}
                   >
                     {/* User display name & email */}
-                    <td className="py-3.5 px-6">
-                      <div className="flex items-center gap-3">
+                    <td className="py-2.5 2xl:py-3 px-3.5 2xl:px-5">
+                      <div className="flex items-center gap-2.5 2xl:gap-3">
                         {item.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={item.avatar}
                             alt={item.name}
-                            className="h-8 w-8 rounded-full object-cover shrink-0"
+                            className="h-7 w-7 2xl:h-8 2xl:w-8 rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0">
+                          <div className="flex h-7 w-7 2xl:h-8 2xl:w-8 items-center justify-center rounded-full bg-primary/10 text-[11px] 2xl:text-xs font-semibold text-primary shrink-0">
                             {item.name ? item.name.slice(0, 2).toUpperCase() : "US"}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <div className="font-semibold text-foreground truncate max-w-[200px] flex items-center gap-1.5">
-                            <span>{item.name}</span>
+                          <div className="font-semibold text-foreground truncate max-w-[130px] sm:max-w-[160px] 2xl:max-w-[200px] flex items-center gap-1.5 text-xs 2xl:text-sm">
+                            <span className="truncate">{item.name}</span>
                             {item.isCurrentUser && (
-                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-primary/10 text-primary">
+                              <span className="text-[9px] 2xl:text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-primary/10 text-primary shrink-0">
                                 Bạn
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-muted-foreground flex items-center gap-1 font-mono truncate max-w-[200px]">
+                          <div className="text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-1 font-mono truncate max-w-[130px] sm:max-w-[160px] 2xl:max-w-[200px]">
                             <Mail className="h-3 w-3 shrink-0" />
-                            {item.email}
+                            <span className="truncate">{item.email}</span>
                           </div>
                         </div>
                       </div>
                     </td>
 
                     {/* UID */}
-                    <td className="py-3.5 px-5 font-mono text-xs">
-                      <div className="flex items-center gap-1.5 text-muted-foreground group">
+                    <td className="py-2.5 2xl:py-3 px-3 2xl:px-4 font-mono text-[11px] 2xl:text-xs">
+                      <div className="flex items-center gap-1 text-muted-foreground group">
                         <Fingerprint className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span className="truncate max-w-[130px]" title={item.id}>
+                        <span className="truncate max-w-[105px] 2xl:max-w-[130px]" title={item.id}>
                           {item.id}
                         </span>
                         <button
@@ -190,15 +190,15 @@ export function UsersTable() {
                     </td>
 
                     {/* Role Column */}
-                    <td className="py-3.5 px-5">{getRoleBadge(item.role)}</td>
+                    <td className="py-2.5 2xl:py-3 px-3 2xl:px-4">{getRoleBadge(item.role)}</td>
 
                     {/* Last login */}
-                    <td className="py-3.5 px-5 text-muted-foreground font-mono text-xs whitespace-nowrap">
+                    <td className="py-2.5 2xl:py-3 px-3 2xl:px-4 text-muted-foreground font-mono text-[11px] 2xl:text-xs whitespace-nowrap">
                       {formatDate(item.lastSignInAt, true)}
                     </td>
 
                     {/* Actions: Edit, View, Delete */}
-                    <td className="py-3.5 px-6 text-right whitespace-nowrap">
+                    <td className="py-2.5 2xl:py-3 px-3.5 2xl:px-5 text-right whitespace-nowrap">
                       <div
                         className="flex items-center justify-end gap-1"
                         onClick={(e) => e.stopPropagation()}
@@ -208,7 +208,7 @@ export function UsersTable() {
                           type="button"
                           onClick={() => openEditUserModal(item)}
                           title="Chỉnh sửa vai trò & người dùng"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground bg-zinc-100/70 hover:bg-zinc-200/70 dark:bg-zinc-800/60 dark:hover:bg-zinc-700/60 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-lg text-xs font-medium text-foreground bg-zinc-100/70 hover:bg-zinc-200/70 dark:bg-zinc-800/60 dark:hover:bg-zinc-700/60 transition-colors cursor-pointer"
                         >
                           <Pencil className="h-3 w-3" />
                           <span>Sửa</span>

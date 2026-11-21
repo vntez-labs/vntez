@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   const { searchParams } = new URL(req.url);
@@ -61,9 +61,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   try {
@@ -84,9 +84,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   try {
@@ -119,9 +119,9 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   try {

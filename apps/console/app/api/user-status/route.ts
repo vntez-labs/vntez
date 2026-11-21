@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { getVerifiedIamSession } from "@/lib/iam-session";
 import { checkUserClientStatus } from "@/lib/client-requests";
 
 // GET /api/user-status - Kiểm tra xem user hiện tại đã có Client nào được duyệt chưa
 export async function GET() {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    const session = await getVerifiedIamSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user } = session;
     const status = await checkUserClientStatus(user.sub, user.email);
 
     return NextResponse.json({

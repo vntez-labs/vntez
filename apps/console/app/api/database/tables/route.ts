@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import type { TableMeta, ColumnMeta } from "@/app/database/types";
 
 export type { TableMeta, ColumnMeta };
 
 export async function GET() {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {

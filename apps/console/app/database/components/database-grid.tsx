@@ -45,11 +45,11 @@ export function DatabaseGrid({
     <div className="flex-1 flex flex-col min-w-0 rounded-2xl bg-card border border-border overflow-hidden shadow-xs">
       {/* Scrollable Data Table Container */}
       <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[640px]">
-        <table className="w-full border-collapse text-left text-sm min-w-full">
+        <table className="w-full border-collapse text-left text-xs 2xl:text-sm min-w-full">
           {/* Table Header */}
           <thead className="sticky top-0 z-10 bg-muted/90 backdrop-blur-md border-b border-border">
             <tr>
-              <th className="w-12 px-3.5 py-3.5 text-center">
+              <th className="w-10 2xl:w-12 px-2.5 2xl:px-3.5 py-2.5 2xl:py-3.5 text-center">
                 <Checkbox
                   checked={isAllSelected}
                   onCheckedChange={onToggleSelectAll}
@@ -57,19 +57,19 @@ export function DatabaseGrid({
                 />
               </th>
               {tableMeta.columns.map((col) => (
-                <th key={col.name} className="px-4 py-3.5 whitespace-nowrap font-medium text-muted-foreground">
+                <th key={col.name} className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 whitespace-nowrap font-medium text-muted-foreground">
                   <div className="flex items-center gap-1.5">
                     {col.isPrimaryKey && (
                       <span title="Khóa chính (Primary Key)">
                         <Key className="h-3.5 w-3.5 text-amber-500" />
                       </span>
                     )}
-                    <span className="font-bold text-foreground text-sm tracking-tight">{col.name}</span>
+                    <span className="font-bold text-foreground text-xs 2xl:text-sm tracking-tight">{col.name}</span>
                     {getColumnTypeBadge(col)}
                   </div>
                 </th>
               ))}
-              <th className="w-24 px-4 py-3.5 text-right font-semibold text-muted-foreground whitespace-nowrap text-sm">
+              <th className="w-20 2xl:w-24 px-3 2xl:px-4 py-2.5 2xl:py-3.5 text-right font-semibold text-muted-foreground whitespace-nowrap text-xs 2xl:text-sm">
                 Thao tác
               </th>
             </tr>
@@ -80,16 +80,16 @@ export function DatabaseGrid({
             {isLoading ? (
               Array.from({ length: 6 }).map((_, rIdx) => (
                 <tr key={rIdx}>
-                  <td className="px-3.5 py-3.5 text-center">
+                  <td className="px-2.5 2xl:px-3.5 py-2.5 2xl:py-3.5 text-center">
                     <Skeleton className="h-4 w-4 rounded mx-auto" />
                   </td>
                   {tableMeta.columns.map((col) => (
-                    <td key={col.name} className="px-4 py-3.5">
-                      <Skeleton className="h-5 w-28 rounded" />
+                    <td key={col.name} className="px-3 2xl:px-4 py-2.5 2xl:py-3.5">
+                      <Skeleton className="h-4 2xl:h-5 w-24 2xl:w-28 rounded" />
                     </td>
                   ))}
-                  <td className="px-4 py-3.5 text-right">
-                    <Skeleton className="h-8 w-8 rounded-lg ml-auto" />
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 text-right">
+                    <Skeleton className="h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg ml-auto" />
                   </td>
                 </tr>
               ))
@@ -116,7 +116,7 @@ export function DatabaseGrid({
                       }`}
                       data-row-id={pkValue} // Add data attribute for debugging
                     >
-                    <td className="px-3.5 py-3.5 text-center">
+                    <td className="px-2.5 2xl:px-3.5 py-2 2xl:py-3 text-center">
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => onToggleSelectRow(pkValue)}
@@ -127,14 +127,14 @@ export function DatabaseGrid({
                       // Ensure we have a valid cell value before rendering
                       if (cellValue === null || cellValue === undefined || cellValue === '') {
                         return (
-                          <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
+                          <td key={col.name} className="px-3 2xl:px-4 py-2 2xl:py-3 whitespace-nowrap max-w-[340px]">
                             <span className="text-muted-foreground italic">null</span>
                           </td>
                         );
                       }
                       // Only render if we have valid data
                       return (
-                        <td key={col.name} className="px-4 py-3.5 whitespace-nowrap max-w-[340px]">
+                        <td key={col.name} className="px-3 2xl:px-4 py-2 2xl:py-3 whitespace-nowrap max-w-[340px]">
                           {formatDatabaseCell(cellValue, col.name, col.isPrimaryKey)}
                         </td>
                       );

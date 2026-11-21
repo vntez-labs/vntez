@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import {
   ListObjectsV2Command,
   PutObjectCommand,
@@ -43,6 +43,11 @@ function inferMimeType(key: string): string {
 }
 
 export async function GET(req: Request) {
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
+  }
+
   try {
     const s3 = getR2Client();
     const bucket = getR2BucketName();
@@ -100,9 +105,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   try {
@@ -149,9 +154,9 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
 
   const { searchParams } = new URL(req.url);

@@ -135,25 +135,25 @@ export function ConsoleSidebar() {
   }, [pathname]);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-border bg-card md:flex shadow-xs">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 2xl:w-72 flex-col border-r border-border bg-card md:flex shadow-xs transition-all duration-200">
       {/* Brand Header */}
-      <div className="flex h-16 items-center gap-3.5 border-b border-border px-6 bg-card">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-xs shrink-0">
-          <IconTerminal2 className="h-5 w-5" />
+      <div className="flex h-14 2xl:h-16 items-center gap-3 border-b border-border px-4 2xl:px-6 bg-card transition-all">
+        <div className="flex h-8 w-8 2xl:h-9 2xl:w-9 items-center justify-center rounded-xl bg-primary text-white shadow-xs shrink-0">
+          <IconTerminal2 className="h-4.5 w-4.5 2xl:h-5 2xl:w-5" />
         </div>
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary block leading-tight">
+          <span className="text-[9px] 2xl:text-[10px] font-mono font-bold uppercase tracking-wider text-primary block leading-tight">
             Management
           </span>
-          <h2 className="text-base font-bold font-display tracking-tight text-foreground leading-tight">
+          <h2 className="text-sm 2xl:text-base font-bold font-display tracking-tight text-foreground leading-tight">
             VNTEZ CONSOLE
           </h2>
         </div>
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 space-y-1.5 px-3.5 py-4 overflow-y-auto bg-card">
-        <div className="px-3 pb-2 text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70">
+      <div className="flex-1 space-y-1 2xl:space-y-1.5 px-2.5 2xl:px-3.5 py-3 2xl:py-4 overflow-y-auto bg-card">
+        <div className="px-2.5 2xl:px-3 pb-1.5 2xl:pb-2 text-[10px] 2xl:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70">
           Dịch vụ Edge Cloud
         </div>
         {NAV_ITEMS.map((item) => {
@@ -171,24 +171,24 @@ export function ConsoleSidebar() {
                 <button
                   type="button"
                   onClick={() => setIsAppsExpanded((prev) => !prev)}
-                  className={`flex w-full items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all cursor-pointer ${
+                  className={`flex w-full items-center justify-between rounded-xl 2xl:rounded-2xl px-3 py-2 2xl:px-3.5 2xl:py-2.5 text-[13px] 2xl:text-sm font-medium transition-all cursor-pointer ${
                     isAnyAppActive
                       ? "bg-muted/70 text-foreground font-semibold"
                       : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                   }`}
                 >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <Icon className="h-5 w-5 shrink-0" />
+                  <div className="flex items-center gap-2.5 2xl:gap-3 min-w-0">
+                    <Icon className="h-4.5 w-4.5 2xl:h-5 2xl:w-5 shrink-0" />
                     <span className="truncate">{item.label}</span>
                   </div>
                   <IconChevronDown
-                    className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                    className={`h-3.5 w-3.5 2xl:h-4 2xl:w-4 shrink-0 transition-transform duration-200 ${
                       isAppsExpanded ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
-                {/* Submenu with App Logo + Name (Bidirectional IN & OUT animation) */}
+                {/* Submenu with App Logo + Name */}
                 <div
                   className={`grid transition-all duration-200 ease-in-out ${
                     isAppsExpanded
@@ -196,14 +196,14 @@ export function ConsoleSidebar() {
                       : "grid-rows-[0fr] opacity-0 pointer-events-none"
                   }`}
                 >
-                  <div className="overflow-hidden pl-5 space-y-1 border-l-2 border-border/70 ml-4.5 py-0.5">
+                  <div className="overflow-hidden pl-4 2xl:pl-5 space-y-1 border-l-2 border-border/70 ml-3.5 2xl:ml-4.5 py-0.5">
                     {sidebarApps.map((app) => {
                       const isAppActive = pathname === `/apps/${app.id}`;
                       return (
                         <Link
                           key={app.id}
                           href={`/apps/${app.id}`}
-                          className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                          className={`flex items-center gap-2 2xl:gap-2.5 rounded-lg 2xl:rounded-xl px-2 py-1.5 text-xs font-medium transition-all ${
                             isAppActive
                               ? "bg-primary/10 text-primary font-semibold shadow-2xs"
                               : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
@@ -215,13 +215,13 @@ export function ConsoleSidebar() {
                             <img
                               src={app.avatarUrl}
                               alt={app.name}
-                              className={`h-4.5 w-4.5 rounded-md object-cover shrink-0 ring-1 ${
+                              className={`h-4 w-4 2xl:h-4.5 2xl:w-4.5 rounded-md object-cover shrink-0 ring-1 ${
                                 isAppActive ? "ring-primary/40" : "ring-border/50"
                               }`}
                             />
                           ) : (
                             <div
-                              className="h-4.5 w-4.5 rounded-md flex items-center justify-center text-white text-[9px] font-bold shrink-0 shadow-2xs"
+                              className="h-4 w-4 2xl:h-4.5 2xl:w-4.5 rounded-md flex items-center justify-center text-white text-[9px] font-bold shrink-0 shadow-2xs"
                               style={{
                                 backgroundColor: app.color || "#fb291a",
                               }}
@@ -243,13 +243,13 @@ export function ConsoleSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3.5 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all ${
+              className={`flex items-center gap-2.5 2xl:gap-3.5 rounded-xl 2xl:rounded-2xl px-3 py-2 2xl:px-3.5 2xl:py-2.5 text-[13px] 2xl:text-sm font-medium transition-all ${
                 isActive
                   ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                   : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
               }`}
             >
-              <Icon className="h-5 w-5 shrink-0" />
+              <Icon className="h-4.5 w-4.5 2xl:h-5 2xl:w-5 shrink-0" />
               <span>{item.label}</span>
             </Link>
           );

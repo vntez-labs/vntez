@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@workspace/ui/lib/api-client";
 import { toast } from "@workspace/ui/components/toaster";
+import { useDatabaseRowMutations } from "./use-database-row-mutations";
+import { useDatabaseRows } from "./use-database-rows";
 import type { TableMeta } from "../types";
 
 export function useDatabaseManager() {
@@ -11,19 +13,23 @@ export function useDatabaseManager() {
   const [isLoadingTables, setIsLoadingTables] = useState(true);
 
   // Table rows & pagination
-  const [rows, setRows] = useState<Record<string, any>[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(25);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoadingRows, setIsLoadingRows] = useState(false);
+  const { requestKey, rows, totalCount, isLoadingRows, canEditRows, refreshRows } =
+    useDatabaseRows(selectedTableName, page, limit, searchQuery);
 
-  // In-memory cache for table rows: key = `${tableName}:${page}:${limit}:${search}`
-  const rowsCache = useRef<Record<string, { rows: Record<string, any>[]; totalCount: number }>>({});
-
-  // Multi-select & Batch Actions
-  const [selectedPks, setSelectedPks] = useState<Set<string>>(new Set());
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [selection, setSelection] = useState({ key: "", pks: new Set<string>() });
+  if (selection.key !== requestKey) setSelection({ key: requestKey, pks: new Set() });
+  const selectedPks = selection.key === requestKey && canEditRows ? selection.pks : new Set<string>();
+  const setSelectedPks = (update: Set<string> | ((previous: Set<string>) => Set<string>)) => {
+    setSelection((previous) => ({
+      key: requestKey,
+      pks: typeof update === "function"
+        ? update(previous.key === requestKey ? previous.pks : new Set<string>())
+        : update,
+    }));
+  };
 
   // 1. Fetch tables list
   const fetchTables = useCallback(async () => {
@@ -75,69 +81,9 @@ export function useDatabaseManager() {
 
   const currentTableMeta = tables.find((t) => t.name === selectedTableName) || null;
 
-  // 2. Fetch rows with in-memory caching
-  const fetchRows = useCallback(
-    async (bypassCache = false) => {
-      if (!selectedTableName) return;
-      setSelectedPks(new Set());
-
-      const cacheKey = `${selectedTableName}:${page}:${limit}:${searchQuery}`;
-
-      if (!bypassCache && rowsCache.current[cacheKey]) {
-        const cached = rowsCache.current[cacheKey];
-        setRows(cached.rows);
-        setTotalCount(cached.totalCount);
-        return;
-      }
-
-      setIsLoadingRows(true);
-      try {
-        const params = new URLSearchParams({
-          table: selectedTableName,
-          page: String(page),
-          limit: String(limit),
-          search: searchQuery,
-        });
-
-        const res = await api.get<any>(`/api/database/rows?${params.toString()}`);
-        const data = res.data !== undefined ? res.data : res;
-
-        if (data.success && Array.isArray(data.rows)) {
-          setRows(data.rows);
-          setTotalCount(data.totalCount || 0);
-          rowsCache.current[cacheKey] = {
-            rows: data.rows,
-            totalCount: data.totalCount || 0,
-          };
-        }
-      } catch (err) {
-        // Failed to fetch rows
-      } finally {
-        setIsLoadingRows(false);
-      }
-    },
-    [selectedTableName, page, limit, searchQuery]
-  );
-
-  useEffect(() => {
-    fetchRows();
-  }, [fetchRows]);
-
-  // Invalidate cache
-  const invalidateTableCache = useCallback((tableName?: string) => {
-    if (!tableName) {
-      rowsCache.current = {};
-      return;
-    }
-    Object.keys(rowsCache.current).forEach((k) => {
-      if (k.startsWith(`${tableName}:`)) {
-        delete rowsCache.current[k];
-      }
-    });
-  }, []);
-
   // 3. Selection Handlers
   const handleToggleSelectRow = (pkVal: string) => {
+    if (!canEditRows) return;
     setSelectedPks((prev) => {
       const next = new Set(prev);
       if (next.has(pkVal)) next.delete(pkVal);
@@ -147,7 +93,7 @@ export function useDatabaseManager() {
   };
 
   const handleToggleSelectAll = () => {
-    if (!currentTableMeta) return;
+    if (!canEditRows || !currentTableMeta) return;
     const pk = currentTableMeta.primaryKey;
     const allPksOnPage = rows.map((r) => String(r[pk]));
     const areAllSelected = allPksOnPage.every((id) => selectedPks.has(id));
@@ -163,101 +109,18 @@ export function useDatabaseManager() {
     });
   };
 
-  // 4. Batch Delete Multiple Rows
-  const handleDeleteSelected = async () => {
-    if (!currentTableMeta || selectedPks.size === 0) return;
-    const count = selectedPks.size;
-    if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn ${count} dòng đã chọn trong bảng "${selectedTableName}"?`)) {
-      return;
-    }
-
-    setIsDeleting(true);
-    try {
-      await api.delete("/api/database/rows", {
-        table: selectedTableName,
-        pkField: currentTableMeta.primaryKey,
-        pks: Array.from(selectedPks),
-      });
-      toast.success(`Đã xóa ${count} bản ghi thành công!`);
-      setSelectedPks(new Set());
-      invalidateTableCache(selectedTableName);
-
-      setTables((prev) =>
-        prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: Math.max(0, t.rowCount - count) } : t))
-      );
-      await fetchRows(true);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Lỗi khi xóa nhiều dòng";
-      toast.error(msg);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // 5. Single Row Delete
-  const handleDeleteSingle = async (pkVal: string) => {
-    if (!currentTableMeta) return;
-    if (!confirm(`Xóa bản ghi có khóa chính: ${pkVal}?`)) return;
-
-    try {
-      await api.delete("/api/database/rows", {
-        table: selectedTableName,
-        pkField: currentTableMeta.primaryKey,
-        pks: [pkVal],
-      });
-      toast.success(`Đã xóa bản ghi [${pkVal}]!`);
-      invalidateTableCache(selectedTableName);
-
-      setTables((prev) =>
-        prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: Math.max(0, t.rowCount - 1) } : t))
-      );
-      await fetchRows(true);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Lỗi khi xóa dòng";
-      toast.error(msg);
-    }
-  };
-
-  // 6. Save Row (Insert or Update)
-  const handleSaveRow = async (
-    editingRow: Record<string, any> | null,
-    formData: Record<string, any>
-  ): Promise<boolean> => {
-    if (!currentTableMeta) return false;
-    const pk = currentTableMeta.primaryKey;
-    const isEdit = Boolean(editingRow);
-
-    const body = isEdit
-      ? {
-        table: selectedTableName,
-        pkField: pk,
-        pkValue: editingRow?.[pk],
-        data: formData,
-      }
-      : { table: selectedTableName, data: formData };
-
-    try {
-      if (isEdit) {
-        await api.patch("/api/database/rows", body);
-      } else {
-        await api.post("/api/database/rows", body);
-      }
-      toast.success(isEdit ? "Cập nhật bản ghi thành công!" : "Tạo bản ghi mới thành công!");
-      invalidateTableCache(selectedTableName);
-
-      if (!isEdit) {
-        setTables((prev) =>
-          prev.map((t) => (t.name === selectedTableName ? { ...t, rowCount: t.rowCount + 1 } : t))
-        );
-      }
-      await fetchRows(true);
-      return true;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Lưu thất bại";
-      toast.error(msg);
-      return false;
-    }
-  };
+  const mutations = useDatabaseRowMutations({
+    selectedTableName,
+    primaryKey: currentTableMeta?.primaryKey,
+    selectedPks,
+    canEditRows,
+    refreshRows,
+    updateRowCount: (delta) => {
+      setTables((tables) => tables.map((table) => table.name === selectedTableName
+        ? { ...table, rowCount: Math.max(0, table.rowCount + delta) }
+        : table));
+    },
+  });
 
   return {
     tables,
@@ -274,14 +137,12 @@ export function useDatabaseManager() {
     searchQuery,
     setSearchQuery,
     isLoadingRows,
-    fetchRows,
+    canEditRows,
+    refreshRows,
     selectedPks,
     setSelectedPks,
-    isDeleting,
     handleToggleSelectRow,
     handleToggleSelectAll,
-    handleDeleteSelected,
-    handleDeleteSingle,
-    handleSaveRow,
+    ...mutations,
   };
 }

@@ -1,138 +1,21 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
-import { fixVietnameseEncoding } from "@workspace/auth/encoding";
+import { listConsoleUsers } from "@/lib/console-users";
 import { getSupabaseAdminClient } from "@/lib/supabase";
-
-export interface SupabaseAuthUser {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  phone: string;
-  providers: string[];
-  role: string;
-  roles?: string[];
-  status: "active" | "inactive";
-  createdAt: string;
-  updatedAt: string;
-  confirmedAt: string | null;
-  lastSignInAt: string | null;
-  isCurrentUser: boolean;
-  rawUser: Record<string, unknown>;
-}
+import { verifyAdminSession } from "@/lib/admin-guard";
 
 // 1. GET /api/users - Lấy danh sách người dùng đầy đủ các cột từ Supabase Auth
 export async function GET() {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
+  const user = authCheck.user;
 
   try {
-    const supabaseClient = getSupabaseAdminClient();
-
-    // Fetch live users directly from Supabase Auth Admin and RBAC roles
-    const [authRes, rolesRes] = await Promise.all([
-      supabaseClient.auth.admin.listUsers(),
-      supabaseClient.from("iam_user_roles").select("user_id, role_id").is("app_id", null),
-    ]);
-
-    if (authRes.error) {
-      throw authRes.error;
-    }
-
-    const authUsers = authRes.data?.users || [];
-    const rolesMap = new Map<string, string[]>();
-
-    if (rolesRes.data) {
-      rolesRes.data.forEach((r: { user_id: string; role_id: string }) => {
-        const list = rolesMap.get(r.user_id) || [];
-        list.push(r.role_id);
-        rolesMap.set(r.user_id, list);
-      });
-    }
-
-    const users: SupabaseAuthUser[] = [];
-
-    for (const u of authUsers) {
-      const rawName =
-        u.user_metadata?.full_name ||
-        u.user_metadata?.name ||
-        u.email?.split("@")[0] ||
-        "Người dùng";
-      const cleanName = fixVietnameseEncoding(rawName);
-
-      const avatar =
-        u.user_metadata?.avatar_url ||
-        u.user_metadata?.picture ||
-        (u.id === user.sub ? user.avatar : undefined);
-
-      const providers: string[] =
-        u.app_metadata?.providers ||
-        (u.app_metadata?.provider ? [u.app_metadata.provider] : ["email"]);
-
-      const isCurrent = u.id === user.sub || u.email === user.email;
-
-      const userRoles = rolesMap.get(u.id) || [];
-      const primaryRole =
-        userRoles[0] ||
-        u.user_metadata?.role ||
-        u.app_metadata?.role ||
-        (isCurrent ? "admin" : "viewer");
-
-      const displayRole =
-        String(primaryRole).toLowerCase().includes("admin")
-          ? "Quản trị viên (Super Admin)"
-          : String(primaryRole).toLowerCase().includes("dev")
-            ? "Lập trình viên (Developer)"
-            : String(primaryRole).toLowerCase().includes("oper")
-              ? "Vận hành (Operator)"
-              : "Người xem (Viewer)";
-
-      const isBanned = Boolean(u.banned_until && new Date(u.banned_until) > new Date());
-      const accountStatus: "active" | "inactive" =
-        isBanned || u.user_metadata?.status === "inactive" ? "inactive" : "active";
-
-      users.push({
-        id: u.id,
-        name: cleanName,
-        email: u.email || "",
-        avatar,
-        phone: u.phone || "-",
-        providers,
-        role: displayRole,
-        roles: userRoles.length > 0 ? userRoles : [primaryRole],
-        status: accountStatus,
-        createdAt: u.created_at,
-        updatedAt: u.updated_at || u.created_at || new Date().toISOString(),
-        confirmedAt: u.confirmed_at || u.email_confirmed_at || null,
-        lastSignInAt: u.last_sign_in_at || null,
-        isCurrentUser: isCurrent,
-        rawUser: u as unknown as Record<string, unknown>,
-      });
-    }
-
-    // If current session user is not found in auth.users (e.g. external token), include them at the top
-    if (!users.some((u) => u.isCurrentUser) && user) {
-      users.unshift({
-        id: user.sub,
-        name: fixVietnameseEncoding(user.name || "Nam Nguyễn"),
-        email: user.email,
-        avatar: user.avatar,
-        phone: "-",
-        providers: ["vntez-sso"],
-        role: "Quản trị viên (Super Admin)",
-        roles: ["admin"],
-        status: "active",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        confirmedAt: new Date().toISOString(),
-        lastSignInAt: new Date().toISOString(),
-        isCurrentUser: true,
-        rawUser: { sub: user.sub, email: user.email, name: user.name, provider: "vntez_id_sso" },
-      });
-    }
+    const users = await listConsoleUsers(user);
 
     return NextResponse.json({
       success: true,
@@ -153,10 +36,12 @@ export async function GET() {
 
 // 2. POST /api/users - Tạo người dùng mới qua Supabase Auth Admin
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {
@@ -212,11 +97,14 @@ export async function POST(req: Request) {
 
 // 3. DELETE /api/users - Xóa người dùng khỏi Supabase Auth
 export async function DELETE(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
+  const user = authCheck.user;
 
   try {
     const { searchParams } = new URL(req.url);

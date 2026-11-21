@@ -6,6 +6,7 @@ const PUBLIC_PATHS = [
   "/login",
   "/auth/callback",
   "/api/auth/login",
+  "/api/auth/me",
   "/api/auth/logout",
   "/favicon.ico",
   "/icon.svg",
@@ -28,12 +29,6 @@ export function proxy(request: NextRequest) {
   const session = request.cookies.get(COOKIE_NAMES.USER_SESSION)?.value;
   const isAuthenticated = Boolean(token || session);
 
-  // 2. If user is already authenticated and visits /login -> redirect to dashboard
-  if (isAuthenticated && pathname === "/login") {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // 3. If user is NOT authenticated and attempts to access protected routes -> redirect to /login
   if (!isAuthenticated && !isPublicPath) {
     const loginUrl = new URL("/login", request.url);
     if (pathname !== "/") {

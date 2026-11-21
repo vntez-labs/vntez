@@ -158,30 +158,30 @@ export function FilesTable() {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border text-xs">
+        <table className="w-full text-left text-xs 2xl:text-sm">
+          <thead className="bg-muted/60 text-muted-foreground uppercase font-mono tracking-wider border-b border-border text-[11px] 2xl:text-xs">
             <tr>
-              <th className="px-5 py-3.5 font-semibold">Tên file / Key</th>
-              <th className="px-4 py-3.5 font-semibold">Định dạng</th>
-              <th className="px-4 py-3.5 font-semibold">Kích thước</th>
-              <th className="px-4 py-3.5 font-semibold">Thời gian</th>
-              <th className="px-5 py-3.5 text-right font-semibold">Thao tác</th>
+              <th className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5 font-semibold">Tên file / Key</th>
+              <th className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 font-semibold">Định dạng</th>
+              <th className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 font-semibold">Kích thước</th>
+              <th className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 font-semibold">Thời gian</th>
+              <th className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5 text-right font-semibold">Thao tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100/80 dark:divide-zinc-800/40">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, idx) => (
                 <tr key={idx}>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5">
                     <div className="flex items-center gap-2.5">
                       <Skeleton className="h-6 w-6 rounded-md shrink-0" />
                       <Skeleton className="h-4 w-40 rounded" />
                     </div>
                   </td>
-                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-20 rounded" /></td>
-                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-16 rounded" /></td>
-                  <td className="px-4 py-3.5"><Skeleton className="h-4 w-28 rounded" /></td>
-                  <td className="px-5 py-3.5 text-right"><Skeleton className="h-7 w-20 rounded-lg ml-auto" /></td>
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5"><Skeleton className="h-4 w-20 rounded" /></td>
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5"><Skeleton className="h-4 w-16 rounded" /></td>
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5"><Skeleton className="h-4 w-28 rounded" /></td>
+                  <td className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5 text-right"><Skeleton className="h-7 w-20 rounded-lg ml-auto" /></td>
                 </tr>
               ))
             ) : filteredFiles.length === 0 ? (
@@ -196,27 +196,27 @@ export function FilesTable() {
                   key={f.key}
                   className="group transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30"
                 >
-                  <td className="px-5 py-3.5 font-medium text-foreground">
-                    <div className="flex items-center gap-2.5">
+                  <td className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5 font-medium text-foreground">
+                    <div className="flex items-center gap-2">
                       <div className="shrink-0">{getFileIcon(f.content_type)}</div>
-                      <span className="font-mono text-sm">{f.key}</span>
+                      <span className="font-mono text-xs 2xl:text-sm truncate max-w-[180px] sm:max-w-[240px] xl:max-w-[320px]">{f.key}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-muted-foreground">
-                    <span className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 text-muted-foreground">
+                    <span className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-[11px] 2xl:text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                       {f.content_type}
                     </span>
                   </td>
-                  <td className="px-4 py-3.5 font-mono text-sm text-muted-foreground">
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 font-mono text-xs 2xl:text-sm text-muted-foreground">
                     {formatBytes(f.size)}
                   </td>
-                  <td className="px-4 py-3.5 text-muted-foreground font-mono text-xs">
+                  <td className="px-3 2xl:px-4 py-2.5 2xl:py-3.5 text-muted-foreground font-mono text-[11px] 2xl:text-xs">
                     {new Date(f.uploaded_at).toLocaleDateString("vi-VN", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </td>
-                  <td className="px-5 py-3.5 text-right">
+                  <td className="px-3.5 2xl:px-5 py-2.5 2xl:py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         title="Tạo Presigned Download URL"

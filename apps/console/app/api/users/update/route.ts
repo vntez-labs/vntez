@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "@workspace/auth/server";
 import { getSupabaseAdminClient } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-guard";
 
 const updateUserSchema = z.object({
   userId: z.string().min(1, "Thiếu userId hợp lệ"),
   name: z.string().optional(),
-  role: z.string().optional().default("Viewer"),
+  role: z.enum(["Admin", "Developer", "Operator", "Viewer"]).default("Viewer"),
   status: z.enum(["active", "inactive"]).optional().default("active"),
 });
 
 export async function POST(req: Request) {
-  const { user } = await getServerSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = await verifyAdminSession();
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: authCheck.status }
+    );
   }
 
   try {
@@ -30,6 +32,10 @@ export async function POST(req: Request) {
 
     const { userId, name, role, status } = parsed.data;
     const supabase = getSupabaseAdminClient();
+    const grantAdmin = role === "Admin" && status === "active";
+    if (!grantAdmin && userId === authCheck.user.sub) {
+      return NextResponse.json({ success: false, error: "Không thể tự thu hồi quyền quản trị" }, { status: 400 });
+    }
 
     const updatePayload: Parameters<typeof supabase.auth.admin.updateUserById>[1] = {
       user_metadata: {
@@ -44,19 +50,32 @@ export async function POST(req: Request) {
       ban_duration: status === "inactive" ? "876000h" : "none",
     };
 
-    const { data, error } = await supabase.auth.admin.updateUserById(
-      userId,
-      updatePayload
-    );
+    // Revoke first so a partial update cannot preserve unwanted privileges.
+    if (!grantAdmin) {
+      const { error } = await supabase
+        .from("iam_user_roles")
+        .delete()
+        .eq("user_id", userId)
+        .eq("role_id", "admin")
+        .is("app_id", null);
+      if (error) throw error;
+    }
 
-    if (error) {
-      throw error;
+    const authRes = await supabase.auth.admin.updateUserById(userId, updatePayload);
+    if (authRes.error) throw authRes.error;
+
+    if (grantAdmin) {
+      const { error } = await supabase.from("iam_user_roles").upsert(
+        { user_id: userId, role_id: "admin", app_id: null },
+        { onConflict: "user_id,role_id" }
+      );
+      if (error) throw error;
     }
 
     return NextResponse.json({
       success: true,
-      message: `Đã cập nhật vai trò "${role}" cho người dùng thành công trên Supabase Auth`,
-      user: data.user,
+      message: `Đã cập nhật vai trò "${role}" cho người dùng thành công trên Supabase Auth & RBAC`,
+      user: authRes.data.user,
     });
   } catch (err) {
     console.error("POST /api/users/update error:", err);

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@workspace/auth/server";
+import { verifyAdminSession } from "@/lib/admin-guard";
 import { generateAppSecret } from "@/lib/apps-repository";
 import {
   getFullAppWorkspace,
@@ -11,10 +11,8 @@ interface RouteParams {
 }
 
 export async function POST(_req: Request, { params }: RouteParams) {
-  const { user } = await getServerSession();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await verifyAdminSession();
+  if (!auth.authorized) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const { id } = await params;
   if (!id) {

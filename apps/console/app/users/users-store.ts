@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "@workspace/ui/components/toaster";
 import { api } from "@workspace/ui/lib/api-client";
-import type { SupabaseAuthUser } from "@/app/api/users/route";
+import type { SupabaseAuthUser } from "@/lib/console-users";
 
 interface AddUserData {
   email: string;
